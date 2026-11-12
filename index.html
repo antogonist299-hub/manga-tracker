@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Трекер читання</title>
+    <!-- Налаштування для PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#141414">
+    <link rel="apple-touch-icon" href="https://ui-avatars.com/api/?name=T&background=2B5712&color=fff&size=192">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        :root {
+            --bg-main: #141414;
+            --bg-card: #242424;
+            --bg-input: #333333;
+            --header-green: #2B5712;
+            --accent-green: #53A518;
+            --text-white: #FFFFFF;
+            --text-gray: #A3A3A3;
+            --auth-bg-register: #43A008; 
+            --auth-bg-login: #26540D;    
+            --auth-btn-gray: #707070;    
+            --base-vw: 3.9;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Manrope', sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-white); display: flex; justify-content: center; min-height: 100vh; }
+        
+        .app-container { width: 100%; max-width: 600px; height: 100dvh; display: flex; flex-direction: column; position: relative; background-color: var(--bg-main); overflow: hidden; }
+
+        /* Авторизація */
+        #authScreen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; padding: 20px; }
+        .auth-card { width: 100%; max-width: clamp(280px, calc(320vw / var(--base-vw)), 360px); padding: clamp(20px, calc(28vw / var(--base-vw)), 40px) clamp(16px, calc(24vw / var(--base-vw)), 32px); border-radius: clamp(8px, calc(12vw / var(--base-vw)), 16px); display: flex; flex-direction: column; }
+        .register-card { background-color: var(--auth-bg-register); }
+        .login-card { background-color: var(--auth-bg-login); }
+        .auth-label { font-size: clamp(14px, calc(15vw / var(--base-vw)), 18px); font-weight: 600; margin-bottom: 8px; color: var(--text-white); }
+        .auth-input { height: clamp(40px, calc(46vw / var(--base-vw)), 54px); border-radius: clamp(6px, calc(8vw / var(--base-vw)), 12px); border: none; outline: none; padding: 0 14px; font-size: clamp(14px, calc(15vw / var(--base-vw)), 18px); margin-bottom: clamp(16px, calc(20vw / var(--base-vw)), 24px); color: #000; }
+        .auth-btn { background-color: var(--auth-btn-gray); color: white; border: none; border-radius: clamp(6px, calc(8vw / var(--base-vw)), 12px); height: clamp(44px, calc(48vw / var(--base-vw)), 56px); font-size: clamp(15px, calc(16vw / var(--base-vw)), 20px); font-weight: 500; cursor: pointer; margin-top: 4px; }
+        .auth-links { margin-top: clamp(16px, calc(20vw / var(--base-vw)), 24px); display: flex; flex-direction: column; gap: 12px; }
+        .auth-link { color: var(--text-white); text-decoration: underline; font-size: clamp(13px, calc(14vw / var(--base-vw)), 16px); cursor: pointer; background: none; border: none; text-align: left; padding: 0; }
+        .switch-auth { text-decoration: none; font-size: 13px; color: rgba(255,255,255,0.7); text-align: center; margin-top: 20px; }
+
+        /* Головний інтерфейс */
+        #mainApp { display: none; flex-direction: column; height: 100%; }
+        
+        .header-section { background-color: var(--header-green); padding: clamp(24px, calc(40vw / var(--base-vw)), 48px) clamp(16px, calc(24vw / var(--base-vw)), 32px) clamp(16px, calc(24vw / var(--base-vw)), 32px); border-bottom-left-radius: 24px; border-bottom-right-radius: 24px; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: clamp(16px, calc(20vw / var(--base-vw)), 28px); }
+        .header-title { font-size: clamp(22px, calc(26vw / var(--base-vw)), 36px); font-weight: 500; }
+        .add-btn { background-color: var(--accent-green); color: white; border: none; width: clamp(36px, calc(40vw / var(--base-vw)), 52px); height: clamp(36px, calc(40vw / var(--base-vw)), 52px); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .add-btn i { font-size: clamp(20px, calc(24vw / var(--base-vw)), 32px); }
+        .search-box { background-color: white; border-radius: clamp(20px, calc(24vw / var(--base-vw)), 32px); display: flex; align-items: center; justify-content: space-between; padding: 0 clamp(12px, calc(16vw / var(--base-vw)), 24px); height: clamp(40px, calc(44vw / var(--base-vw)), 56px); }
+        .search-box input { border: none; outline: none; flex: 1; font-size: clamp(14px, calc(15vw / var(--base-vw)), 20px); color: #000; }
+        .search-box i { color: #000; font-size: clamp(18px, calc(20vw / var(--base-vw)), 28px); margin-left: 10px; }
+        
+        .main-content { flex: 1; overflow-y: auto; }
+        #trackerScreen { padding: clamp(16px, calc(24vw / var(--base-vw)), 32px); padding-bottom: clamp(90px, calc(100vw / var(--base-vw)), 130px); }
+
+        .items-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(12px, calc(16vw / var(--base-vw)), 24px); }
+        .card { background-color: var(--bg-card); border-radius: clamp(10px, calc(12vw / var(--base-vw)), 16px); padding: clamp(8px, calc(10vw / var(--base-vw)), 14px); display: flex; flex-direction: column; cursor: pointer; position: relative; }
+        .card-image-wrapper { position: relative; width: 100%; aspect-ratio: 0.72; border-radius: clamp(4px, calc(6vw / var(--base-vw)), 8px); overflow: hidden; background-color: #333; margin-bottom: clamp(8px, calc(10vw / var(--base-vw)), 14px); }
+        .card-image-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        .options-btn { position: absolute; top: 8px; right: 8px; background-color: rgba(140, 140, 140, 0.6); border: none; border-radius: 6px; width: 30px; height: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; backdrop-filter: blur(2px); z-index: 10; }
+        .card-type { color: var(--accent-green); font-size: clamp(9px, calc(11vw / var(--base-vw)), 14px); font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
+        .card-title { font-size: clamp(12px, calc(14vw / var(--base-vw)), 18px); line-height: 1.3; font-weight: 500; }
+        
+        /* Випадаюче меню опцій */
+        .options-menu { position: absolute; top: 35px; right: 8px; background-color: #1a1a1a; border-radius: 8px; display: none; flex-direction: column; padding: 8px 0; z-index: 20; box-shadow: 0 4px 12px rgba(0,0,0,0.5); min-width: 140px; border: 1px solid #333; }
+        .options-menu button { background: none; border: none; color: white; padding: 10px 16px; text-align: left; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .options-menu button:hover { background-color: #333; }
+        .options-menu button i { font-size: 16px; }
+        .options-menu-divider { height: 1px; background-color: #333; margin: 4px 16px; }
+
+        .bottom-nav { position: absolute; bottom: 0; left: 0; width: 100%; background-color: var(--bg-card); display: flex; justify-content: space-around; padding: clamp(12px, calc(14vw / var(--base-vw)), 20px) 0 clamp(20px, calc(24vw / var(--base-vw)), 32px) 0; border-top-left-radius: clamp(16px, calc(20vw / var(--base-vw)), 28px); border-top-right-radius: clamp(16px, calc(20vw / var(--base-vw)), 28px); z-index: 100;}
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--text-gray); font-size: clamp(11px, calc(13vw / var(--base-vw)), 16px); font-weight: 500; cursor: pointer; }
+        .nav-item i { font-size: clamp(22px, calc(26vw / var(--base-vw)), 34px); }
+        .nav-item.active { color: var(--accent-green); }
+        
+        /* Профіль */
+        #profileScreen { display: none; flex-direction: column; padding: 0; padding-bottom: clamp(90px, calc(100vw / var(--base-vw)), 130px); }
+        .profile-header-bg { background-color: var(--header-green); padding: clamp(32px, calc(40vw / var(--base-vw)), 48px) clamp(20px, calc(24vw / var(--base-vw)), 32px); padding-bottom: clamp(60px, calc(80vw / var(--base-vw)), 100px); width: 100%; }
+        .profile-avatar-container { display: flex; flex-direction: column; align-items: center; margin-top: clamp(-50px, calc(-70vw / var(--base-vw)), -80px); margin-bottom: clamp(24px, calc(32vw / var(--base-vw)), 40px); position: relative; }
+        .avatar-wrapper { position: relative; width: clamp(100px, calc(120vw / var(--base-vw)), 140px); height: clamp(100px, calc(120vw / var(--base-vw)), 140px); }
+        .profile-avatar { width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--accent-green); background-color: var(--bg-card); object-fit: cover; }
+        .edit-avatar-btn { position: absolute; bottom: 4px; right: 4px; background-color: var(--accent-green); color: white; border: none; width: clamp(24px, calc(28vw / var(--base-vw)), 32px); height: clamp(24px, calc(28vw / var(--base-vw)), 32px); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.5); font-size: 14px; }
+        .profile-name-wrapper { display: flex; align-items: center; gap: 8px; margin-top: 16px; }
+        .profile-name { font-size: clamp(20px, calc(24vw / var(--base-vw)), 32px); font-weight: 500; color: var(--text-white); text-transform: uppercase; }
+        .edit-name-btn { background: none; border: none; color: var(--text-gray); cursor: pointer; font-size: 20px; display: flex; align-items: center; }
+        .stats-container { display: flex; gap: clamp(8px, calc(12vw / var(--base-vw)), 16px); padding: 0 clamp(12px, calc(16vw / var(--base-vw)), 24px); }
+        .stat-card { flex: 1; background-color: var(--bg-card); border-radius: clamp(12px, calc(16vw / var(--base-vw)), 20px); padding: clamp(12px, calc(16vw / var(--base-vw)), 24px) clamp(6px, calc(8vw / var(--base-vw)), 12px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; }
+        .stat-label { color: var(--accent-green); font-size: clamp(9px, calc(10vw / var(--base-vw)), 13px); font-weight: 700; text-transform: uppercase; }
+        .stat-value { font-size: clamp(24px, calc(28vw / var(--base-vw)), 40px); font-weight: 500; color: var(--text-white); }
+        .logout-btn { background-color: #d32f2f; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; margin: 40px auto; width: fit-content; cursor: pointer; }
+
+        /* Модальні вікна (Спільні стилі) */
+        .modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 200; display: none; flex-direction: column; justify-content: flex-end; }
+        .modal-content { background-color: var(--bg-card); width: 100%; border-top-left-radius: 24px; border-top-right-radius: 24px; padding: 16px 24px 32px; display: flex; flex-direction: column; gap: 20px; animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        
+        /* Модалка підтвердження видалення */
+        #deleteModalOverlay .modal-content { justify-content: center; align-items: center; padding: 32px; gap: 24px; border-radius: 16px; width: 80%; margin: auto; margin-bottom: auto; animation: scaleUp 0.2s ease-out; }
+        @keyframes scaleUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        #deleteModalOverlay h3 { font-size: 20px; font-weight: 500; text-align: center; }
+        .delete-actions { display: flex; gap: 16px; width: 100%; }
+        
+        .modal-drag-handle { width: 40px; height: 4px; background-color: #555; border-radius: 2px; margin: 0 auto 8px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .modal-header h3 { font-size: 20px; font-weight: 500; margin: 0 auto; padding-left: 32px; }
+        .modal-close { background-color: white; color: black; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; }
+
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group label { font-size: 16px; color: var(--text-white); }
+        .modal-input { background-color: var(--bg-input); border: none; border-radius: 8px; padding: 12px 16px; color: white; font-size: 15px; width: 100%; outline: none; }
+        .modal-input::placeholder { color: #888; }
+        
+        .pill-group { display: flex; gap: 8px; flex-wrap: wrap; }
+        .pill-btn { background: none; border: 1px solid #555; color: #AAA; border-radius: 20px; padding: 8px 14px; font-size: 13px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+        .pill-btn.active { border-color: var(--accent-green); color: var(--accent-green); }
+        
+        .cover-input-wrapper { position: relative; display: flex; align-items: center; }
+        .cover-input-wrapper i { position: absolute; left: 16px; font-size: 20px; color: white; }
+        .cover-input-wrapper .modal-input { padding-left: 44px; cursor: pointer; text-overflow: ellipsis; }
+        
+        .modal-actions { display: flex; gap: 16px; margin-top: 12px; }
+        .modal-btn { flex: 1; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 500; cursor: pointer; border: none; }
+        .btn-cancel { background: transparent; border: 1px solid #555; color: white; }
+        .btn-save { background-color: var(--accent-green); color: white; }
+        
+        /* ЕКРАН ДЕТАЛЕЙ КНИГИ */
+        #bookDetailScreen { display: none; flex-direction: column; background-color: var(--bg-main); height: 100%; overflow-y: auto; z-index: 150; position: absolute; top: 0; left: 0; width: 100%; }
+        .detail-cover-container { position: relative; width: 100%; height: clamp(250px, calc(300vw / var(--base-vw)), 350px); }
+        .detail-cover-container img { width: 100%; height: 100%; object-fit: cover; }
+        .detail-back-btn { position: absolute; top: 20px; left: 20px; width: 40px; height: 40px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.8); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #000; font-size: 20px; z-index: 2; }
+        .detail-content { padding: clamp(20px, calc(24vw / var(--base-vw)), 32px); display: flex; flex-direction: column; gap: 24px; padding-bottom: 40px; }
+        .detail-header { display: flex; flex-direction: column; gap: 8px; }
+        .detail-type { color: var(--accent-green); font-size: clamp(12px, calc(14vw / var(--base-vw)), 16px); font-weight: 700; text-transform: uppercase; }
+        .detail-title { font-size: clamp(24px, calc(28vw / var(--base-vw)), 36px); font-weight: 600; line-height: 1.2; color: var(--text-white); }
+        .detail-row { display: flex; flex-direction: column; gap: 12px; }
+        .detail-row-title { font-size: 16px; color: var(--text-white); font-weight: 500; }
+        .rating-stars { display: flex; gap: 12px; }
+        .rating-stars i { font-size: clamp(28px, calc(32vw / var(--base-vw)), 40px); color: #555; cursor: pointer; transition: color 0.2s; }
+        .rating-stars i.active { color: var(--accent-green); }
+        .review-textarea { resize: vertical; min-height: 120px; background-color: #242424; }
+    </style>
+</head>
+<body onclick="closeAllMenus()">
+
+<div class="app-container">
+    <!-- Auth forms -->
+    <div id="authScreen">
+        <div id="loginBlock" class="auth-card login-card">
+            <label class="auth-label">Email</label>
+            <input type="email" id="loginEmail" class="auth-input" placeholder="Value">
+            <label class="auth-label">Password</label>
+            <input type="password" id="loginPassword" class="auth-input" placeholder="Value">
+            <button type="button" class="auth-btn" onclick="signIn()">Sign In</button>
+            <button type="button" class="auth-link switch-auth" onclick="toggleAuth('register')">Не маєте акаунту? Register</button>
+        </div>
+        <div id="registerBlock" class="auth-card register-card" style="display: none;">
+            <label class="auth-label">Email</label>
+            <input type="email" id="registerEmail" class="auth-input" placeholder="Value">
+            <label class="auth-label">Password</label>
+            <input type="password" id="registerPassword" class="auth-input" placeholder="Value">
+            <button type="button" class="auth-btn" onclick="signUp()">Register</button>
+            <button type="button" class="auth-link switch-auth" onclick="toggleAuth('login')">Вже є акаунт? Sign In</button>
+        </div>
+    </div>
+
+    <div id="mainApp">
+        <!-- Шапка -->
+        <div class="header-section" id="headerSection">
+            <div class="header-top">
+                <h1 class="header-title" id="pageTitle">Не прочитані</h1>
+                <button type="button" class="add-btn" onclick="openAddModal()"><i class="ph ph-plus"></i></button>
+            </div>
+            <div class="search-box">
+                <input type="text" placeholder="Пошук" id="searchInput">
+                <i class="ph ph-magnifying-glass"></i>
+            </div>
+        </div>
+
+        <!-- Трекер -->
+        <div class="main-content" id="trackerScreen">
+            <div class="items-grid" id="itemsGrid"></div>
+        </div>
+
+        <!-- Профіль -->
+        <div class="main-content" id="profileScreen">
+            <div class="profile-header-bg"><h1 class="header-title">Кабінет</h1></div>
+            <div class="profile-avatar-container">
+                <div class="avatar-wrapper">
+                    <img src="" alt="Аватар" class="profile-avatar" id="profileAvatarImg" onerror="setFallbackAvatar()">
+                    <input type="file" id="avatarFileInput" style="display: none;" accept="image/*" onchange="uploadAvatarFile(event)">
+                    <button type="button" class="edit-avatar-btn" onclick="document.getElementById('avatarFileInput').click()"><i class="ph ph-pencil-simple"></i></button>
+                </div>
+                <div class="profile-name-wrapper">
+                    <div class="profile-name" id="profileName">USER</div>
+                    <button type="button" class="edit-name-btn" onclick="editProfileName()"><i class="ph ph-pencil-simple"></i></button>
+                </div>
+            </div>
+            <div class="stats-container">
+                <div class="stat-card"><span class="stat-label">Прочитані</span><span class="stat-value" id="statRead">0</span></div>
+                <div class="stat-card"><span class="stat-label">Не читані</span><span class="stat-value" id="statUnread">0</span></div>
+                <div class="stat-card"><span class="stat-label">В планах</span><span class="stat-value" id="statPlanned">0</span></div>
+            </div>
+            <button type="button" class="logout-btn" onclick="signOut()">Вийти з акаунту</button>
+        </div>
+
+        <!-- Навігація -->
+        <div class="bottom-nav">
+            <div class="nav-item" id="navRead" onclick="switchTab('read')"><i class="ph ph-book-bookmark" id="iconRead"></i><span>Прочитані</span></div>
+            <div class="nav-item active" id="navUnread" onclick="switchTab('unread')"><i class="ph-fill ph-book-open" id="iconUnread"></i><span>Не читані</span></div>
+            <div class="nav-item" id="navPlanned" onclick="switchTab('planned')"><i class="ph ph-bookmark-simple" id="iconPlanned"></i><span>В планах</span></div>
+            <div class="nav-item" id="navProfile" onclick="switchTab('profile')"><i class="ph ph-user" id="iconProfile"></i><span>Кабінет</span></div>
+        </div>
+        
+        <!-- МОДАЛЬНЕ ВІКНО ДОДАВАННЯ / РЕДАГУВАННЯ -->
+        <div id="addModalOverlay" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-drag-handle"></div>
+                <div class="modal-header">
+                    <h3 id="modalFormTitle">Додати твір</h3>
+                    <button class="modal-close" onclick="closeAddModal()"><i class="ph ph-x"></i></button>
+                </div>
+                
+                <div class="form-group">
+                    <label>Назва</label>
+                    <input type="text" id="addTitle" class="modal-input" placeholder="Сага про Вінланд, том 2">
+                </div>
+                
+                <div class="form-group">
+                    <label>Тип</label>
+                    <div class="pill-group" id="typeGroup">
+                        <button type="button" class="pill-btn" onclick="selectPill('type', 'КНИГА')">Книга</button>
+                        <button type="button" class="pill-btn active" onclick="selectPill('type', 'МАНҐА')">Манґа</button>
+                        <button type="button" class="pill-btn" onclick="selectPill('type', 'КОМІКС')">Комікс</button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Статус</label>
+                    <div class="pill-group" id="statusGroup">
+                        <button type="button" class="pill-btn" onclick="selectPill('status', 'read')">Прочитано</button>
+                        <button type="button" class="pill-btn active" onclick="selectPill('status', 'unread')">Не прочитано</button>
+                        <button type="button" class="pill-btn" onclick="selectPill('status', 'planned')">В планах</button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Обкладинка</label>
+                    <div class="pill-group" id="coverGroup">
+                        <button type="button" class="pill-btn active" onclick="selectPill('cover', 'gallery')">Галерея</button>
+                        <button type="button" class="pill-btn" onclick="selectPill('cover', 'link')">Посилання</button>
+                    </div>
+                    <div class="cover-input-wrapper" id="coverGalleryWrapper">
+                        <i class="ph ph-image"></i>
+                        <input type="text" id="coverGalleryInputDisplay" class="modal-input" value="Обрати зображення..." readonly onclick="document.getElementById('coverFileInput').click()">
+                        <input type="file" id="coverFileInput" style="display: none;" accept="image/*" onchange="handleCoverFileSelect(event)">
+                    </div>
+                    <div class="cover-input-wrapper" id="coverLinkWrapper" style="display: none;">
+                        <i class="ph ph-link"></i>
+                        <input type="text" id="coverLinkInput" class="modal-input" placeholder="Вставити посилання...">
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="modal-btn btn-cancel" onclick="closeAddModal()">Відмінити</button>
+                    <button type="button" class="modal-btn btn-save" id="saveItemBtn" onclick="saveNewItem()">Зберегти</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- МОДАЛЬНЕ ВІКНО ВИДАЛЕННЯ -->
+        <div id="deleteModalOverlay" class="modal-overlay">
+            <div class="modal-content">
+                <h3>Видалити?</h3>
+                <div class="delete-actions">
+                    <button type="button" class="modal-btn btn-cancel" onclick="closeDeleteModal()">Ні</button>
+                    <button type="button" class="modal-btn btn-save" onclick="confirmDelete()">Так</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ЕКРАН СТОРІНКИ КНИГИ -->
+        <div id="bookDetailScreen">
+            <div class="detail-cover-container">
+                <button type="button" class="detail-back-btn" onclick="closeBookDetail()"><i class="ph ph-caret-left"></i></button>
+                <img src="" alt="Обкладинка" id="detailCoverImg">
+            </div>
+            
+            <div class="detail-content">
+                <div class="detail-header">
+                    <span class="detail-type" id="detailItemType">МАНҐА</span>
+                    <h2 class="detail-title" id="detailItemTitle">Назва книги</h2>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-row-title">Статус</span>
+                    <div class="pill-group" id="detailStatusGroup">
+                        <button type="button" class="pill-btn" onclick="updateBookStatus('read')">Прочитано</button>
+                        <button type="button" class="pill-btn" onclick="updateBookStatus('unread')">Не прочитано</button>
+                        <button type="button" class="pill-btn" onclick="updateBookStatus('planned')">В планах</button>
+                    </div>
+                </div>
+
+                <div class="detail-row" style="flex-direction: row; align-items: center; justify-content: space-between;">
+                    <span class="detail-row-title">Оцінка</span>
+                    <div class="rating-stars" id="detailRatingStars">
+                        <i class="ph ph-star" onclick="updateBookRating(1)"></i>
+                        <i class="ph ph-star" onclick="updateBookRating(2)"></i>
+                        <i class="ph ph-star" onclick="updateBookRating(3)"></i>
+                        <i class="ph ph-star" onclick="updateBookRating(4)"></i>
+                        <i class="ph ph-star" onclick="updateBookRating(5)"></i>
+                    </div>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-row-title">Відгук</span>
+                    <textarea id="detailReviewInput" class="modal-input review-textarea" placeholder="Писати текст тут....." onblur="updateBookReview()"></textarea>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+<script>
+    // ВСТАВ СВОЇ ДАНІ ТУТ:
+    const SUPABASE_URL = 'https://eebgugxrflawjfnsrgal.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVlYmd1Z3hyZmxhd2pmbnNyZ2FsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAxNzg4ODgsImV4cCI6MjEwNTc1NDg4OH0.WiDuU3Vns-T1h5ZuaPnl3e8Hxq4YIbmLAbRRGtDjtx4';
+    const supaClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let loadedItems = [];
+    let currentBookId = null;
+    let editModeId = null; // null якщо додаємо нову, ID якщо редагуємо
+    let itemToDeleteId = null;
+    let newItemData = { type: 'МАНҐА', status: 'unread', coverType: 'gallery', coverFile: null, existingCoverUrl: '' };
+
+    // --- Авторизація ---
+    function toggleAuth(type) {
+        document.getElementById('loginBlock').style.display = type === 'login' ? 'flex' : 'none';
+        document.getElementById('registerBlock').style.display = type === 'register' ? 'flex' : 'none';
+    }
+    async function signUp() {
+        const email = document.getElementById('registerEmail').value;
+        const password = document.getElementById('registerPassword').value;
+        if(!email || !password) return alert("Введіть дані");
+        const { error } = await supaClient.auth.signUp({ email, password });
+        if (error) alert("Помилка: " + error.message); else { alert("Успішно"); toggleAuth('login'); }
+    }
+    async function signIn() {
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        if(!email || !password) return alert("Введіть дані");
+        const { error } = await supaClient.auth.signInWithPassword({ email, password });
+        if (error) alert("Помилка: " + error.message); else checkUserSession();
+    }
+    async function signOut() { await supaClient.auth.signOut(); checkUserSession(); }
+    async function checkUserSession() {
+        const { data: { session } } = await supaClient.auth.getSession();
+        if (session) {
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'flex';
+            switchTab('unread');
+        } else {
+            document.getElementById('authScreen').style.display = 'flex';
+            document.getElementById('mainApp').style.display = 'none';
+        }
+    }
+
+    // --- Трекер ---
+    function renderCard(item) {
+        return `
+            <div class="card" onclick="openBookDetail('${item.id}')">
+                <div class="card-image-wrapper">
+                    <img src="${item.cover_url || 'https://via.placeholder.com/150'}" alt="Обкладинка">
+                    <button type="button" class="options-btn" onclick="toggleMenu(event, 'menu-${item.id}')"><i class="ph ph-dots-three"></i></button>
+                    
+                    <div id="menu-${item.id}" class="options-menu">
+                        <button type="button" onclick="openEditModal(event, '${item.id}')"><i class="ph ph-pencil-simple"></i> Редагувати</button>
+                        <div class="options-menu-divider"></div>
+                        <button type="button" onclick="openDeleteModal(event, '${item.id}')"><i class="ph ph-trash"></i> Видалити</button>
+                    </div>
+                </div>
+                <div class="card-type">${item.item_type}</div>
+                <div class="card-title">${item.title}</div>
+            </div>
+        `;
+    }
+
+    // Логіка випадаючого меню
+    function toggleMenu(event, menuId) {
+        event.stopPropagation(); // Щоб не відкривалась сторінка книги
+        closeAllMenus(); // Закриваємо інші меню
+        const menu = document.getElementById(menuId);
+        menu.style.display = 'flex';
+    }
+
+    function closeAllMenus() {
+        const menus = document.getElementsByClassName('options-menu');
+        for(let m of menus) m.style.display = 'none';
+    }
+
+    async function loadItemsFromDB(status) {
+        const grid = document.getElementById('itemsGrid');
+        grid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1; color: gray;">Завантаження...</p>';
+        const { data, error } = await supaClient.from('reading_items').select('*').eq('status', status);
+        if (error) return grid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1; color: red;">Помилка БД.</p>';
+        loadedItems = data; 
+        if (data.length === 0) grid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1; color: var(--text-gray);">Тут поки порожньо</p>';
+        else grid.innerHTML = data.map(renderCard).join('');
+    }
+
+    function switchTab(tabName) {
+        ['navRead', 'navPlanned', 'navUnread', 'navProfile'].forEach(id => document.getElementById(id).classList.remove('active'));
+        document.getElementById('iconRead').className = "ph ph-book-bookmark";
+        document.getElementById('iconPlanned').className = "ph ph-bookmark-simple";
+        document.getElementById('iconUnread').className = "ph ph-book-open";
+        document.getElementById('iconProfile').className = "ph ph-user";
+
+        const trackerScreen = document.getElementById('trackerScreen');
+        const profileScreen = document.getElementById('profileScreen');
+        const headerSection = document.getElementById('headerSection');
+
+        if (tabName === 'read' || tabName === 'unread' || tabName === 'planned') {
+            const titles = { 'read': 'Прочитані', 'planned': 'В планах', 'unread': 'Не прочитані' };
+            document.getElementById('pageTitle').innerText = titles[tabName];
+            
+            document.getElementById(tabName === 'read' ? 'navRead' : (tabName === 'planned' ? 'navPlanned' : 'navUnread')).classList.add('active');
+            document.getElementById(tabName === 'read' ? 'iconRead' : (tabName === 'planned' ? 'iconPlanned' : 'iconUnread')).className = tabName === 'read' ? 'ph-fill ph-book-bookmark' : (tabName === 'planned' ? 'ph-fill ph-bookmark-simple' : 'ph-fill ph-book-open');
+            
+            headerSection.style.display = 'block';
+            trackerScreen.style.display = 'block';
+            profileScreen.style.display = 'none';
+            loadItemsFromDB(tabName);
+        } else if (tabName === 'profile') {
+            document.getElementById('navProfile').classList.add('active');
+            document.getElementById('iconProfile').className = "ph-fill ph-user";
+            headerSection.style.display = 'none'; 
+            trackerScreen.style.display = 'none';
+            profileScreen.style.display = 'flex';
+            loadProfileData();
+        }
+    }
+
+    // --- Сторінка Книги ---
+    function openBookDetail(id) {
+        const book = loadedItems.find(b => b.id === id);
+        if (!book) return;
+        currentBookId = id;
+        document.getElementById('detailCoverImg').src = book.cover_url || 'https://via.placeholder.com/600x800';
+        document.getElementById('detailItemType').innerText = book.item_type;
+        document.getElementById('detailItemTitle').innerText = book.title;
+        document.getElementById('detailReviewInput').value = book.review || '';
+        renderDetailStatusPills(book.status);
+        renderDetailRatingStars(book.rating || 0);
+        document.getElementById('headerSection').style.display = 'none';
+        document.getElementById('trackerScreen').style.display = 'none';
+        document.querySelector('.bottom-nav').style.display = 'none';
+        document.getElementById('bookDetailScreen').style.display = 'flex';
+    }
+
+    function closeBookDetail() {
+        document.getElementById('bookDetailScreen').style.display = 'none';
+        document.querySelector('.bottom-nav').style.display = 'flex';
+        const activeNav = document.querySelector('.nav-item.active').id;
+        const tabMap = { 'navRead': 'read', 'navUnread': 'unread', 'navPlanned': 'planned' };
+        switchTab(tabMap[activeNav]);
+    }
+
+    function renderDetailStatusPills(status) {
+        const buttons = document.getElementById('detailStatusGroup').getElementsByClassName('pill-btn');
+        for (let btn of buttons) {
+            btn.classList.remove('active');
+            if ((status === 'read' && btn.innerText === 'Прочитано') || (status === 'unread' && btn.innerText === 'Не прочитано') || (status === 'planned' && btn.innerText === 'В планах')) btn.classList.add('active');
+        }
+    }
+
+    function renderDetailRatingStars(rating) {
+        const stars = document.getElementById('detailRatingStars').getElementsByTagName('i');
+        for (let i = 0; i < 5; i++) stars[i].className = i < rating ? "ph-fill ph-star active" : "ph ph-star";
+    }
+
+    async function updateBookStatus(newStatus) {
+        renderDetailStatusPills(newStatus);
+        const book = loadedItems.find(b => b.id === currentBookId);
+        if (book) book.status = newStatus;
+        await supaClient.from('reading_items').update({ status: newStatus }).eq('id', currentBookId);
+    }
+
+    async function updateBookRating(newRating) {
+        renderDetailRatingStars(newRating);
+        const book = loadedItems.find(b => b.id === currentBookId);
+        if (book) book.rating = newRating;
+        await supaClient.from('reading_items').update({ rating: newRating }).eq('id', currentBookId);
+    }
+
+    async function updateBookReview() {
+        const text = document.getElementById('detailReviewInput').value;
+        const book = loadedItems.find(b => b.id === currentBookId);
+        if (book) book.review = text;
+        await supaClient.from('reading_items').update({ review: text }).eq('id', currentBookId);
+    }
+
+    // --- Видалення ---
+    function openDeleteModal(event, id) {
+        event.stopPropagation();
+        closeAllMenus();
+        itemToDeleteId = id;
+        document.getElementById('deleteModalOverlay').style.display = 'flex';
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModalOverlay').style.display = 'none';
+        itemToDeleteId = null;
+    }
+
+    async function confirmDelete() {
+        if(!itemToDeleteId) return;
+        const { error } = await supaClient.from('reading_items').delete().eq('id', itemToDeleteId);
+        if(error) alert("Помилка видалення: " + error.message);
+        else {
+            closeDeleteModal();
+            const currentTab = document.querySelector('.nav-item.active').id.replace('nav', '').toLowerCase();
+            loadItemsFromDB(currentTab);
+        }
+    }
+
+    // --- Модальне Додавання / Редагування ---
+    function openAddModal() {
+        editModeId = null;
+        document.getElementById('modalFormTitle').innerText = "Додати твір";
+        document.getElementById('addModalOverlay').style.display = 'flex';
+        
+        let currentTab = 'unread';
+        if (document.getElementById('navRead').classList.contains('active')) currentTab = 'read';
+        if (document.getElementById('navPlanned').classList.contains('active')) currentTab = 'planned';
+        
+        document.getElementById('addTitle').value = '';
+        newItemData.existingCoverUrl = '';
+        newItemData.coverFile = null;
+        document.getElementById('coverGalleryInputDisplay').value = 'Обрати зображення...';
+        document.getElementById('coverLinkInput').value = '';
+        
+        selectPill('type', 'МАНҐА');
+        selectPill('status', currentTab);
+        selectPill('cover', 'gallery');
+    }
+
+    function openEditModal(event, id) {
+        event.stopPropagation();
+        closeAllMenus();
+        const book = loadedItems.find(b => b.id === id);
+        if(!book) return;
+
+        editModeId = id;
+        document.getElementById('modalFormTitle').innerText = "Редагування";
+        document.getElementById('addTitle').value = book.title;
+        newItemData.existingCoverUrl = book.cover_url || '';
+        newItemData.coverFile = null;
+        
+        selectPill('type', book.item_type);
+        selectPill('status', book.status);
+        
+        if (book.cover_url && book.cover_url.startsWith('http')) {
+            selectPill('cover', 'link');
+            document.getElementById('coverLinkInput').value = book.cover_url;
+            document.getElementById('coverGalleryInputDisplay').value = 'Обрати зображення...';
+        } else {
+            selectPill('cover', 'gallery');
+            document.getElementById('coverGalleryInputDisplay').value = book.cover_url ? 'Поточне фото' : 'Обрати зображення...';
+            document.getElementById('coverLinkInput').value = '';
+        }
+        
+        document.getElementById('addModalOverlay').style.display = 'flex';
+    }
+
+    function closeAddModal() {
+        document.getElementById('addModalOverlay').style.display = 'none';
+        editModeId = null;
+    }
+
+    function selectPill(group, value) {
+        newItemData[group] = value;
+        const buttons = document.getElementById(`${group}Group`).getElementsByClassName('pill-btn');
+        for (let btn of buttons) {
+            btn.classList.remove('active');
+            if ((group === 'type' && btn.innerText.toUpperCase() === value) ||
+                (group === 'status' && ((value === 'read' && btn.innerText === 'Прочитано') || (value === 'planned' && btn.innerText === 'В планах') || (value === 'unread' && btn.innerText === 'Не прочитано'))) ||
+                (group === 'cover' && ((value === 'gallery' && btn.innerText === 'Галерея') || (value === 'link' && btn.innerText === 'Посилання')))) {
+                btn.classList.add('active');
+            }
+        }
+        if (group === 'cover') {
+            document.getElementById('coverGalleryWrapper').style.display = value === 'gallery' ? 'flex' : 'none';
+            document.getElementById('coverLinkWrapper').style.display = value === 'link' ? 'flex' : 'none';
+        }
+    }
+
+    function handleCoverFileSelect(event) {
+        const file = event.target.files[0];
+        if (file) {
+            newItemData.coverFile = file;
+            document.getElementById('coverGalleryInputDisplay').value = file.name;
+        }
+    }
+
+    async function saveNewItem() {
+        const title = document.getElementById('addTitle').value.trim();
+        if (!title) return alert("Введіть назву");
+
+        const btn = document.getElementById('saveItemBtn');
+        btn.disabled = true; btn.innerText = "Збереження...";
+
+        try {
+            const { data: { session } } = await supaClient.auth.getSession();
+            let finalCoverUrl = newItemData.existingCoverUrl;
+
+            if (newItemData.coverType === 'link') {
+                finalCoverUrl = document.getElementById('coverLinkInput').value.trim();
+            } else if (newItemData.coverType === 'gallery' && newItemData.coverFile) {
+                const fileName = `${Date.now()}.${newItemData.coverFile.name.split('.').pop()}`;
+                const { error: uploadError } = await supaClient.storage.from('covers').upload(fileName, newItemData.coverFile);
+                if (uploadError) throw uploadError;
+                finalCoverUrl = supaClient.storage.from('covers').getPublicUrl(fileName).data.publicUrl;
+            }
+
+            const dbData = {
+                title: title,
+                item_type: newItemData.type,
+                status: newItemData.status,
+                cover_url: finalCoverUrl
+            };
+
+            if (editModeId) {
+                const { error } = await supaClient.from('reading_items').update(dbData).eq('id', editModeId);
+                if (error) throw error;
+            } else {
+                dbData.user_id = session.user.id;
+                const { error } = await supaClient.from('reading_items').insert(dbData);
+                if (error) throw error;
+            }
+
+            closeAddModal();
+            // Повертаємо користувача на вкладку того статусу, який він щойно обрав/зберіг
+            switchTab(newItemData.status); 
+            
+        } catch (error) { alert("Помилка збереження: " + error.message); } 
+        finally { btn.disabled = false; btn.innerText = "Зберегти"; }
+    }
+
+    // --- Профіль ---
+    function setFallbackAvatar() {
+        const name = document.getElementById('profileName').innerText || 'U';
+        const img = document.getElementById('profileAvatarImg');
+        img.onerror = null; 
+        img.src = `https://ui-avatars.com/api/?name=${name}&background=2B5712&color=fff&size=150&bold=true`;
+    }
+
+    async function editProfileName() {
+        const currentName = document.getElementById('profileName').innerText;
+        const newName = prompt("Введіть нове ім'я:", currentName);
+        if (newName && newName.trim() !== "") {
+            const { data, error } = await supaClient.auth.updateUser({ data: { display_name: newName.trim() } });
+            if (!error) document.getElementById('profileName').innerText = newName.trim().toUpperCase();
+        }
+    }
+
+    async function uploadAvatarFile(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const avatarImg = document.getElementById('profileAvatarImg');
+        const originalSrc = avatarImg.src;
+        avatarImg.style.opacity = '0.5';
+        try {
+            const fileName = `${Date.now()}.${file.name.split('.').pop()}`;
+            const { error: uploadError } = await supaClient.storage.from('avatars').upload(fileName, file);
+            if (uploadError) throw uploadError;
+            const { data: { publicUrl } } = supaClient.storage.from('avatars').getPublicUrl(fileName);
+            await supaClient.auth.updateUser({ data: { avatar_url: publicUrl } });
+            avatarImg.src = publicUrl;
+        } catch (error) { alert("Помилка: " + error.message); avatarImg.src = originalSrc; } 
+        finally { avatarImg.style.opacity = '1'; event.target.value = ''; }
+    }
+
+    async function loadProfileData() {
+        const { data: { session } } = await supaClient.auth.getSession();
+        if(!session) return;
+        const metadata = session.user.user_metadata || {};
+        document.getElementById('profileName').innerText = (metadata.display_name || session.user.email.split('@')[0]).toUpperCase();
+        const avatarImg = document.getElementById('profileAvatarImg');
+        if (metadata.avatar_url) avatarImg.src = metadata.avatar_url; else setFallbackAvatar();
+        
+        const { count: readCount } = await supaClient.from('reading_items').select('*', { count: 'exact', head: true }).eq('status', 'read');
+        const { count: unreadCount } = await supaClient.from('reading_items').select('*', { count: 'exact', head: true }).eq('status', 'unread');
+        const { count: plannedCount } = await supaClient.from('reading_items').select('*', { count: 'exact', head: true }).eq('status', 'planned');
+        
+        document.getElementById('statRead').innerText = readCount || 0;
+        document.getElementById('statUnread').innerText = unreadCount || 0;
+        document.getElementById('statPlanned').innerText = plannedCount || 0;
+    }
+
+    window.onload = checkUserSession;
+
+    // Реєстрація Service Worker для PWA
+    if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW error:', err));
+    }
+</script>
+</body>
+</html>
