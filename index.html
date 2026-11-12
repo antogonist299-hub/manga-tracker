@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Трекер читання</title>
     <!-- Налаштування для PWA -->
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#141414">
@@ -711,7 +711,7 @@
 
     // Реєстрація Service Worker для PWA
     if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW error:', err));
+    navigator.serviceWorker.register('sw.js').catch(err => console.log('SW error:', err));
     }
 </script>
 </body>
