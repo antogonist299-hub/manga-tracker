@@ -9,7 +9,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#141414">
-   <link rel="apple-touch-icon" href="icon.png">
+    <link rel="apple-touch-icon" href="icon.png">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -99,12 +100,11 @@
         .stat-value { font-size: clamp(24px, calc(28vw / var(--base-vw)), 40px); font-weight: 500; color: var(--text-white); }
         .logout-btn { background-color: #d32f2f; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; margin: 40px auto; width: fit-content; cursor: pointer; }
 
-        /* Модальні вікна (Спільні стилі) */
+        /* Модальні вікна */
         .modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 200; display: none; flex-direction: column; justify-content: flex-end; }
         .modal-content { background-color: var(--bg-card); width: 100%; border-top-left-radius: 24px; border-top-right-radius: 24px; padding: 16px 24px 32px; display: flex; flex-direction: column; gap: 20px; animation: slideUp 0.3s ease-out; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         
-        /* Модалка підтвердження видалення */
         #deleteModalOverlay .modal-content { justify-content: center; align-items: center; padding: 32px; gap: 24px; border-radius: 16px; width: 80%; margin: auto; margin-bottom: auto; animation: scaleUp 0.2s ease-out; }
         @keyframes scaleUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         #deleteModalOverlay h3 { font-size: 20px; font-weight: 500; text-align: center; }
@@ -153,7 +153,6 @@
 <body onclick="closeAllMenus()">
 
 <div class="app-container">
-    <!-- Auth forms -->
     <div id="authScreen">
         <div id="loginBlock" class="auth-card login-card">
             <label class="auth-label">Email</label>
@@ -174,24 +173,22 @@
     </div>
 
     <div id="mainApp">
-        <!-- Шапка -->
         <div class="header-section" id="headerSection">
             <div class="header-top">
                 <h1 class="header-title" id="pageTitle">Не прочитані</h1>
                 <button type="button" class="add-btn" onclick="openAddModal()"><i class="ph ph-plus"></i></button>
             </div>
             <div class="search-box">
-                <input type="text" placeholder="Пошук" id="searchInput">
+                <!-- ДОДАНО oninput ДЛЯ ПОШУКУ -->
+                <input type="text" placeholder="Пошук" id="searchInput" oninput="searchItems()">
                 <i class="ph ph-magnifying-glass"></i>
             </div>
         </div>
 
-        <!-- Трекер -->
         <div class="main-content" id="trackerScreen">
             <div class="items-grid" id="itemsGrid"></div>
         </div>
 
-        <!-- Профіль -->
         <div class="main-content" id="profileScreen">
             <div class="profile-header-bg"><h1 class="header-title">Кабінет</h1></div>
             <div class="profile-avatar-container">
@@ -213,7 +210,6 @@
             <button type="button" class="logout-btn" onclick="signOut()">Вийти з акаунту</button>
         </div>
 
-        <!-- Навігація -->
         <div class="bottom-nav">
             <div class="nav-item" id="navRead" onclick="switchTab('read')"><i class="ph ph-book-bookmark" id="iconRead"></i><span>Прочитані</span></div>
             <div class="nav-item active" id="navUnread" onclick="switchTab('unread')"><i class="ph-fill ph-book-open" id="iconUnread"></i><span>Не читані</span></div>
@@ -332,16 +328,19 @@
 </div>
 
 <script>
-    // ВСТАВ СВОЇ ДАНІ ТУТ:
     const SUPABASE_URL = 'https://eebgugxrflawjfnsrgal.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVlYmd1Z3hyZmxhd2pmbnNyZ2FsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAxNzg4ODgsImV4cCI6MjEwNTc1NDg4OH0.WiDuU3Vns-T1h5ZuaPnl3e8Hxq4YIbmLAbRRGtDjtx4';
     const supaClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let loadedItems = [];
     let currentBookId = null;
-    let editModeId = null; // null якщо додаємо нову, ID якщо редагуємо
+    let editModeId = null; 
     let itemToDeleteId = null;
     let newItemData = { type: 'МАНҐА', status: 'unread', coverType: 'gallery', coverFile: null, existingCoverUrl: '' };
+
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').catch(err => console.log('SW error:', err));
+    }
 
     // --- Авторизація ---
     function toggleAuth(type) {
@@ -395,10 +394,9 @@
         `;
     }
 
-    // Логіка випадаючого меню
     function toggleMenu(event, menuId) {
-        event.stopPropagation(); // Щоб не відкривалась сторінка книги
-        closeAllMenus(); // Закриваємо інші меню
+        event.stopPropagation(); 
+        closeAllMenus(); 
         const menu = document.getElementById(menuId);
         menu.style.display = 'flex';
     }
@@ -408,14 +406,40 @@
         for(let m of menus) m.style.display = 'none';
     }
 
+    // ФУНКЦІЯ ПОШУКУ
+    function searchItems() {
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        const grid = document.getElementById('itemsGrid');
+        
+        if (loadedItems.length === 0) {
+            grid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1; color: var(--text-gray);">Тут поки порожньо</p>';
+            return;
+        }
+
+        const filtered = loadedItems.filter(item => item.title.toLowerCase().includes(query));
+
+        if (filtered.length === 0) {
+            grid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1; color: var(--text-gray);">Нічого не знайдено</p>';
+        } else {
+            grid.innerHTML = filtered.map(renderCard).join('');
+        }
+    }
+
     async function loadItemsFromDB(status) {
         const grid = document.getElementById('itemsGrid');
         grid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1; color: gray;">Завантаження...</p>';
-        const { data, error } = await supaClient.from('reading_items').select('*').eq('status', status);
+        
+        // Додано сортування A-Z
+        const { data, error } = await supaClient
+            .from('reading_items')
+            .select('*')
+            .eq('status', status)
+            .order('title', { ascending: true });
+            
         if (error) return grid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1; color: red;">Помилка БД.</p>';
-        loadedItems = data; 
-        if (data.length === 0) grid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1; color: var(--text-gray);">Тут поки порожньо</p>';
-        else grid.innerHTML = data.map(renderCard).join('');
+        loadedItems = data || []; 
+        
+        searchItems(); // Рендеримо сітку з урахуванням тексту пошуку
     }
 
     function switchTab(tabName) {
@@ -439,6 +463,10 @@
             headerSection.style.display = 'block';
             trackerScreen.style.display = 'block';
             profileScreen.style.display = 'none';
+            
+            // Очищаємо пошук при переході між категоріями
+            document.getElementById('searchInput').value = '';
+            
             loadItemsFromDB(tabName);
         } else if (tabName === 'profile') {
             document.getElementById('navProfile').classList.add('active');
@@ -632,12 +660,7 @@
                 finalCoverUrl = supaClient.storage.from('covers').getPublicUrl(fileName).data.publicUrl;
             }
 
-            const dbData = {
-                title: title,
-                item_type: newItemData.type,
-                status: newItemData.status,
-                cover_url: finalCoverUrl
-            };
+            const dbData = { title: title, item_type: newItemData.type, status: newItemData.status, cover_url: finalCoverUrl };
 
             if (editModeId) {
                 const { error } = await supaClient.from('reading_items').update(dbData).eq('id', editModeId);
@@ -649,7 +672,6 @@
             }
 
             closeAddModal();
-            // Повертаємо користувача на вкладку того статусу, який він щойно обрав/зберіг
             switchTab(newItemData.status); 
             
         } catch (error) { alert("Помилка збереження: " + error.message); } 
@@ -708,11 +730,6 @@
     }
 
     window.onload = checkUserSession;
-
-    // Реєстрація Service Worker для PWA
-    if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').catch(err => console.log('SW error:', err));
-    }
 </script>
 </body>
 </html>
