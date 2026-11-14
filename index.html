@@ -33,9 +33,9 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Manrope', sans-serif; }
-        body { background-color: var(--bg-main); color: var(--text-white); display: flex; justify-content: center; min-height: 100vh; }
+        body { background-color: var(--bg-main); color: var(--text-white); display: flex; justify-content: center; min-height: 100vh; margin: 0; }
         
-        .app-container { width: 100%; max-width: 600px; height: 100dvh; display: flex; flex-direction: column; position: relative; background-color: var(--bg-main); overflow: hidden; transition: all 0.3s ease; }
+        .app-container { width: 100%; height: 100dvh; display: flex; flex-direction: column; position: relative; background-color: var(--bg-main); overflow: hidden; transition: all 0.3s ease; }
 
         /* Авторизація */
         #authScreen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; padding: 20px; width: 100%; }
@@ -153,33 +153,34 @@
         .review-textarea { resize: vertical; min-height: 120px; background-color: #242424; }
 
         /* ======================================================== */
-        /* МАГІЯ ДЛЯ ПК ТА НОУТБУКІВ (АДАПТИВНІСТЬ)                 */
+        /* МАГІЯ ДЛЯ ПК ТА НОУТБУКІВ (АДАПТИВНІСТЬ ФУЛСКРІН)        */
         /* ======================================================== */
         @media (min-width: 768px) {
             .app-container {
-                max-width: 1200px;
-                height: 94vh;
-                margin: auto;
-                border-radius: 20px;
-                box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+                max-width: 100%; /* Розтягуємо на 100% екрана */
+                height: 100vh;
+                margin: 0;
+                border-radius: 0;
+                box-shadow: none;
             }
 
             #mainApp {
-                flex-direction: row; /* Бокова панель + контент */
+                flex-direction: row; /* Бокова панель зліва, контент справа */
             }
 
             /* Перетворюємо нижнє меню на бокову панель */
             .bottom-nav {
                 position: relative;
-                width: 250px;
+                width: 260px;
                 height: 100%;
                 flex-direction: column;
                 justify-content: flex-start;
                 padding: 40px 16px;
                 border-radius: 0;
                 border-right: 1px solid #333;
-                gap: 16px;
-                display: flex !important; /* Щоб меню не зникало при відкритті книги на ПК */
+                background-color: var(--bg-card);
+                gap: 12px;
+                display: flex !important; /* Меню завжди видно на ПК */
             }
 
             .nav-item {
@@ -190,21 +191,28 @@
                 font-size: 16px;
             }
 
-            .nav-item i { font-size: 24px; margin-right: 4px; }
+            .nav-item i { font-size: 24px; margin-right: 12px; }
             .nav-item:hover { background-color: rgba(255, 255, 255, 0.05); }
             .nav-item.active { background-color: rgba(83, 165, 24, 0.15); }
 
-            /* Прибираємо нижні відступи у екранів, бо меню більше не знизу */
+            /* Шапка дашборду без заокруглень */
+            .header-section, .profile-header-bg {
+                border-radius: 0 !important;
+                padding: 40px 48px 32px;
+            }
+
+            /* Більші відступи та без місця під нижнє меню */
             #trackerScreen, #profileScreen {
-                padding-bottom: 32px !important;
+                padding: 32px 48px 60px !important;
             }
 
-            /* Більше колонок для сітки */
+            /* Динамічна кількість колонок (чим ширший екран, тим більше карток) */
             .items-grid {
-                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 24px;
             }
 
-            /* Модальні вікна акуратно по центру */
+            /* Модальні вікна по центру */
             .modal-overlay { justify-content: center; align-items: center; }
             .modal-content {
                 width: 500px;
@@ -215,18 +223,18 @@
             }
             .modal-drag-handle { display: none; }
 
-            /* Сторінка книги розділяється надвоє */
+            /* Сторінка книги ділиться надвоє (фото зліва, текст справа) */
             #bookDetailScreen {
                 flex-direction: row;
             }
             .detail-cover-container {
-                width: 350px;
+                width: 400px;
                 max-width: 40%;
                 height: 100%;
             }
             .detail-content {
                 flex: 1;
-                padding: 40px;
+                padding: 60px;
                 overflow-y: auto;
             }
         }
@@ -574,7 +582,6 @@
         document.getElementById('headerSection').style.display = 'none';
         document.getElementById('trackerScreen').style.display = 'none';
         
-        // На мобільних меню зникає, на ПК CSS залишить його
         if(window.innerWidth < 768) {
             document.querySelector('.bottom-nav').style.display = 'none';
         }
@@ -584,7 +591,7 @@
 
     function closeBookDetail() {
         document.getElementById('bookDetailScreen').style.display = 'none';
-        document.querySelector('.bottom-nav').style.display = ''; // Скидаємо inline стиль
+        document.querySelector('.bottom-nav').style.display = ''; 
         const activeNav = document.querySelector('.nav-item.active').id;
         const tabMap = { 'navRead': 'read', 'navUnread': 'unread', 'navPlanned': 'planned' };
         switchTab(tabMap[activeNav]);
