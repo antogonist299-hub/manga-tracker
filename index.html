@@ -35,11 +35,11 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Manrope', sans-serif; }
         body { background-color: var(--bg-main); color: var(--text-white); display: flex; justify-content: center; min-height: 100vh; }
         
-        .app-container { width: 100%; max-width: 600px; height: 100dvh; display: flex; flex-direction: column; position: relative; background-color: var(--bg-main); overflow: hidden; }
+        .app-container { width: 100%; max-width: 600px; height: 100dvh; display: flex; flex-direction: column; position: relative; background-color: var(--bg-main); overflow: hidden; transition: all 0.3s ease; }
 
         /* Авторизація */
-        #authScreen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; padding: 20px; }
-        .auth-card { width: 100%; max-width: clamp(280px, calc(320vw / var(--base-vw)), 360px); padding: clamp(20px, calc(28vw / var(--base-vw)), 40px) clamp(16px, calc(24vw / var(--base-vw)), 32px); border-radius: clamp(8px, calc(12vw / var(--base-vw)), 16px); display: flex; flex-direction: column; }
+        #authScreen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; padding: 20px; width: 100%; }
+        .auth-card { width: 100%; max-width: clamp(280px, calc(320vw / var(--base-vw)), 360px); padding: clamp(20px, calc(28vw / var(--base-vw)), 40px) clamp(16px, calc(24vw / var(--base-vw)), 32px); border-radius: clamp(8px, calc(12vw / var(--base-vw)), 16px); display: flex; flex-direction: column; margin: 0 auto; }
         .register-card { background-color: var(--auth-bg-register); }
         .login-card { background-color: var(--auth-bg-login); }
         .auth-label { font-size: clamp(14px, calc(15vw / var(--base-vw)), 18px); font-weight: 600; margin-bottom: 8px; color: var(--text-white); }
@@ -50,12 +50,14 @@
         .switch-auth { text-decoration: none; font-size: 13px; color: rgba(255,255,255,0.7); text-align: center; margin-top: 20px; }
 
         /* Головний інтерфейс */
-        #mainApp { display: none; flex-direction: column; height: 100%; }
+        #mainApp { display: none; flex-direction: column; height: 100%; width: 100%; }
+        .app-body { flex: 1; display: flex; flex-direction: column; position: relative; overflow: hidden; height: 100%; }
         
         .header-section { background-color: var(--header-green); padding: clamp(24px, calc(40vw / var(--base-vw)), 48px) clamp(16px, calc(24vw / var(--base-vw)), 32px) clamp(16px, calc(24vw / var(--base-vw)), 32px); border-bottom-left-radius: 24px; border-bottom-right-radius: 24px; }
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: clamp(16px, calc(20vw / var(--base-vw)), 28px); }
         .header-title { font-size: clamp(22px, calc(26vw / var(--base-vw)), 36px); font-weight: 500; }
-        .add-btn { background-color: var(--accent-green); color: white; border: none; width: clamp(36px, calc(40vw / var(--base-vw)), 52px); height: clamp(36px, calc(40vw / var(--base-vw)), 52px); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .add-btn { background-color: var(--accent-green); color: white; border: none; width: clamp(36px, calc(40vw / var(--base-vw)), 52px); height: clamp(36px, calc(40vw / var(--base-vw)), 52px); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.2s; }
+        .add-btn:hover { transform: scale(1.05); }
         .add-btn i { font-size: clamp(20px, calc(24vw / var(--base-vw)), 32px); }
         .search-box { background-color: white; border-radius: clamp(20px, calc(24vw / var(--base-vw)), 32px); display: flex; align-items: center; justify-content: space-between; padding: 0 clamp(12px, calc(16vw / var(--base-vw)), 24px); height: clamp(40px, calc(44vw / var(--base-vw)), 56px); }
         .search-box input { border: none; outline: none; flex: 1; font-size: clamp(14px, calc(15vw / var(--base-vw)), 20px); color: #000; }
@@ -65,28 +67,27 @@
         #trackerScreen { padding: clamp(16px, calc(24vw / var(--base-vw)), 32px); padding-bottom: clamp(90px, calc(100vw / var(--base-vw)), 130px); }
 
         .items-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(12px, calc(16vw / var(--base-vw)), 24px); }
-        .card { background-color: var(--bg-card); border-radius: clamp(10px, calc(12vw / var(--base-vw)), 16px); padding: clamp(8px, calc(10vw / var(--base-vw)), 14px); display: flex; flex-direction: column; cursor: pointer; position: relative; }
+        .card { background-color: var(--bg-card); border-radius: clamp(10px, calc(12vw / var(--base-vw)), 16px); padding: clamp(8px, calc(10vw / var(--base-vw)), 14px); display: flex; flex-direction: column; cursor: pointer; position: relative; transition: transform 0.2s; }
+        .card:hover { transform: translateY(-3px); }
         .card-image-wrapper { position: relative; width: 100%; aspect-ratio: 0.72; border-radius: clamp(4px, calc(6vw / var(--base-vw)), 8px); overflow: hidden; background-color: #333; margin-bottom: clamp(8px, calc(10vw / var(--base-vw)), 14px); }
         .card-image-wrapper img { width: 100%; height: 100%; object-fit: cover; }
         .options-btn { position: absolute; top: 8px; right: 8px; background-color: rgba(140, 140, 140, 0.6); border: none; border-radius: 6px; width: 30px; height: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; backdrop-filter: blur(2px); z-index: 10; }
         .card-type { color: var(--accent-green); font-size: clamp(9px, calc(11vw / var(--base-vw)), 14px); font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
         .card-title { font-size: clamp(12px, calc(14vw / var(--base-vw)), 18px); line-height: 1.3; font-weight: 500; }
         
-        /* Випадаюче меню опцій */
         .options-menu { position: absolute; top: 35px; right: 8px; background-color: #1a1a1a; border-radius: 8px; display: none; flex-direction: column; padding: 8px 0; z-index: 20; box-shadow: 0 4px 12px rgba(0,0,0,0.5); min-width: 140px; border: 1px solid #333; }
         .options-menu button { background: none; border: none; color: white; padding: 10px 16px; text-align: left; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
         .options-menu button:hover { background-color: #333; }
-        .options-menu button i { font-size: 16px; }
         .options-menu-divider { height: 1px; background-color: #333; margin: 4px 16px; }
 
-        .bottom-nav { position: absolute; bottom: 0; left: 0; width: 100%; background-color: var(--bg-card); display: flex; justify-content: space-around; padding: clamp(12px, calc(14vw / var(--base-vw)), 20px) 0 clamp(20px, calc(24vw / var(--base-vw)), 32px) 0; border-top-left-radius: clamp(16px, calc(20vw / var(--base-vw)), 28px); border-top-right-radius: clamp(16px, calc(20vw / var(--base-vw)), 28px); z-index: 100;}
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--text-gray); font-size: clamp(11px, calc(13vw / var(--base-vw)), 16px); font-weight: 500; cursor: pointer; }
+        .bottom-nav { position: absolute; bottom: 0; left: 0; width: 100%; background-color: var(--bg-card); display: flex; justify-content: space-around; padding: clamp(12px, calc(14vw / var(--base-vw)), 20px) 0 clamp(20px, calc(24vw / var(--base-vw)), 32px) 0; border-top-left-radius: clamp(16px, calc(20vw / var(--base-vw)), 28px); border-top-right-radius: clamp(16px, calc(20vw / var(--base-vw)), 28px); z-index: 100; transition: all 0.3s ease;}
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--text-gray); font-size: clamp(11px, calc(13vw / var(--base-vw)), 16px); font-weight: 500; cursor: pointer; transition: all 0.2s; }
         .nav-item i { font-size: clamp(22px, calc(26vw / var(--base-vw)), 34px); }
         .nav-item.active { color: var(--accent-green); }
         
         /* Профіль */
         #profileScreen { display: none; flex-direction: column; padding: 0; padding-bottom: clamp(90px, calc(100vw / var(--base-vw)), 130px); }
-        .profile-header-bg { background-color: var(--header-green); padding: clamp(32px, calc(40vw / var(--base-vw)), 48px) clamp(20px, calc(24vw / var(--base-vw)), 32px); padding-bottom: clamp(60px, calc(80vw / var(--base-vw)), 100px); width: 100%; }
+        .profile-header-bg { background-color: var(--header-green); padding: clamp(32px, calc(40vw / var(--base-vw)), 48px) clamp(20px, calc(24vw / var(--base-vw)), 32px); padding-bottom: clamp(60px, calc(80vw / var(--base-vw)), 100px); width: 100%; border-bottom-left-radius: 24px; border-bottom-right-radius: 24px; }
         .profile-avatar-container { display: flex; flex-direction: column; align-items: center; margin-top: clamp(-50px, calc(-70vw / var(--base-vw)), -80px); margin-bottom: clamp(24px, calc(32vw / var(--base-vw)), 40px); position: relative; }
         .avatar-wrapper { position: relative; width: clamp(100px, calc(120vw / var(--base-vw)), 140px); height: clamp(100px, calc(120vw / var(--base-vw)), 140px); }
         .profile-avatar { width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--accent-green); background-color: var(--bg-card); object-fit: cover; }
@@ -122,22 +123,24 @@
         
         .pill-group { display: flex; gap: 8px; flex-wrap: wrap; }
         .pill-btn { background: none; border: 1px solid #555; color: #AAA; border-radius: 20px; padding: 8px 14px; font-size: 13px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
-        .pill-btn.active { border-color: var(--accent-green); color: var(--accent-green); }
+        .pill-btn.active { border-color: var(--accent-green); color: var(--accent-green); background-color: rgba(83, 165, 24, 0.1); }
         
         .cover-input-wrapper { position: relative; display: flex; align-items: center; }
         .cover-input-wrapper i { position: absolute; left: 16px; font-size: 20px; color: white; }
         .cover-input-wrapper .modal-input { padding-left: 44px; cursor: pointer; text-overflow: ellipsis; }
         
         .modal-actions { display: flex; gap: 16px; margin-top: 12px; }
-        .modal-btn { flex: 1; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 500; cursor: pointer; border: none; }
+        .modal-btn { flex: 1; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 500; cursor: pointer; border: none; transition: background-color 0.2s; }
         .btn-cancel { background: transparent; border: 1px solid #555; color: white; }
+        .btn-cancel:hover { background: rgba(255,255,255,0.05); }
         .btn-save { background-color: var(--accent-green); color: white; }
         
         /* ЕКРАН ДЕТАЛЕЙ КНИГИ */
         #bookDetailScreen { display: none; flex-direction: column; background-color: var(--bg-main); height: 100%; overflow-y: auto; z-index: 150; position: absolute; top: 0; left: 0; width: 100%; }
-        .detail-cover-container { position: relative; width: 100%; height: clamp(250px, calc(300vw / var(--base-vw)), 350px); }
+        .detail-cover-container { position: relative; width: 100%; height: clamp(250px, calc(300vw / var(--base-vw)), 350px); flex-shrink: 0; }
         .detail-cover-container img { width: 100%; height: 100%; object-fit: cover; }
-        .detail-back-btn { position: absolute; top: 20px; left: 20px; width: 40px; height: 40px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.8); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #000; font-size: 20px; z-index: 2; }
+        .detail-back-btn { position: absolute; top: 20px; left: 20px; width: 40px; height: 40px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.8); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #000; font-size: 20px; z-index: 2; transition: transform 0.2s; }
+        .detail-back-btn:hover { transform: scale(1.1); }
         .detail-content { padding: clamp(20px, calc(24vw / var(--base-vw)), 32px); display: flex; flex-direction: column; gap: 24px; padding-bottom: 40px; }
         .detail-header { display: flex; flex-direction: column; gap: 8px; }
         .detail-type { color: var(--accent-green); font-size: clamp(12px, calc(14vw / var(--base-vw)), 16px); font-weight: 700; text-transform: uppercase; }
@@ -148,6 +151,85 @@
         .rating-stars i { font-size: clamp(28px, calc(32vw / var(--base-vw)), 40px); color: #555; cursor: pointer; transition: color 0.2s; }
         .rating-stars i.active { color: var(--accent-green); }
         .review-textarea { resize: vertical; min-height: 120px; background-color: #242424; }
+
+        /* ======================================================== */
+        /* МАГІЯ ДЛЯ ПК ТА НОУТБУКІВ (АДАПТИВНІСТЬ)                 */
+        /* ======================================================== */
+        @media (min-width: 768px) {
+            .app-container {
+                max-width: 1200px;
+                height: 94vh;
+                margin: auto;
+                border-radius: 20px;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            }
+
+            #mainApp {
+                flex-direction: row; /* Бокова панель + контент */
+            }
+
+            /* Перетворюємо нижнє меню на бокову панель */
+            .bottom-nav {
+                position: relative;
+                width: 250px;
+                height: 100%;
+                flex-direction: column;
+                justify-content: flex-start;
+                padding: 40px 16px;
+                border-radius: 0;
+                border-right: 1px solid #333;
+                gap: 16px;
+                display: flex !important; /* Щоб меню не зникало при відкритті книги на ПК */
+            }
+
+            .nav-item {
+                flex-direction: row;
+                justify-content: flex-start;
+                padding: 16px 20px;
+                border-radius: 12px;
+                font-size: 16px;
+            }
+
+            .nav-item i { font-size: 24px; margin-right: 4px; }
+            .nav-item:hover { background-color: rgba(255, 255, 255, 0.05); }
+            .nav-item.active { background-color: rgba(83, 165, 24, 0.15); }
+
+            /* Прибираємо нижні відступи у екранів, бо меню більше не знизу */
+            #trackerScreen, #profileScreen {
+                padding-bottom: 32px !important;
+            }
+
+            /* Більше колонок для сітки */
+            .items-grid {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            }
+
+            /* Модальні вікна акуратно по центру */
+            .modal-overlay { justify-content: center; align-items: center; }
+            .modal-content {
+                width: 500px;
+                border-radius: 24px;
+                max-height: 90vh;
+                overflow-y: auto;
+                animation: scaleUp 0.2s ease-out;
+            }
+            .modal-drag-handle { display: none; }
+
+            /* Сторінка книги розділяється надвоє */
+            #bookDetailScreen {
+                flex-direction: row;
+            }
+            .detail-cover-container {
+                width: 350px;
+                max-width: 40%;
+                height: 100%;
+            }
+            .detail-content {
+                flex: 1;
+                padding: 40px;
+                overflow-y: auto;
+            }
+        }
     </style>
 </head>
 <body onclick="closeAllMenus()">
@@ -156,68 +238,111 @@
     <div id="authScreen">
         <div id="loginBlock" class="auth-card login-card">
             <label class="auth-label">Email</label>
-            <input type="email" id="loginEmail" class="auth-input" placeholder="Value">
+            <input type="email" id="loginEmail" class="auth-input" placeholder="mail@example.com">
             <label class="auth-label">Password</label>
-            <input type="password" id="loginPassword" class="auth-input" placeholder="Value">
+            <input type="password" id="loginPassword" class="auth-input" placeholder="******">
             <button type="button" class="auth-btn" onclick="signIn()">Sign In</button>
             <button type="button" class="auth-link switch-auth" onclick="toggleAuth('register')">Не маєте акаунту? Register</button>
         </div>
         <div id="registerBlock" class="auth-card register-card" style="display: none;">
             <label class="auth-label">Email</label>
-            <input type="email" id="registerEmail" class="auth-input" placeholder="Value">
+            <input type="email" id="registerEmail" class="auth-input" placeholder="mail@example.com">
             <label class="auth-label">Password</label>
-            <input type="password" id="registerPassword" class="auth-input" placeholder="Value">
+            <input type="password" id="registerPassword" class="auth-input" placeholder="******">
             <button type="button" class="auth-btn" onclick="signUp()">Register</button>
             <button type="button" class="auth-link switch-auth" onclick="toggleAuth('login')">Вже є акаунт? Sign In</button>
         </div>
     </div>
 
     <div id="mainApp">
-        <div class="header-section" id="headerSection">
-            <div class="header-top">
-                <h1 class="header-title" id="pageTitle">Не прочитані</h1>
-                <button type="button" class="add-btn" onclick="openAddModal()"><i class="ph ph-plus"></i></button>
-            </div>
-            <div class="search-box">
-                <!-- ДОДАНО oninput ДЛЯ ПОШУКУ -->
-                <input type="text" placeholder="Пошук" id="searchInput" oninput="searchItems()">
-                <i class="ph ph-magnifying-glass"></i>
-            </div>
-        </div>
-
-        <div class="main-content" id="trackerScreen">
-            <div class="items-grid" id="itemsGrid"></div>
-        </div>
-
-        <div class="main-content" id="profileScreen">
-            <div class="profile-header-bg"><h1 class="header-title">Кабінет</h1></div>
-            <div class="profile-avatar-container">
-                <div class="avatar-wrapper">
-                    <img src="" alt="Аватар" class="profile-avatar" id="profileAvatarImg" onerror="setFallbackAvatar()">
-                    <input type="file" id="avatarFileInput" style="display: none;" accept="image/*" onchange="uploadAvatarFile(event)">
-                    <button type="button" class="edit-avatar-btn" onclick="document.getElementById('avatarFileInput').click()"><i class="ph ph-pencil-simple"></i></button>
-                </div>
-                <div class="profile-name-wrapper">
-                    <div class="profile-name" id="profileName">USER</div>
-                    <button type="button" class="edit-name-btn" onclick="editProfileName()"><i class="ph ph-pencil-simple"></i></button>
-                </div>
-            </div>
-            <div class="stats-container">
-                <div class="stat-card"><span class="stat-label">Прочитані</span><span class="stat-value" id="statRead">0</span></div>
-                <div class="stat-card"><span class="stat-label">Не читані</span><span class="stat-value" id="statUnread">0</span></div>
-                <div class="stat-card"><span class="stat-label">В планах</span><span class="stat-value" id="statPlanned">0</span></div>
-            </div>
-            <button type="button" class="logout-btn" onclick="signOut()">Вийти з акаунту</button>
-        </div>
-
+        <!-- БОКОВЕ МЕНЮ (ПК) / НИЖНЄ МЕНЮ (Мобайл) -->
         <div class="bottom-nav">
             <div class="nav-item" id="navRead" onclick="switchTab('read')"><i class="ph ph-book-bookmark" id="iconRead"></i><span>Прочитані</span></div>
             <div class="nav-item active" id="navUnread" onclick="switchTab('unread')"><i class="ph-fill ph-book-open" id="iconUnread"></i><span>Не читані</span></div>
             <div class="nav-item" id="navPlanned" onclick="switchTab('planned')"><i class="ph ph-bookmark-simple" id="iconPlanned"></i><span>В планах</span></div>
             <div class="nav-item" id="navProfile" onclick="switchTab('profile')"><i class="ph ph-user" id="iconProfile"></i><span>Кабінет</span></div>
         </div>
-        
-        <!-- МОДАЛЬНЕ ВІКНО ДОДАВАННЯ / РЕДАГУВАННЯ -->
+
+        <!-- ОСНОВНА ЧАСТИНА -->
+        <div class="app-body">
+            <div class="header-section" id="headerSection">
+                <div class="header-top">
+                    <h1 class="header-title" id="pageTitle">Не прочитані</h1>
+                    <button type="button" class="add-btn" onclick="openAddModal()"><i class="ph ph-plus"></i></button>
+                </div>
+                <div class="search-box">
+                    <input type="text" placeholder="Пошук" id="searchInput" oninput="searchItems()">
+                    <i class="ph ph-magnifying-glass"></i>
+                </div>
+            </div>
+
+            <div class="main-content" id="trackerScreen">
+                <div class="items-grid" id="itemsGrid"></div>
+            </div>
+
+            <div class="main-content" id="profileScreen">
+                <div class="profile-header-bg"><h1 class="header-title">Кабінет</h1></div>
+                <div class="profile-avatar-container">
+                    <div class="avatar-wrapper">
+                        <img src="" alt="Аватар" class="profile-avatar" id="profileAvatarImg" onerror="setFallbackAvatar()">
+                        <input type="file" id="avatarFileInput" style="display: none;" accept="image/*" onchange="uploadAvatarFile(event)">
+                        <button type="button" class="edit-avatar-btn" onclick="document.getElementById('avatarFileInput').click()"><i class="ph ph-pencil-simple"></i></button>
+                    </div>
+                    <div class="profile-name-wrapper">
+                        <div class="profile-name" id="profileName">USER</div>
+                        <button type="button" class="edit-name-btn" onclick="editProfileName()"><i class="ph ph-pencil-simple"></i></button>
+                    </div>
+                </div>
+                <div class="stats-container">
+                    <div class="stat-card"><span class="stat-label">Прочитані</span><span class="stat-value" id="statRead">0</span></div>
+                    <div class="stat-card"><span class="stat-label">Не читані</span><span class="stat-value" id="statUnread">0</span></div>
+                    <div class="stat-card"><span class="stat-label">В планах</span><span class="stat-value" id="statPlanned">0</span></div>
+                </div>
+                <button type="button" class="logout-btn" onclick="signOut()">Вийти з акаунту</button>
+            </div>
+
+            <!-- ЕКРАН СТОРІНКИ КНИГИ -->
+            <div id="bookDetailScreen">
+                <div class="detail-cover-container">
+                    <button type="button" class="detail-back-btn" onclick="closeBookDetail()"><i class="ph ph-caret-left"></i></button>
+                    <img src="" alt="Обкладинка" id="detailCoverImg">
+                </div>
+                
+                <div class="detail-content">
+                    <div class="detail-header">
+                        <span class="detail-type" id="detailItemType">МАНҐА</span>
+                        <h2 class="detail-title" id="detailItemTitle">Назва книги</h2>
+                    </div>
+                    
+                    <div class="detail-row">
+                        <span class="detail-row-title">Статус</span>
+                        <div class="pill-group" id="detailStatusGroup">
+                            <button type="button" class="pill-btn" onclick="updateBookStatus('read')">Прочитано</button>
+                            <button type="button" class="pill-btn" onclick="updateBookStatus('unread')">Не прочитано</button>
+                            <button type="button" class="pill-btn" onclick="updateBookStatus('planned')">В планах</button>
+                        </div>
+                    </div>
+
+                    <div class="detail-row" style="flex-direction: row; align-items: center; justify-content: space-between; margin-top: 10px;">
+                        <span class="detail-row-title">Оцінка</span>
+                        <div class="rating-stars" id="detailRatingStars">
+                            <i class="ph ph-star" onclick="updateBookRating(1)"></i>
+                            <i class="ph ph-star" onclick="updateBookRating(2)"></i>
+                            <i class="ph ph-star" onclick="updateBookRating(3)"></i>
+                            <i class="ph ph-star" onclick="updateBookRating(4)"></i>
+                            <i class="ph ph-star" onclick="updateBookRating(5)"></i>
+                        </div>
+                    </div>
+
+                    <div class="detail-row" style="margin-top: 10px;">
+                        <span class="detail-row-title">Відгук</span>
+                        <textarea id="detailReviewInput" class="modal-input review-textarea" placeholder="Писати текст тут....." onblur="updateBookReview()"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- МОДАЛЬНІ ВІКНА -->
         <div id="addModalOverlay" class="modal-overlay">
             <div class="modal-content">
                 <div class="modal-drag-handle"></div>
@@ -273,7 +398,6 @@
             </div>
         </div>
 
-        <!-- МОДАЛЬНЕ ВІКНО ВИДАЛЕННЯ -->
         <div id="deleteModalOverlay" class="modal-overlay">
             <div class="modal-content">
                 <h3>Видалити?</h3>
@@ -283,51 +407,12 @@
                 </div>
             </div>
         </div>
-
-        <!-- ЕКРАН СТОРІНКИ КНИГИ -->
-        <div id="bookDetailScreen">
-            <div class="detail-cover-container">
-                <button type="button" class="detail-back-btn" onclick="closeBookDetail()"><i class="ph ph-caret-left"></i></button>
-                <img src="" alt="Обкладинка" id="detailCoverImg">
-            </div>
-            
-            <div class="detail-content">
-                <div class="detail-header">
-                    <span class="detail-type" id="detailItemType">МАНҐА</span>
-                    <h2 class="detail-title" id="detailItemTitle">Назва книги</h2>
-                </div>
-                
-                <div class="detail-row">
-                    <span class="detail-row-title">Статус</span>
-                    <div class="pill-group" id="detailStatusGroup">
-                        <button type="button" class="pill-btn" onclick="updateBookStatus('read')">Прочитано</button>
-                        <button type="button" class="pill-btn" onclick="updateBookStatus('unread')">Не прочитано</button>
-                        <button type="button" class="pill-btn" onclick="updateBookStatus('planned')">В планах</button>
-                    </div>
-                </div>
-
-                <div class="detail-row" style="flex-direction: row; align-items: center; justify-content: space-between;">
-                    <span class="detail-row-title">Оцінка</span>
-                    <div class="rating-stars" id="detailRatingStars">
-                        <i class="ph ph-star" onclick="updateBookRating(1)"></i>
-                        <i class="ph ph-star" onclick="updateBookRating(2)"></i>
-                        <i class="ph ph-star" onclick="updateBookRating(3)"></i>
-                        <i class="ph ph-star" onclick="updateBookRating(4)"></i>
-                        <i class="ph ph-star" onclick="updateBookRating(5)"></i>
-                    </div>
-                </div>
-
-                <div class="detail-row">
-                    <span class="detail-row-title">Відгук</span>
-                    <textarea id="detailReviewInput" class="modal-input review-textarea" placeholder="Писати текст тут....." onblur="updateBookReview()"></textarea>
-                </div>
-            </div>
-        </div>
         
     </div>
 </div>
 
 <script>
+    // ВСТАВ СВОЇ ДАНІ ТУТ:
     const SUPABASE_URL = 'https://eebgugxrflawjfnsrgal.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVlYmd1Z3hyZmxhd2pmbnNyZ2FsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAxNzg4ODgsImV4cCI6MjEwNTc1NDg4OH0.WiDuU3Vns-T1h5ZuaPnl3e8Hxq4YIbmLAbRRGtDjtx4';
     const supaClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -406,7 +491,6 @@
         for(let m of menus) m.style.display = 'none';
     }
 
-    // ФУНКЦІЯ ПОШУКУ
     function searchItems() {
         const query = document.getElementById('searchInput').value.toLowerCase();
         const grid = document.getElementById('itemsGrid');
@@ -429,7 +513,6 @@
         const grid = document.getElementById('itemsGrid');
         grid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1; color: gray;">Завантаження...</p>';
         
-        // Додано сортування A-Z
         const { data, error } = await supaClient
             .from('reading_items')
             .select('*')
@@ -439,7 +522,7 @@
         if (error) return grid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1; color: red;">Помилка БД.</p>';
         loadedItems = data || []; 
         
-        searchItems(); // Рендеримо сітку з урахуванням тексту пошуку
+        searchItems();
     }
 
     function switchTab(tabName) {
@@ -464,7 +547,6 @@
             trackerScreen.style.display = 'block';
             profileScreen.style.display = 'none';
             
-            // Очищаємо пошук при переході між категоріями
             document.getElementById('searchInput').value = '';
             
             loadItemsFromDB(tabName);
@@ -491,13 +573,18 @@
         renderDetailRatingStars(book.rating || 0);
         document.getElementById('headerSection').style.display = 'none';
         document.getElementById('trackerScreen').style.display = 'none';
-        document.querySelector('.bottom-nav').style.display = 'none';
+        
+        // На мобільних меню зникає, на ПК CSS залишить його
+        if(window.innerWidth < 768) {
+            document.querySelector('.bottom-nav').style.display = 'none';
+        }
+        
         document.getElementById('bookDetailScreen').style.display = 'flex';
     }
 
     function closeBookDetail() {
         document.getElementById('bookDetailScreen').style.display = 'none';
-        document.querySelector('.bottom-nav').style.display = 'flex';
+        document.querySelector('.bottom-nav').style.display = ''; // Скидаємо inline стиль
         const activeNav = document.querySelector('.nav-item.active').id;
         const tabMap = { 'navRead': 'read', 'navUnread': 'unread', 'navPlanned': 'planned' };
         switchTab(tabMap[activeNav]);
