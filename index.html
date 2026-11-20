@@ -152,6 +152,39 @@
         .rating-stars i.active { color: var(--accent-green); }
         .review-textarea { resize: vertical; min-height: 120px; background-color: #242424; }
 
+        /* Панель фільтрів (працює і на телефоні, і на ПК) */
+        .filter-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            scrollbar-width: none; /* ховає смугу прокрутки */
+        }
+        .filter-bar::-webkit-scrollbar {
+            display: none;
+        }
+        .filter-btn {
+            -webkit-appearance: none;
+            appearance: none;
+            background-color: var(--bg-card);
+            border: 1px solid #333;
+            color: var(--text-gray);
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+        .filter-btn.active {
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+            background-color: rgba(83, 165, 24, 0.15);
+        }
+
         /* ======================================================== */
         /* МАГІЯ ДЛЯ ПК ТА НОУТБУКІВ (АДАПТИВНІСТЬ ФУЛСКРІН)        */
         /* ======================================================== */
@@ -236,25 +269,6 @@
                 flex: 1;
                 padding: 60px;
                 overflow-y: auto;
-            }
-            .filter-bar {
-                display: flex;
-                gap: 8px;
-                margin-bottom: 20px;
-                overflow-x: auto;
-                padding-bottom: 4px;
-            }
-            .filter-btn {
-                background-color: var(--bg-card);
-                border: 1px solid #333;
-                color: var(--text-gray);
-                border-radius: 20px;
-                padding: 8px 16px;
-                font-size: 13px;
-                font-weight: 500;
-                cursor: pointer;
-                white-space: nowrap;
-                transition: all 0.2s;
             }
             .filter-btn.active {
                 border-color: var(--accent-green);
