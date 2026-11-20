@@ -237,6 +237,30 @@
                 padding: 60px;
                 overflow-y: auto;
             }
+            .filter-bar {
+                display: flex;
+                gap: 8px;
+                margin-bottom: 20px;
+                overflow-x: auto;
+                padding-bottom: 4px;
+            }
+            .filter-btn {
+                background-color: var(--bg-card);
+                border: 1px solid #333;
+                color: var(--text-gray);
+                border-radius: 20px;
+                padding: 8px 16px;
+                font-size: 13px;
+                font-weight: 500;
+                cursor: pointer;
+                white-space: nowrap;
+                transition: all 0.2s;
+            }
+            .filter-btn.active {
+                border-color: var(--accent-green);
+                color: var(--accent-green);
+                background-color: rgba(83, 165, 24, 0.15);
+            }
         }
     </style>
 </head>
@@ -285,6 +309,15 @@
             </div>
 
             <div class="main-content" id="trackerScreen">
+                <div class="main-content" id="trackerScreen">
+                    <div class="filter-bar" id="filterBar">
+                        <button type="button" class="filter-btn active" onclick="setTypeFilter('ALL', this)">Всі</button>
+                        <button type="button" class="filter-btn" onclick="setTypeFilter('КНИГА', this)">Книги</button>
+                        <button type="button" class="filter-btn" onclick="setTypeFilter('МАНҐА', this)">Манґа</button>
+                        <button type="button" class="filter-btn" onclick="setTypeFilter('КОМІКС', this)">Комікси</button>
+                    </div>
+                    <div class="items-grid" id="itemsGrid"></div>
+                </div>
                 <div class="items-grid" id="itemsGrid"></div>
             </div>
 
