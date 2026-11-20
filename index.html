@@ -518,20 +518,23 @@
     }
 
     async function loadItemsFromDB(status) {
-        const grid = document.getElementById('itemsGrid');
-        grid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1; color: gray;">Завантаження...</p>';
+    const grid = document.getElementById('itemsGrid');
+    grid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1; color: gray;">Завантаження...</p>';
+    
+    const { data, error } = await supaClient
+        .from('reading_items')
+        .select('*')
+        .eq('status', status);
         
-        const { data, error } = await supaClient
-            .from('reading_items')
-            .select('*')
-            .eq('status', status)
-            .order('title', { ascending: true });
-            
-        if (error) return grid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1; color: red;">Помилка БД.</p>';
-        loadedItems = data || []; 
-        
-        searchItems();
-    }
+    if (error) return grid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1; color: red;">Помилка БД.</p>';
+    
+    // Природне сортування: враховує український алфавіт і числа (2 йде перед 10)
+    loadedItems = (data || []).sort((a, b) => 
+        a.title.localeCompare(b.title, 'uk', { numeric: true, sensitivity: 'base' })
+    );
+    
+    searchItems();
+}
 
     function switchTab(tabName) {
         ['navRead', 'navPlanned', 'navUnread', 'navProfile'].forEach(id => document.getElementById(id).classList.remove('active'));
