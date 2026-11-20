@@ -677,24 +677,24 @@
     }
 
     // --- Трекер ---
-    function renderCard(item) {
-        return `
-            <div class="card" onclick="openBookDetail('${item.id}')">
-                <div class="card-image-wrapper">
-                    <img src="${item.cover_url || 'https://via.placeholder.com/150'}" alt="Обкладинка">
-                    <button type="button" class="options-btn" onclick="toggleMenu(event, 'menu-${item.id}')"><i class="ph ph-dots-three"></i></button>
-                    
-                    <div id="menu-${item.id}" class="options-menu">
-                        <button type="button" onclick="openEditModal(event, '${item.id}')"><i class="ph ph-pencil-simple"></i> Редагувати</button>
-                        <div class="options-menu-divider"></div>
-                        <button type="button" onclick="openDeleteModal(event, '${item.id}')"><i class="ph ph-trash"></i> Видалити</button>
-                    </div>
+   function renderCard(item) {
+       return `
+        <div class="card" onclick="openBookDetail('${item.id}')">
+            <div class="card-image-wrapper">
+                <img src="${item.cover_url || 'https://via.placeholder.com/150'}" alt="Обкладинка">
+                <button type="button" class="options-btn" onclick="toggleMenu(event, 'menu-${item.id}')"><i class="ph ph-dots-three"></i></button>
+                
+                <div id="menu-${item.id}" class="options-menu" onclick="event.stopPropagation()">
+                    <button type="button" onclick="openEditModal(event, '${item.id}')"><i class="ph ph-pencil-simple"></i> Редагувати</button>
+                    <div class="options-menu-divider"></div>
+                    <button type="button" onclick="openDeleteModal(event, '${item.id}')"><i class="ph ph-trash"></i> Видалити</button>
                 </div>
-                <div class="card-type">${item.item_type}</div>
-                <div class="card-title">${item.title}</div>
             </div>
+            <div class="card-type">${item.item_type}</div>
+            <div class="card-title">${item.title}</div>
+        </div>
         `;
-    }
+   }
 
     function toggleMenu(event, menuId) {
         event.stopPropagation(); 
@@ -855,7 +855,7 @@
                 <img src="${item.cover_url || 'https://via.placeholder.com/150'}" alt="Обкладинка">
                 <span class="vol-status-badge">${statusLabels[item.status] || ''}</span>
                 <button type="button" class="options-btn" onclick="toggleMenu(event, 'smenu-${item.id}')"><i class="ph ph-dots-three"></i></button>
-                <div id="smenu-${item.id}" class="options-menu">
+                <div id="smenu-${item.id}" class="options-menu" onclick="event.stopPropagation()">
                     <button type="button" onclick="openEditModal(event, '${item.id}')"><i class="ph ph-pencil-simple"></i> Редагувати</button>
                     <div class="options-menu-divider"></div>
                     <button type="button" onclick="openDeleteModal(event, '${item.id}')"><i class="ph ph-trash"></i> Видалити</button>
@@ -1127,18 +1127,22 @@
     }
 
     function openEditModal(event, id) {
-        const bookSeries = allSeries.find(s => s.id === book.series_id);
-        document.getElementById('addSeriesInput').value = bookSeries ? bookSeries.title : '';
-        event.stopPropagation();
+        if (event) event.stopPropagation();
         closeAllMenus();
         const book = loadedItems.find(b => b.id === id);
-        if(!book) return;
-
+        if (!book) return;
+        
         editModeId = id;
         document.getElementById('modalFormTitle').innerText = "Редагування";
         document.getElementById('addTitle').value = book.title;
         newItemData.existingCoverUrl = book.cover_url || '';
         newItemData.coverFile = null;
+        
+        const seriesInput = document.getElementById('addSeriesInput');
+        if (seriesInput) {
+            const bookSeries = allSeries.find(s => s.id === book.series_id);
+            seriesInput.value = bookSeries ? bookSeries.title : '';
+        }
         
         selectPill('type', book.item_type);
         selectPill('status', book.status);
@@ -1155,12 +1159,12 @@
         
         document.getElementById('addModalOverlay').style.display = 'flex';
     }
-
+    
     function closeAddModal() {
         document.getElementById('addModalOverlay').style.display = 'none';
         editModeId = null;
     }
-
+    
     function selectPill(group, value) {
         newItemData[group] = value;
         const buttons = document.getElementById(`${group}Group`).getElementsByClassName('pill-btn');
