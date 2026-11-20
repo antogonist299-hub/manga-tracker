@@ -53,21 +53,21 @@
         #mainApp { display: none; flex-direction: column; height: 100%; width: 100%; }
         .app-body { flex: 1; display: flex; flex-direction: column; position: relative; overflow: hidden; height: 100%; }
         
-        .header-section { background-color: var(--header-green); padding: clamp(24px, calc(40vw / var(--base-vw)), 48px) clamp(16px, calc(24vw / var(--base-vw)), 32px) clamp(16px, calc(24vw / var(--base-vw)), 32px); border-bottom-left-radius: 24px; border-bottom-right-radius: 24px; }
-        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: clamp(16px, calc(20vw / var(--base-vw)), 28px); }
-        .header-title { font-size: clamp(22px, calc(26vw / var(--base-vw)), 36px); font-weight: 500; }
+        .header-section {background-color: var(--header-green); padding: 18px 16px 16px; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;}
+        .header-top {display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;}
+        .header-title {font-size: 24px; font-weight: 500;}
         .add-btn { background-color: var(--accent-green); color: white; border: none; width: clamp(36px, calc(40vw / var(--base-vw)), 52px); height: clamp(36px, calc(40vw / var(--base-vw)), 52px); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.2s; }
         .add-btn:hover { transform: scale(1.05); }
         .add-btn i { font-size: clamp(20px, calc(24vw / var(--base-vw)), 32px); }
-        .search-box { background-color: white; border-radius: clamp(20px, calc(24vw / var(--base-vw)), 32px); display: flex; align-items: center; justify-content: space-between; padding: 0 clamp(12px, calc(16vw / var(--base-vw)), 24px); height: clamp(40px, calc(44vw / var(--base-vw)), 56px); }
+        .search-box {background-color: white; border-radius: 24px; display: flex; align-items: center; justify-content: space-between; padding: 0 14px; height: 42px;}
         .search-box input { border: none; outline: none; flex: 1; font-size: clamp(14px, calc(15vw / var(--base-vw)), 20px); color: #000; }
         .search-box i { color: #000; font-size: clamp(18px, calc(20vw / var(--base-vw)), 28px); margin-left: 10px; }
         
         .main-content { flex: 1; overflow-y: auto; }
-        #trackerScreen { padding: clamp(16px, calc(24vw / var(--base-vw)), 32px); padding-bottom: clamp(90px, calc(100vw / var(--base-vw)), 130px); }
-
-        .items-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(12px, calc(16vw / var(--base-vw)), 24px); }
-        .card { background-color: var(--bg-card); border-radius: clamp(10px, calc(12vw / var(--base-vw)), 16px); padding: clamp(8px, calc(10vw / var(--base-vw)), 14px); display: flex; flex-direction: column; cursor: pointer; position: relative; transition: transform 0.2s; }
+        #trackerScreen {padding: 14px 12px 90px;}
+        
+        .items-grid {display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;}
+        .card {background-color: var(--bg-card); border-radius: 12px; padding: 8px; display: flex; flex-direction: column; cursor: pointer; position: relative; transition: transform 0.2s;}
         .card:hover { transform: translateY(-3px); }
         .card-image-wrapper { position: relative; width: 100%; aspect-ratio: 0.72; border-radius: clamp(4px, calc(6vw / var(--base-vw)), 8px); overflow: hidden; background-color: #333; margin-bottom: clamp(8px, calc(10vw / var(--base-vw)), 14px); }
         .card-image-wrapper img { width: 100%; height: 100%; object-fit: cover; }
@@ -80,7 +80,7 @@
         .options-menu button:hover { background-color: #333; }
         .options-menu-divider { height: 1px; background-color: #333; margin: 4px 16px; }
 
-        .bottom-nav { position: absolute; bottom: 0; left: 0; width: 100%; background-color: var(--bg-card); display: flex; justify-content: space-around; padding: clamp(12px, calc(14vw / var(--base-vw)), 20px) 0 clamp(20px, calc(24vw / var(--base-vw)), 32px) 0; border-top-left-radius: clamp(16px, calc(20vw / var(--base-vw)), 28px); border-top-right-radius: clamp(16px, calc(20vw / var(--base-vw)), 28px); z-index: 100; transition: all 0.3s ease;}
+        .bottom-nav {position: absolute; bottom: 0; left: 0; width: 100%; background-color: var(--bg-card); display: flex; justify-content: space-around; padding: 10px 0 14px; border-top-left-radius: 18px; border-top-right-radius: 18px; z-index: 100; transition: all 0.3s ease;}
         .nav-item { display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--text-gray); font-size: clamp(11px, calc(13vw / var(--base-vw)), 16px); font-weight: 500; cursor: pointer; transition: all 0.2s; }
         .nav-item i { font-size: clamp(22px, calc(26vw / var(--base-vw)), 34px); }
         .nav-item.active { color: var(--accent-green); }
