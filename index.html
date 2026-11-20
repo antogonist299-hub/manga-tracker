@@ -188,6 +188,120 @@
             background-color: rgba(83, 165, 24, 0.15);
         }
 
+        /* Картка-папка для серії */
+        .card.is-series {
+            border: 1px solid rgba(83, 165, 24, 0.4);
+            box-shadow: 4px 4px 0px #1e1e1e, 4px 4px 0px 1px #333;
+        }
+        .series-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background-color: rgba(20, 20, 20, 0.85);
+            color: var(--accent-green);
+            border: 1px solid var(--accent-green);
+            border-radius: 6px;
+            padding: 2px 7px;
+            font-size: 11px;
+            font-weight: 700;
+            backdrop-filter: blur(4px);
+            z-index: 5;
+        }
+        .vol-status-badge {
+            position: absolute;
+            bottom: 6px;
+            left: 6px;
+            background-color: rgba(20, 20, 20, 0.85);
+            color: #fff;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        /* Сторінка серії (тайтлу) */
+        #seriesDetailScreen {
+            display: none;
+            flex-direction: column;
+            background-color: var(--bg-main);
+            height: 100%;
+            overflow-y: auto;
+            z-index: 140;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding-bottom: 90px;
+        }
+        .series-header {
+            background-color: var(--header-green);
+            padding: 20px 16px 24px;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .series-header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .series-back-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .series-title-text {
+            font-size: 22px;
+            font-weight: 600;
+            flex: 1;
+            line-height: 1.2;
+        }
+        .series-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            padding: 16px 12px 0;
+        }
+        .series-stat-box {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            padding: 12px 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            text-align: center;
+        }
+        .series-stat-box.clickable {
+            cursor: pointer;
+            border: 1px dashed #444;
+        }
+        .series-stat-label {
+            font-size: 10px;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        .series-stat-val {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-white);
+        }
+        .series-volumes-section {
+            padding: 16px 12px;
+        }
+
         /* ======================================================== */
         /* МАГІЯ ДЛЯ ПК ТА НОУТБУКІВ (АДАПТИВНІСТЬ ФУЛСКРІН)        */
         /* ======================================================== */
@@ -359,6 +473,39 @@
                 <button type="button" class="logout-btn" onclick="signOut()">Вийти з акаунту</button>
             </div>
 
+            <!-- ЕКРАН СТОРІНКИ СЕРІЇ (ТАЙТЛУ) -->
+            <div id="seriesDetailScreen">
+                <div class="series-header">
+                    <div class="series-header-top">
+                        <button type="button" class="series-back-btn" onclick="closeSeriesDetail()"><i class="ph ph-caret-left"></i></button>
+                        <h2 class="series-title-text" id="seriesDetailTitle">Назва серії</h2>
+                        <button type="button" class="add-btn" onclick="openAddVolumeToSeries()" title="Додати том"><i class="ph ph-plus"></i></button>
+                    </div>
+                </div>
+                
+                <div class="series-stats-grid">
+                    <div class="series-stat-box clickable" onclick="editSeriesTotal()" title="Натисни, щоб змінити">
+                        <span class="series-stat-label">Всього ✎</span>
+                        <span class="series-stat-val" id="seriesStatTotal">?</span>
+                    </div>
+                    <div class="series-stat-box">
+                        <span class="series-stat-label">Маю</span>
+                        <span class="series-stat-val" id="seriesStatOwned">0</span>
+                    </div>
+                    <div class="series-stat-box">
+                        <span class="series-stat-label">Читав</span>
+                        <span class="series-stat-val" id="seriesStatRead" style="color: var(--accent-green);">0</span>
+                    </div>
+                    <div class="series-stat-box">
+                        <span class="series-stat-label">Оцінка</span>
+                        <span class="series-stat-val" id="seriesStatRating">—</span>
+                    </div>
+                </div>
+                <div class="series-volumes-section">
+                    <div class="items-grid" id="seriesVolumesGrid"></div>
+                </div>
+            </div>
+
             <!-- ЕКРАН СТОРІНКИ КНИГИ -->
             <div id="bookDetailScreen">
                 <div class="detail-cover-container">
@@ -415,6 +562,12 @@
                 <div class="form-group">
                     <label>Назва</label>
                     <input type="text" id="addTitle" class="modal-input" placeholder="Сага про Вінланд, том 2">
+                </div>
+
+                <div class="form-group">
+                    <label>Серія / Тайтл <span style="color: var(--text-gray); font-size: 12px;">(необов'язково)</span></label>
+                    <input type="text" id="addSeriesInput" class="modal-input" list="seriesDatalist" placeholder="Наприклад: Сага про Вінланд">
+                    <datalist id="seriesDatalist"></datalist>
                 </div>
                 
                 <div class="form-group">
@@ -479,6 +632,8 @@
     const supaClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let loadedItems = [];
+    let allSeries = [];
+    let currentSeriesId = null;
     let currentTypeFilter = 'ALL';
     let currentBookId = null;
     let editModeId = null; 
@@ -560,6 +715,50 @@
         searchItems();
     }
     
+    async function loadSeriesList() {
+        const { data } = await supaClient.from('series').select('*').order('title', { ascending: true });
+        allSeries = data || [];      
+        const datalist = document.getElementById('seriesDatalist');
+        if (datalist) {
+            datalist.innerHTML = allSeries.map(s => `<option value="${s.title}">`).join('');
+        }
+    }
+
+    async function loadItemsFromDB(status) {
+        const grid = document.getElementById('itemsGrid');
+        grid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1; color: gray;">Завантаження...</p>';
+        
+        await loadSeriesList();
+        
+        const { data, error } = await supaClient
+            .from('reading_items')
+            .select('*')
+            .eq('status', status);
+        
+        if (error) return grid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1; color: red;">Помилка БД.</p>';
+        
+        loadedItems = (data || []).sort((a, b) => 
+            a.title.localeCompare(b.title, 'uk', { numeric: true, sensitivity: 'base' })
+                                       );
+        
+        searchItems();
+    }
+
+    function renderSeriesCard(series, items) {
+        const firstItem = items[0];
+        const totalText = series.total_volumes > 0 ? `${items.length} / ${series.total_volumes}` : `${items.length} т.`;
+        return `
+        <div class="card is-series" onclick="openSeriesDetail('${series.id}')">
+            <div class="card-image-wrapper">
+                <span class="series-badge"><i class="ph-fill ph-books"></i> ${totalText}</span>
+                <img src="${firstItem.cover_url || 'https://via.placeholder.com/150'}" alt="Обкладинка">
+            </div>
+            <div class="card-type">${firstItem.item_type} • СЕРІЯ</div>
+            <div class="card-title">${series.title}</div>
+        </div>
+        `;
+    }
+
     function searchItems() {
         const query = document.getElementById('searchInput').value.toLowerCase();
         const grid = document.getElementById('itemsGrid');
@@ -568,37 +767,141 @@
             grid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1; color: var(--text-gray);">Тут поки порожньо</p>';
             return;
         }
+        
         const filtered = loadedItems.filter(item => {
-            const matchesTitle = item.title.toLowerCase().includes(query);
+            const series = allSeries.find(s => s.id === item.series_id);
+            const matchesTitle = item.title.toLowerCase().includes(query) || (series && series.title.toLowerCase().includes(query));
             const matchesType = currentTypeFilter === 'ALL' || item.item_type === currentTypeFilter;
             return matchesTitle && matchesType;
         });
-        
+
         if (filtered.length === 0) {
             grid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1; color: var(--text-gray);">Нічого не знайдено</p>';
-        } else {
-            grid.innerHTML = filtered.map(renderCard).join('');
+            return;
+        }
+        
+    // Групуємо томи, які належать до однієї серії
+        const groupedMap = new Map();
+        const displayList = [];
+        
+        filtered.forEach(item => {
+            if (item.series_id) {
+                if (!groupedMap.has(item.series_id)) {
+                    const seriesObj = allSeries.find(s => s.id === item.series_id);
+                    if (seriesObj) {
+                        const entry = { isSeries: true, series: seriesObj, items: [item], sortTitle: seriesObj.title };
+                        groupedMap.set(item.series_id, entry);
+                        displayList.push(entry);
+                    } else {
+                        displayList.push({ isSeries: false, item, sortTitle: item.title });
+                    }
+                } else {
+                    groupedMap.get(item.series_id).items.push(item);
+                }
+            } else {
+                displayList.push({ isSeries: false, item, sortTitle: item.title });
+            }
+        });
+
+        displayList.sort((a, b) => a.sortTitle.localeCompare(b.sortTitle, 'uk', { numeric: true, sensitivity: 'base' }));
+        
+        grid.innerHTML = displayList.map(entry => 
+            entry.isSeries ? renderSeriesCard(entry.series, entry.items) : renderCard(entry.item)
+                                        ).join('');
+    }
+    
+    async function openSeriesDetail(seriesId) {
+        currentSeriesId = seriesId;
+        const series = allSeries.find(s => s.id === seriesId);
+        if (!series) return;
+        
+        document.getElementById('seriesDetailTitle').innerText = series.title;
+        document.getElementById('seriesStatTotal').innerText = series.total_volumes > 0 ? series.total_volumes : '?';
+        
+        // Завантажуємо ВСІ томи цієї серії (з усіх категорій)
+        const { data, error } = await supaClient
+            .from('reading_items')
+            .select('*')
+            .eq('series_id', seriesId);
+        
+        if (error) return alert("Помилка завантаження серії: " + error.message);
+        
+        const volumes = (data || []).sort((a, b) => 
+            a.title.localeCompare(b.title, 'uk', { numeric: true, sensitivity: 'base' })
+                                         );
+        
+        // Додаємо їх у loadedItems, щоб клік по тому відкривав його сторінку
+        volumes.forEach(v => {
+            if (!loadedItems.find(x => x.id === v.id)) loadedItems.push(v);
+        });
+        
+        // Рахуємо статистику
+        const readCount = volumes.filter(v => v.status === 'read').length;
+        const ownedCount = volumes.filter(v => v.status === 'read' || v.status === 'unread').length;
+        const rated = volumes.filter(v => parseFloat(v.rating) > 0);
+        const avgRating = rated.length > 0 
+            ? (rated.reduce((sum, v) => sum + parseFloat(v.rating), 0) / rated.length).toFixed(1) 
+            : '—';
+        
+        document.getElementById('seriesStatOwned').innerText = ownedCount;
+        document.getElementById('seriesStatRead').innerText = readCount;
+        document.getElementById('seriesStatRating').innerText = avgRating !== '—' ? `${avgRating} ★` : '—';
+        
+        const statusLabels = { read: 'Прочитано', unread: 'Не читано', planned: 'В планах' };
+        const grid = document.getElementById('seriesVolumesGrid');
+        grid.innerHTML = volumes.map(item => `
+        <div class="card" onclick="openBookDetail('${item.id}')">
+            <div class="card-image-wrapper">
+                <img src="${item.cover_url || 'https://via.placeholder.com/150'}" alt="Обкладинка">
+                <span class="vol-status-badge">${statusLabels[item.status] || ''}</span>
+                <button type="button" class="options-btn" onclick="toggleMenu(event, 'smenu-${item.id}')"><i class="ph ph-dots-three"></i></button>
+                <div id="smenu-${item.id}" class="options-menu">
+                    <button type="button" onclick="openEditModal(event, '${item.id}')"><i class="ph ph-pencil-simple"></i> Редагувати</button>
+                    <div class="options-menu-divider"></div>
+                    <button type="button" onclick="openDeleteModal(event, '${item.id}')"><i class="ph ph-trash"></i> Видалити</button>
+                </div>
+            </div>
+            <div class="card-type">${item.rating > 0 ? '★ ' + item.rating : item.item_type}</div>
+            <div class="card-title">${item.title}</div>
+        </div>
+        `).join('');
+        
+        document.getElementById('headerSection').style.display = 'none';
+        document.getElementById('trackerScreen').style.display = 'none';
+        document.getElementById('seriesDetailScreen').style.display = 'flex';
+    }
+    
+    function closeSeriesDetail() {
+        currentSeriesId = null;
+        document.getElementById('seriesDetailScreen').style.display = 'none';
+        const activeNav = document.querySelector('.nav-item.active').id;
+        const tabMap = { 'navRead': 'read', 'navUnread': 'unread', 'navPlanned': 'planned' };
+        switchTab(tabMap[activeNav] || 'unread');
+    }
+    
+    async function editSeriesTotal() {
+        const series = allSeries.find(s => s.id === currentSeriesId);
+        if (!series) return;
+        const val = prompt("Скільки всього томів у цій серії?", series.total_volumes || "");
+        if (val !== null) {
+            const num = parseInt(val) || 0;
+            const { error } = await supaClient.from('series').update({ total_volumes: num }).eq('id', currentSeriesId);
+            if (!error) {
+                series.total_volumes = num;
+                document.getElementById('seriesStatTotal').innerText = num > 0 ? num : '?';
+            }
+        }
+    }
+    
+    function openAddVolumeToSeries() {
+        const series = allSeries.find(s => s.id === currentSeriesId);
+        openAddModal();
+        if (series) {
+            document.getElementById('addSeriesInput').value = series.title;
         }
     }
 
-    async function loadItemsFromDB(status) {
-    const grid = document.getElementById('itemsGrid');
-    grid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1; color: gray;">Завантаження...</p>';
     
-    const { data, error } = await supaClient
-        .from('reading_items')
-        .select('*')
-        .eq('status', status);
-        
-    if (error) return grid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1; color: red;">Помилка БД.</p>';
-    
-    // Природне сортування: враховує український алфавіт і числа (2 йде перед 10)
-    loadedItems = (data || []).sort((a, b) => 
-        a.title.localeCompare(b.title, 'uk', { numeric: true, sensitivity: 'base' })
-    );
-        searchItems();
-    }
-
     function switchTab(tabName) {
         ['navRead', 'navPlanned', 'navUnread', 'navProfile'].forEach(id => document.getElementById(id).classList.remove('active'));
         document.getElementById('iconRead').className = "ph ph-book-bookmark";
@@ -691,6 +994,11 @@
         }
         
         document.getElementById('bookDetailScreen').style.display = 'none';
+        if (currentSeriesId) {
+            document.querySelector('.bottom-nav').style.display = '';
+            openSeriesDetail(currentSeriesId);
+            return;
+        }
         document.querySelector('.bottom-nav').style.display = ''; 
         const activeNav = document.querySelector('.nav-item.active').id;
         const tabMap = { 'navRead': 'read', 'navUnread': 'unread', 'navPlanned': 'planned' };
@@ -799,6 +1107,7 @@
     // --- Модальне Додавання / Редагування ---
     function openAddModal() {
         editModeId = null;
+        document.getElementById('addSeriesInput').value = '';
         document.getElementById('modalFormTitle').innerText = "Додати твір";
         document.getElementById('addModalOverlay').style.display = 'flex';
         
@@ -818,6 +1127,8 @@
     }
 
     function openEditModal(event, id) {
+        const bookSeries = allSeries.find(s => s.id === book.series_id);
+        document.getElementById('addSeriesInput').value = bookSeries ? bookSeries.title : '';
         event.stopPropagation();
         closeAllMenus();
         const book = loadedItems.find(b => b.id === id);
@@ -894,8 +1205,33 @@
                 if (uploadError) throw uploadError;
                 finalCoverUrl = supaClient.storage.from('covers').getPublicUrl(fileName).data.publicUrl;
             }
-
-            const dbData = { title: title, item_type: newItemData.type, status: newItemData.status, cover_url: finalCoverUrl };
+            
+            // Шукаємо або створюємо серію, якщо поле заповнене
+            let finalSeriesId = null;
+            const seriesTitle = document.getElementById('addSeriesInput').value.trim();
+            if (seriesTitle) {
+                let existing = allSeries.find(s => s.title.toLowerCase() === seriesTitle.toLowerCase());
+                if (existing) {
+                    finalSeriesId = existing.id;
+                } else {
+                    const { data: newSeries, error: sErr } = await supaClient
+                        .from('series')
+                        .insert({ user_id: session.user.id, title: seriesTitle })
+                        .select()
+                        .single();
+                    if (sErr) throw sErr;
+                    allSeries.push(newSeries);
+                    finalSeriesId = newSeries.id;
+                }
+            }
+            
+            const dbData = {
+                title: title,
+                item_type: newItemData.type,
+                status: newItemData.status,
+                cover_url: finalCoverUrl,
+                series_id: finalSeriesId
+            };
 
             if (editModeId) {
                 const { error } = await supaClient.from('reading_items').update(dbData).eq('id', editModeId);
@@ -907,7 +1243,7 @@
             }
 
             closeAddModal();
-            switchTab(newItemData.status); 
+            if (currentSeriesId) openSeriesDetail(currentSeriesId); else switchTab(newItemData.status);
             
         } catch (error) { alert("Помилка збереження: " + error.message); } 
         finally { btn.disabled = false; btn.innerText = "Зберегти"; }
