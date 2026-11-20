@@ -382,13 +382,13 @@
                     </div>
 
                     <div class="detail-row" style="flex-direction: row; align-items: center; justify-content: space-between; margin-top: 10px;">
-                        <span class="detail-row-title">Оцінка</span>
+                        <span class="detail-row-title">Оцінка <span id="detailRatingValue" style="color: var(--accent-green); margin-left: 6px;"></span></span>
                         <div class="rating-stars" id="detailRatingStars">
-                            <i class="ph ph-star" onclick="updateBookRating(1)"></i>
-                            <i class="ph ph-star" onclick="updateBookRating(2)"></i>
-                            <i class="ph ph-star" onclick="updateBookRating(3)"></i>
-                            <i class="ph ph-star" onclick="updateBookRating(4)"></i>
-                            <i class="ph ph-star" onclick="updateBookRating(5)"></i>
+                            <i class="ph ph-star" onclick="updateBookRating(event, 1)"></i>
+                            <i class="ph ph-star" onclick="updateBookRating(event, 2)"></i>
+                            <i class="ph ph-star" onclick="updateBookRating(event, 3)"></i>
+                            <i class="ph ph-star" onclick="updateBookRating(event, 4)"></i>
+                            <i class="ph ph-star" onclick="updateBookRating(event, 5)"></i>
                         </div>
                     </div>
 
@@ -730,8 +730,22 @@
     }
 
     function renderDetailRatingStars(rating) {
+        const numRating = parseFloat(rating) || 0;
         const stars = document.getElementById('detailRatingStars').getElementsByTagName('i');
-        for (let i = 0; i < 5; i++) stars[i].className = i < rating ? "ph-fill ph-star active" : "ph ph-star";
+        const valEl = document.getElementById('detailRatingValue');
+        
+        if (valEl) valEl.innerText = numRating > 0 ? numRating : '';
+        
+        for (let i = 0; i < 5; i++) {
+            const starNum = i + 1;
+            if (numRating >= starNum) {
+                stars[i].className = "ph-fill ph-star active";
+            } else if (numRating >= starNum - 0.5) {
+                stars[i].className = "ph-fill ph-star-half active";
+            } else {
+                stars[i].className = "ph ph-star";
+            }
+        }
     }
 
     async function updateBookStatus(newStatus) {
@@ -741,11 +755,22 @@
         await supaClient.from('reading_items').update({ status: newStatus }).eq('id', currentBookId);
     }
 
-    async function updateBookRating(newRating) {
+    async function updateBookRating(event, starIndex) {
+        const rect = event.currentTarget.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        
+        // Клік по лівій половині зірки = x.5, по правій = ціле число
+        const newRating = clickX < rect.width / 2 ? starIndex - 0.5 : starIndex;
+        
         renderDetailRatingStars(newRating);
         const book = loadedItems.find(b => b.id === currentBookId);
         if (book) book.rating = newRating;
-        await supaClient.from('reading_items').update({ rating: newRating }).eq('id', currentBookId);
+        
+        const { error } = await supaClient
+            .from('reading_items')
+            .update({ rating: newRating })
+            .eq('id', currentBookId);
+        if (error) alert("Помилка збереження оцінки: " + error.message);
     }
     // --- Видалення ---
     function openDeleteModal(event, id) {
