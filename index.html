@@ -150,7 +150,10 @@
         .rating-stars { display: flex; gap: 12px; }
         .rating-stars i { font-size: clamp(28px, calc(32vw / var(--base-vw)), 40px); color: #555; cursor: pointer; transition: color 0.2s; }
         .rating-stars i.active { color: var(--accent-green); }
-        .review-textarea { resize: vertical; min-height: 120px; background-color: #242424; }
+        .review-textarea { resize: none; overflow: hidden; min-height: 120px; background-color: #242424; line-height: 1.5;}
+        .review-header { display: flex; justify-content: space-between; align-items: center;}
+        .save-status { font-size: 12px; color: var(--accent-green); opacity: 0; transition: opacity 0.3s;}
+        .save-status.visible { opacity: 1;}
 
         /* Панель фільтрів (працює і на телефоні, і на ПК) */
         .filter-bar {
@@ -390,8 +393,11 @@
                     </div>
 
                     <div class="detail-row" style="margin-top: 10px;">
-                        <span class="detail-row-title">Відгук</span>
-                        <textarea id="detailReviewInput" class="modal-input review-textarea" placeholder="Писати текст тут....." onblur="updateBookReview()"></textarea>
+                        <div class="review-header">
+                            <span class="detail-row-title">Відгук</span>
+                            <span class="save-status" id="reviewSaveStatus">Збережено ✓</span>
+                        </div>
+                        <textarea id="detailReviewInput" class="modal-input review-textarea" placeholder="Писати текст тут....." oninput="handleReviewInput(this)"></textarea>
                     </div>
                 </div>
             </div>
@@ -590,9 +596,8 @@
     loadedItems = (data || []).sort((a, b) => 
         a.title.localeCompare(b.title, 'uk', { numeric: true, sensitivity: 'base' })
     );
-    
-    searchItems();
-}
+        searchItems();
+    }
 
     function switchTab(tabName) {
         ['navRead', 'navPlanned', 'navUnread', 'navProfile'].forEach(id => document.getElementById(id).classList.remove('active'));
@@ -631,6 +636,26 @@
     }
 
     // --- Сторінка Книги ---
+    let reviewSaveTimer = null;
+    function autoResizeTextarea(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.max(120, el.scrollHeight) + 'px';
+    }
+    
+    function handleReviewInput(el) {
+        autoResizeTextarea(el);
+        
+        const statusEl = document.getElementById('reviewSaveStatus');
+        statusEl.innerText = 'Збереження...';
+        statusEl.classList.add('visible');
+        
+        // Зберігаємо автоматично через 0.6 сек після зупинки друку
+        clearTimeout(reviewSaveTimer);
+        reviewSaveTimer = setTimeout(() => {
+            updateBookReview();
+        }, 600);
+    }
+    
     function openBookDetail(id) {
         const book = loadedItems.find(b => b.id === id);
         if (!book) return;
@@ -638,27 +663,64 @@
         document.getElementById('detailCoverImg').src = book.cover_url || 'https://via.placeholder.com/600x800';
         document.getElementById('detailItemType').innerText = book.item_type;
         document.getElementById('detailItemTitle').innerText = book.title;
-        document.getElementById('detailReviewInput').value = book.review || '';
+        
+        const reviewInput = document.getElementById('detailReviewInput');
+        reviewInput.value = book.review || '';
+        document.getElementById('reviewSaveStatus').classList.remove('visible');
         renderDetailStatusPills(book.status);
         renderDetailRatingStars(book.rating || 0);
         document.getElementById('headerSection').style.display = 'none';
         document.getElementById('trackerScreen').style.display = 'none';
         
-        if(window.innerWidth < 768) {
+        if (window.innerWidth < 768) {
             document.querySelector('.bottom-nav').style.display = 'none';
         }
         
         document.getElementById('bookDetailScreen').style.display = 'flex';
+        
+        // Важливо викликати ПІСЛЯ того, як екран став видимим, щоб правильно порахувати висоту
+        autoResizeTextarea(reviewInput);
     }
-
-    function closeBookDetail() {
+    
+    async function closeBookDetail() {
+        // Якщо користувач вийшов одразу після друку — дочекаємось збереження
+        if (reviewSaveTimer) {
+            clearTimeout(reviewSaveTimer);
+            reviewSaveTimer = null;
+            await updateBookReview();
+        }
+        
         document.getElementById('bookDetailScreen').style.display = 'none';
         document.querySelector('.bottom-nav').style.display = ''; 
         const activeNav = document.querySelector('.nav-item.active').id;
         const tabMap = { 'navRead': 'read', 'navUnread': 'unread', 'navPlanned': 'planned' };
         switchTab(tabMap[activeNav]);
     }
-
+    
+    async function updateBookReview() {
+        if (!currentBookId) return;
+        const text = document.getElementById('detailReviewInput').value;
+        const book = loadedItems.find(b => b.id === currentBookId);
+        if (book) book.review = text;
+        
+        const { error } = await supaClient
+            .from('reading_items')
+            .update({ review: text })
+            .eq('id', currentBookId);
+        
+        const statusEl = document.getElementById('reviewSaveStatus');
+        if (error) {
+            statusEl.innerText = 'Помилка збереження';
+            statusEl.style.color = '#ff5252';
+            alert('Помилка збереження відгуку: ' + error.message);
+        } else {
+            statusEl.innerText = 'Збережено ✓';
+            statusEl.style.color = 'var(--accent-green)';
+            statusEl.classList.add('visible');
+            setTimeout(() => statusEl.classList.remove('visible'), 1500);
+        }
+    }
+    
     function renderDetailStatusPills(status) {
         const buttons = document.getElementById('detailStatusGroup').getElementsByClassName('pill-btn');
         for (let btn of buttons) {
@@ -685,14 +747,6 @@
         if (book) book.rating = newRating;
         await supaClient.from('reading_items').update({ rating: newRating }).eq('id', currentBookId);
     }
-
-    async function updateBookReview() {
-        const text = document.getElementById('detailReviewInput').value;
-        const book = loadedItems.find(b => b.id === currentBookId);
-        if (book) book.review = text;
-        await supaClient.from('reading_items').update({ review: text }).eq('id', currentBookId);
-    }
-
     // --- Видалення ---
     function openDeleteModal(event, id) {
         event.stopPropagation();
