@@ -459,6 +459,7 @@
     const supaClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let loadedItems = [];
+    let currentTypeFilter = 'ALL';
     let currentBookId = null;
     let editModeId = null; 
     let itemToDeleteId = null;
@@ -531,7 +532,14 @@
         const menus = document.getElementsByClassName('options-menu');
         for(let m of menus) m.style.display = 'none';
     }
-
+    
+    function setTypeFilter(type, btn) {
+        currentTypeFilter = type;
+        document.querySelectorAll('#filterBar .filter-btn').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+        searchItems();
+    }
+    
     function searchItems() {
         const query = document.getElementById('searchInput').value.toLowerCase();
         const grid = document.getElementById('itemsGrid');
@@ -540,9 +548,12 @@
             grid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1; color: var(--text-gray);">Тут поки порожньо</p>';
             return;
         }
-
-        const filtered = loadedItems.filter(item => item.title.toLowerCase().includes(query));
-
+        const filtered = loadedItems.filter(item => {
+            const matchesTitle = item.title.toLowerCase().includes(query);
+            const matchesType = currentTypeFilter === 'ALL' || item.item_type === currentTypeFilter;
+            return matchesTitle && matchesType;
+        });
+        
         if (filtered.length === 0) {
             grid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1; color: var(--text-gray);">Нічого не знайдено</p>';
         } else {
@@ -592,6 +603,7 @@
             profileScreen.style.display = 'none';
             
             document.getElementById('searchInput').value = '';
+            setTypeFilter('ALL', document.querySelector('#filterBar .filter-btn'));
             
             loadItemsFromDB(tabName);
         } else if (tabName === 'profile') {
