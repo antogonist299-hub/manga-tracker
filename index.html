@@ -913,6 +913,27 @@
     let loadedItems = [];
     let allSeries = [];
     let currentSeriesId = null;
+    let currentActiveTab = 'unread';
+    let savedScroll = { window: 0, tracker: 0, body: 0 };
+    
+    function saveScrollPosition() {
+        const tracker = document.getElementById('trackerScreen');
+        const body = document.querySelector('.app-body');
+        savedScroll.window = window.scrollY;
+        savedScroll.tracker = tracker ? tracker.scrollTop : 0;
+        savedScroll.body = body ? body.scrollTop : 0;
+    }
+    
+    function restoreScrollPosition() {
+        requestAnimationFrame(() => {
+            const tracker = document.getElementById('trackerScreen');
+            const body = document.querySelector('.app-body');
+            window.scrollTo(0, savedScroll.window);
+            if (tracker) tracker.scrollTop = savedScroll.tracker;
+            if (body) body.scrollTop = savedScroll.body;
+        });
+    }
+    
     let currentTypeFilter = 'ALL';
     let currentSortMode = 'alpha';
     let currentBookId = null;
@@ -1110,6 +1131,9 @@
     }
     
     async function openSeriesDetail(seriesId) {
+        if (document.getElementById('seriesDetailScreen').style.display !== 'flex') {
+            saveScrollPosition();
+        }
         currentSeriesId = seriesId;
         const series = allSeries.find(s => s.id === seriesId);
         if (!series) return;
@@ -1173,9 +1197,14 @@
     function closeSeriesDetail() {
         currentSeriesId = null;
         document.getElementById('seriesDetailScreen').style.display = 'none';
-        const activeNav = document.querySelector('.nav-item.active').id;
-        const tabMap = { 'navRead': 'read', 'navUnread': 'unread', 'navPlanned': 'planned', 'navReading': 'reading' };
-        switchTab(tabMap[activeNav] || 'unread');
+        
+        // Залишаємо лише томи, що належать до поточної вкладки
+        loadedItems = loadedItems.filter(item => item.status === currentActiveTab);
+        
+        document.getElementById('headerSection').style.display = 'block';
+        document.getElementById('trackerScreen').style.display = 'block';
+        searchItems();
+        restoreScrollPosition();
     }
     
     function editSeriesTotal() {
@@ -1222,6 +1251,7 @@
 
     
     function switchTab(tabName) {
+        currentActiveTab = tabName;
         // Якщо є незбережений відгук — зберігаємо перед виходом
         if (typeof reviewSaveTimer !== 'undefined' && reviewSaveTimer) {
             clearTimeout(reviewSaveTimer);
@@ -1306,6 +1336,7 @@
         document.getElementById('reviewSaveStatus').classList.remove('visible');
         renderDetailStatusPills(book.status);
         renderDetailRatingStars(book.rating || 0);
+        if (!currentSeriesId) saveScrollPosition();
         document.getElementById('headerSection').style.display = 'none';
         document.getElementById('trackerScreen').style.display = 'none';
         
@@ -1325,23 +1356,27 @@
     }
     
     async function closeBookDetail() {
-        // Якщо користувач вийшов одразу після друку — дочекаємось збереження
-        if (reviewSaveTimer) {
+        if (typeof reviewSaveTimer !== 'undefined' && reviewSaveTimer) {
             clearTimeout(reviewSaveTimer);
             reviewSaveTimer = null;
             await updateBookReview();
         }
         
         document.getElementById('bookDetailScreen').style.display = 'none';
+        document.querySelector('.bottom-nav').style.display = '';
+        
         if (currentSeriesId) {
-            document.querySelector('.bottom-nav').style.display = '';
             openSeriesDetail(currentSeriesId);
             return;
         }
-        document.querySelector('.bottom-nav').style.display = ''; 
-        const activeNav = document.querySelector('.nav-item.active').id;
-        const tabMap = { 'navRead': 'read', 'navUnread': 'unread', 'navPlanned': 'planned', 'navReading': 'reading'};
-        switchTab(tabMap[activeNav]);
+        
+        // Прибираємо з поточного списку книги, яким щойно змінили статус
+        loadedItems = loadedItems.filter(item => item.status === currentActiveTab);
+        
+        document.getElementById('headerSection').style.display = 'block';
+        document.getElementById('trackerScreen').style.display = 'block';
+        searchItems();
+        restoreScrollPosition();
     }
     
     async function updateBookReview() {
