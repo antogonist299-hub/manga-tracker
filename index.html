@@ -90,10 +90,18 @@
             display: none;
             flex-direction: column;
             gap: 16px;
-            padding: 16px 12px 96px;
+            padding: 16px 12px 120px;
             max-width: 960px;
             margin: 0 auto;
             width: 100%;
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        #profileScreen > * {
+            flex-shrink: 0;
         }
         
         .profile-hero {
@@ -944,11 +952,11 @@
                <div class="profile-hero">
                    <div class="profile-hero-left">
                        <div class="profile-avatar-wrap">
-                           <img id="profileAvatar" src="" alt="Аватар" onerror="setFallbackAvatar(this)">
+                           <img id="profileAvatarImg" src="" alt="Аватар" onerror="setFallbackAvatar(this)">
                            <button type="button" class="avatar-edit-btn" onclick="document.getElementById('avatarUploadInput').click()" title="Змінити фото">
                                <i class="ph-fill ph-pencil-simple"></i>
                            </button>
-                           <input type="file" id="avatarUploadInput" accept="image/*" style="display:none;" onchange="handleAvatarUpload(event)">
+                           <input type="file" id="avatarUploadInput" accept="image/*" style="display:none;" onchange="uploadAvatarFile(event)">
                        </div>
                        <div class="profile-user-meta">
                            <div class="profile-name-row">
@@ -1613,7 +1621,7 @@
             document.getElementById('navProfile').classList.add('active');
             document.getElementById('iconProfile').className = "ph-fill ph-user";
             
-            loadProfileStats();
+            loadProfileData();
         }
     }
 
@@ -1996,11 +2004,19 @@
 
     async function editProfileName() {
         const currentName = document.getElementById('profileName').innerText;
-        const newName = prompt("Введіть нове ім'я:", currentName);
-        if (newName && newName.trim() !== "") {
-            const { data, error } = await supaClient.auth.updateUser({ data: { display_name: newName.trim() } });
-            if (!error) document.getElementById('profileName').innerText = newName.trim().toUpperCase();
+        const newName = prompt("Введіть новий нікнейм:", currentName);
+        if (!newName || !newName.trim()) return;
+        
+        const { error } = await supaClient.auth.updateUser({
+            data: { display_name: newName.trim() }
+        });
+        
+        if (error) {
+            alert("Помилка збереження: " + error.message);
+            return;
         }
+        
+        document.getElementById('profileName').innerText = newName.trim().toUpperCase();
     }
 
     function showSeriesDropdown() {
@@ -2098,19 +2114,19 @@
     
     async function loadProfileData() {
         const { data: { session } } = await supaClient.auth.getSession();
-        if(!session) return;
+        if (!session) return;
+        
         const metadata = session.user.user_metadata || {};
         document.getElementById('profileName').innerText = (metadata.display_name || session.user.email.split('@')[0]).toUpperCase();
+        
         const avatarImg = document.getElementById('profileAvatarImg');
-        if (metadata.avatar_url) avatarImg.src = metadata.avatar_url; else setFallbackAvatar();
+        if (metadata.avatar_url) {
+            avatarImg.src = metadata.avatar_url;
+        } else {
+            setFallbackAvatar(avatarImg);
+        }
         
-        const { count: readCount } = await supaClient.from('reading_items').select('*', { count: 'exact', head: true }).eq('status', 'read');
-        const { count: unreadCount } = await supaClient.from('reading_items').select('*', { count: 'exact', head: true }).eq('status', 'unread');
-        const { count: plannedCount } = await supaClient.from('reading_items').select('*', { count: 'exact', head: true }).eq('status', 'planned');
-        
-        document.getElementById('statRead').innerText = readCount || 0;
-        document.getElementById('statUnread').innerText = unreadCount || 0;
-        document.getElementById('statPlanned').innerText = plannedCount || 0;
+        await loadProfileStats();
     }
     
     async function loadProfileStats() {
