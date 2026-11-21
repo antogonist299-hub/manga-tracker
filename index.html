@@ -86,21 +86,267 @@
         .nav-item.active { color: var(--accent-green); }
         
         /* Профіль */
-        #profileScreen { display: none; flex-direction: column; padding: 0; padding-bottom: clamp(90px, calc(100vw / var(--base-vw)), 130px); }
-        .profile-header-bg { background-color: var(--header-green); padding: clamp(32px, calc(40vw / var(--base-vw)), 48px) clamp(20px, calc(24vw / var(--base-vw)), 32px); padding-bottom: clamp(60px, calc(80vw / var(--base-vw)), 100px); width: 100%; border-bottom-left-radius: 24px; border-bottom-right-radius: 24px; }
-        .profile-avatar-container { display: flex; flex-direction: column; align-items: center; margin-top: clamp(-50px, calc(-70vw / var(--base-vw)), -80px); margin-bottom: clamp(24px, calc(32vw / var(--base-vw)), 40px); position: relative; }
-        .avatar-wrapper { position: relative; width: clamp(100px, calc(120vw / var(--base-vw)), 140px); height: clamp(100px, calc(120vw / var(--base-vw)), 140px); }
-        .profile-avatar { width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--accent-green); background-color: var(--bg-card); object-fit: cover; }
-        .edit-avatar-btn { position: absolute; bottom: 4px; right: 4px; background-color: var(--accent-green); color: white; border: none; width: clamp(24px, calc(28vw / var(--base-vw)), 32px); height: clamp(24px, calc(28vw / var(--base-vw)), 32px); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.5); font-size: 14px; }
-        .profile-name-wrapper { display: flex; align-items: center; gap: 8px; margin-top: 16px; }
-        .profile-name { font-size: clamp(20px, calc(24vw / var(--base-vw)), 32px); font-weight: 500; color: var(--text-white); text-transform: uppercase; }
-        .edit-name-btn { background: none; border: none; color: var(--text-gray); cursor: pointer; font-size: 20px; display: flex; align-items: center; }
-        .stats-container { display: flex; gap: clamp(8px, calc(12vw / var(--base-vw)), 16px); padding: 0 clamp(12px, calc(16vw / var(--base-vw)), 24px); }
-        .stat-card { flex: 1; background-color: var(--bg-card); border-radius: clamp(12px, calc(16vw / var(--base-vw)), 20px); padding: clamp(12px, calc(16vw / var(--base-vw)), 24px) clamp(6px, calc(8vw / var(--base-vw)), 12px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; }
-        .stat-label { color: var(--accent-green); font-size: clamp(9px, calc(10vw / var(--base-vw)), 13px); font-weight: 700; text-transform: uppercase; }
-        .stat-value { font-size: clamp(24px, calc(28vw / var(--base-vw)), 40px); font-weight: 500; color: var(--text-white); }
-        .logout-btn { background-color: #d32f2f; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; margin: 40px auto; width: fit-content; cursor: pointer; }
-
+        #profileScreen {
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+            padding: 16px 12px 96px;
+            max-width: 960px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .profile-hero {
+            background: linear-gradient(135deg, var(--header-green) 0%, #1d3510 100%);
+            border-radius: 20px;
+            padding: 24px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(83, 165, 24, 0.25);
+        }
+        
+        .profile-hero-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            z-index: 2;
+        }
+        
+        .profile-avatar-wrap {
+            position: relative;
+            width: 76px;
+            height: 76px;
+            flex-shrink: 0;
+        }
+        
+        .profile-avatar-wrap img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--accent-green);
+            background-color: #1a1a1a;
+        }
+        
+        .avatar-edit-btn {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background-color: var(--accent-green);
+            color: #fff;
+            border: 2px solid #1d3510;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        
+        .profile-user-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .profile-name-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .profile-name-row h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+            margin: 0;
+        }
+        
+        .profile-edit-name-btn {
+            background: rgba(255, 255, 255, 0.12);
+            border: none;
+            color: #fff;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .profile-subtext {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .profile-logout-btn {
+            background-color: rgba(255, 82, 82, 0.12);
+            border: 1px solid rgba(255, 82, 82, 0.35);
+            color: #ff6b6b;
+            padding: 8px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;         
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            z-index: 2;
+        }
+        
+        .profile-logout-btn:hover {
+            background-color: rgba(255, 82, 82, 0.25);
+        }
+        
+        /* 4 картки статусів */
+        .profile-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .p-stat-card {
+            background-color: var(--bg-card);
+            border: 1px solid #2b2b2b;
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            cursor: pointer;
+            transition: transform 0.15s, border-color 0.2s;
+        }
+        
+        .p-stat-card:hover {
+            border-color: var(--accent-green);
+            transform: translateY(-2px);
+        }
+        
+        .p-stat-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: var(--text-gray);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .p-stat-top i {
+            font-size: 18px;
+            color: var(--accent-green);
+        }
+        
+        .p-stat-num {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-white);
+        }
+        
+        /* Блок аналітики */
+        .profile-analytics-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        
+        .analytics-card {
+            background-color: var(--bg-card);
+            border: 1px solid #2b2b2b;
+            border-radius: 16px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        
+        .analytics-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-white);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .type-bar-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .type-bar-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: var(--text-gray);
+        }
+        
+        .type-bar-labels strong {
+            color: var(--text-white);
+        }
+        
+        .type-bar-track {
+            width: 100%;
+            height: 7px;
+            background-color: #2a2a2a;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .type-bar-fill {
+            height: 100%;
+            background-color: var(--accent-green);
+            border-radius: 4px;
+            transition: width 0.4s ease;
+        }
+        
+        .avg-rating-big {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+        
+        .avg-rating-big span {
+            font-size: 32px;
+            font-weight: 700;
+            color: #fff;
+        }
+        
+        .avg-rating-big i {
+            color: #f5b942;
+            font-size: 24px;
+        }
+        
+        /* Десктопна адаптація для Кабінету */
+        @media (min-width: 768px) {
+            #profileScreen {
+                padding: 32px;
+                gap: 20px;
+            }
+            .profile-hero {
+                padding: 28px 32px;
+            }
+            .profile-avatar-wrap {
+                width: 92px;
+                height: 92px;
+            }
+            .profile-stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            .profile-analytics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
         /* Модальні вікна */
         .modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 200; display: none; flex-direction: column; justify-content: flex-end; }
         .modal-content { background-color: var(--bg-card); width: 100%; border-top-left-radius: 24px; border-top-right-radius: 24px; padding: 16px 24px 32px; display: flex; flex-direction: column; gap: 20px; animation: slideUp 0.3s ease-out; }
@@ -693,27 +939,94 @@
                 <div class="items-grid" id="itemsGrid"></div>
             </div>
 
-            <div class="main-content" id="profileScreen">
-                <div class="profile-header-bg"><h1 class="header-title">Кабінет</h1></div>
-                <div class="profile-avatar-container">
-                    <div class="avatar-wrapper">
-                        <img src="" alt="Аватар" class="profile-avatar" id="profileAvatarImg" onerror="setFallbackAvatar()">
-                        <input type="file" id="avatarFileInput" style="display: none;" accept="image/*" onchange="uploadAvatarFile(event)">
-                        <button type="button" class="edit-avatar-btn" onclick="document.getElementById('avatarFileInput').click()"><i class="ph ph-pencil-simple"></i></button>
-                    </div>
-                    <div class="profile-name-wrapper">
-                        <div class="profile-name" id="profileName">USER</div>
-                        <button type="button" class="edit-name-btn" onclick="editProfileName()"><i class="ph ph-pencil-simple"></i></button>
-                    </div>
-                </div>
-                <div class="stats-container">
-                    <div class="stat-card"><span class="stat-label">Прочитані</span><span class="stat-value" id="statRead">0</span></div>
-                    <div class="stat-card"><span class="stat-label">Не читані</span><span class="stat-value" id="statUnread">0</span></div>
-                    <div class="stat-card"><span class="stat-label">В планах</span><span class="stat-value" id="statPlanned">0</span></div>
-                </div>
-                <button type="button" class="logout-btn" onclick="signOut()">Вийти з акаунту</button>
-            </div>
-
+           <div id="profileScreen">
+               <!-- Шапка профілю -->
+               <div class="profile-hero">
+                   <div class="profile-hero-left">
+                       <div class="profile-avatar-wrap">
+                           <img id="profileAvatar" src="" alt="Аватар" onerror="setFallbackAvatar(this)">
+                           <button type="button" class="avatar-edit-btn" onclick="document.getElementById('avatarUploadInput').click()" title="Змінити фото">
+                               <i class="ph-fill ph-pencil-simple"></i>
+                           </button>
+                           <input type="file" id="avatarUploadInput" accept="image/*" style="display:none;" onchange="handleAvatarUpload(event)">
+                       </div>
+                       <div class="profile-user-meta">
+                           <div class="profile-name-row">
+                               <h2 id="profileName">Читач</h2>
+                               <button type="button" class="profile-edit-name-btn" onclick="editProfileName()" title="Змінити ім'я">
+                                   <i class="ph ph-pencil-simple"></i>
+                               </button>
+                           </div>
+                           <span class="profile-subtext" id="profileTotalSummary">У бібліотеці: 0 творів</span>
+                       </div>
+                   </div>
+                   
+                   <button type="button" class="profile-logout-btn" onclick="signOut()">
+                       <i class="ph ph-sign-out"></i>
+                       <span>Вийти</span>
+                   </button>
+               </div>
+               
+               <!-- 4 інтерактивні картки -->
+               <div class="profile-stats-grid">
+                   <div class="p-stat-card" onclick="switchTab('reading')">
+                       <div class="p-stat-top"><span>Читаю</span><i class="ph-fill ph-eyeglasses"></i></div>
+                       <div class="p-stat-num" id="statReading">0</div>
+                   </div>
+                   <div class="p-stat-card" onclick="switchTab('read')">
+                       <div class="p-stat-top"><span>Прочитані</span><i class="ph-fill ph-book-bookmark"></i></div>
+                       <div class="p-stat-num" id="statRead">0</div>
+                   </div>
+                   <div class="p-stat-card" onclick="switchTab('unread')">
+                       <div class="p-stat-top"><span>Не читані</span><i class="ph-fill ph-book-open"></i></div>
+                       <div class="p-stat-num" id="statUnread">0</div>
+                   </div>
+                   <div class="p-stat-card" onclick="switchTab('planned')">
+                       <div class="p-stat-top"><span>В планах</span><i class="ph-fill ph-bookmark-simple"></i></div>
+                       <div class="p-stat-num" id="statPlanned">0</div>
+                   </div>
+               </div>
+               
+               <!-- Аналітика -->
+               <div class="profile-analytics-grid">
+                   <div class="analytics-card">
+                       <div class="analytics-title">
+                           <span>Загальний прогрес</span>
+                           <span id="statReadPercent" style="color: var(--accent-green);">0%</span>
+                       </div>
+                       <div class="type-bar-track" style="height: 10px;">
+                           <div class="type-bar-fill" id="statReadProgressBar" style="width: 0%;"></div>
+                       </div>
+                       <span style="font-size: 12px; color: var(--text-gray);" id="statReadProgressText">Прочитано 0 із 0 наявних творів</span>
+                       
+                       <div style="border-top: 1px solid #2b2b2b; padding-top: 12px; margin-top: 4px;">
+                           <div class="analytics-title" style="margin-bottom: 6px;"><span>Середня оцінка</span></div>
+                           <div class="avg-rating-big">
+                               <i class="ph-fill ph-star"></i>
+                               <span id="statAvgRating">—</span>
+                               <small style="color: var(--text-gray); font-size: 13px;" id="statRatedCount">(0 оцінено)</small>
+                           </div>
+                       </div>
+                   </div>
+                   
+                   <div class="analytics-card">
+                       <div class="analytics-title"><span>Розподіл за типом</span></div>
+                       <div class="type-bar-row">
+                           <div class="type-bar-labels"><span>Книги</span><strong id="typeCountBook">0</strong></div>
+                           <div class="type-bar-track"><div class="type-bar-fill" id="typeBarBook" style="width: 0%;"></div></div>
+                       </div>
+                       <div class="type-bar-row">
+                           <div class="type-bar-labels"><span>Манґа</span><strong id="typeCountManga">0</strong></div>
+                           <div class="type-bar-track"><div class="type-bar-fill" id="typeBarManga" style="width: 0%;"></div></div>
+                       </div>
+                       <div class="type-bar-row">
+                           <div class="type-bar-labels"><span>Комікси</span><strong id="typeCountComic">0</strong></div>
+                           <div class="type-bar-track"><div class="type-bar-fill" id="typeBarComic" style="width: 0%;"></div></div>
+                       </div>
+                   </div>
+               </div>
+           </div>
+            
             <!-- ЕКРАН СТОРІНКИ СЕРІЇ (ТАЙТЛУ) -->
             <div id="seriesDetailScreen">
                 <div class="series-header">
@@ -1293,12 +1606,14 @@
             
             loadItemsFromDB(tabName);
         } else if (tabName === 'profile') {
+            document.getElementById('headerSection').style.display = 'none';
+            document.getElementById('trackerScreen').style.display = 'none';
+            document.getElementById('profileScreen').style.display = 'flex';
+            
             document.getElementById('navProfile').classList.add('active');
             document.getElementById('iconProfile').className = "ph-fill ph-user";
-            headerSection.style.display = 'none'; 
-            trackerScreen.style.display = 'none';
-            profileScreen.style.display = 'flex';
-            loadProfileData();
+            
+            loadProfileStats();
         }
     }
 
@@ -1797,7 +2112,55 @@
         document.getElementById('statUnread').innerText = unreadCount || 0;
         document.getElementById('statPlanned').innerText = plannedCount || 0;
     }
-
+    
+    async function loadProfileStats() {
+        const { data, error } = await supaClient
+            .from('reading_items')
+            .select('status, item_type, rating');
+        
+        if (error || !data) return;
+        
+        const total = data.length;
+        const reading = data.filter(i => i.status === 'reading').length;
+        const read = data.filter(i => i.status === 'read').length;
+        const unread = data.filter(i => i.status === 'unread').length;
+        const planned = data.filter(i => i.status === 'planned').length;
+        
+        document.getElementById('profileTotalSummary').innerText = `У бібліотеці: ${total} творів`;
+        document.getElementById('statReading').innerText = reading;
+        document.getElementById('statRead').innerText = read;
+        document.getElementById('statUnread').innerText = unread;
+        document.getElementById('statPlanned').innerText = planned;
+        
+        // Прогрес по наявній колекції (без «В планах»)
+        const owned = read + unread + reading;
+        const readPct = owned > 0 ? Math.round((read / owned) * 100) : 0;
+        document.getElementById('statReadPercent').innerText = `${readPct}%`;
+        document.getElementById('statReadProgressBar').style.width = `${readPct}%`;
+        document.getElementById('statReadProgressText').innerText = `Прочитано ${read} із ${owned} наявних творів`;
+        
+        // Середня оцінка
+        const rated = data.filter(i => parseFloat(i.rating) > 0);
+        const avg = rated.length > 0
+            ? (rated.reduce((sum, i) => sum + parseFloat(i.rating), 0) / rated.length).toFixed(1)
+            : '—';
+        document.getElementById('statAvgRating').innerText = avg;
+        document.getElementById('statRatedCount').innerText = `(${rated.length} оцінено)`;
+        
+        // Розподіл за типами
+        const books = data.filter(i => i.item_type === 'КНИГА').length;
+        const manga = data.filter(i => i.item_type === 'МАНҐА').length;
+        const comics = data.filter(i => i.item_type === 'КОМІКС').length;
+        
+        document.getElementById('typeCountBook').innerText = books;
+        document.getElementById('typeCountManga').innerText = manga;
+        document.getElementById('typeCountComic').innerText = comics;
+        
+        document.getElementById('typeBarBook').style.width = total > 0 ? `${Math.round((books / total) * 100)}%` : '0%';
+        document.getElementById('typeBarManga').style.width = total > 0 ? `${Math.round((manga / total) * 100)}%` : '0%';
+        document.getElementById('typeBarComic').style.width = total > 0 ? `${Math.round((comics / total) * 100)}%` : '0%';
+    }
+    
     window.onload = checkUserSession;
 </script>
 </body>
