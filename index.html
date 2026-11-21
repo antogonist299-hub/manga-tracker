@@ -109,6 +109,21 @@
         #deleteModalOverlay .modal-content { justify-content: center; align-items: center; padding: 32px; gap: 24px; border-radius: 16px; width: 80%; margin: auto; margin-bottom: auto; animation: scaleUp 0.2s ease-out; }
         @keyframes scaleUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         #deleteModalOverlay h3 { font-size: 20px; font-weight: 500; text-align: center; }
+        #seriesTotalModalOverlay .modal-content {
+            justify-content: center;
+            padding: 28px 24px;
+            gap: 20px;
+            border-radius: 16px;
+            width: 85%;
+            max-width: 360px;
+            margin: auto;
+            animation: scaleUp 0.2s ease-out;
+        }
+        #seriesTotalModalOverlay h3 {
+            font-size: 18px;
+            font-weight: 500;
+            text-align: center;
+        }
         .delete-actions { display: flex; gap: 16px; width: 100%; }
         
         .modal-drag-handle { width: 40px; height: 4px; background-color: #555; border-radius: 2px; margin: 0 auto 8px; }
@@ -622,6 +637,18 @@
             </div>
         </div>
         
+        <!-- МОДАЛЬНЕ ВІКНО КІЛЬКОСТІ ТОМІВ -->
+        <div id="seriesTotalModalOverlay" class="modal-overlay" onclick="if(event.target === this) closeSeriesTotalModal()">
+            <div class="modal-content">
+                <h3>Скільки всього томів у серії?</h3>
+                <input type="number" id="seriesTotalInput" class="modal-input" min="0" placeholder="Наприклад: 28" onkeydown="if(event.key === 'Enter') saveSeriesTotal()">
+                <div class="delete-actions">
+                    <button type="button" class="modal-btn btn-cancel" onclick="closeSeriesTotalModal()">Скасувати</button>
+                    <button type="button" class="modal-btn btn-save" onclick="saveSeriesTotal()">Зберегти</button>
+                </div>
+            </div>
+        </div>
+        
     </div>
 </div>
 
@@ -879,18 +906,38 @@
         switchTab(tabMap[activeNav] || 'unread');
     }
     
-    async function editSeriesTotal() {
+    function editSeriesTotal() {
         const series = allSeries.find(s => s.id === currentSeriesId);
         if (!series) return;
-        const val = prompt("Скільки всього томів у цій серії?", series.total_volumes || "");
-        if (val !== null) {
-            const num = parseInt(val) || 0;
-            const { error } = await supaClient.from('series').update({ total_volumes: num }).eq('id', currentSeriesId);
-            if (!error) {
-                series.total_volumes = num;
-                document.getElementById('seriesStatTotal').innerText = num > 0 ? num : '?';
-            }
+        
+        const input = document.getElementById('seriesTotalInput');
+        input.value = series.total_volumes > 0 ? series.total_volumes : '';
+        document.getElementById('seriesTotalModalOverlay').style.display = 'flex';
+        setTimeout(() => input.focus(), 50);
+    }
+    
+    function closeSeriesTotalModal() {
+        document.getElementById('seriesTotalModalOverlay').style.display = 'none';
+    }
+    
+    async function saveSeriesTotal() {
+        const series = allSeries.find(s => s.id === currentSeriesId);
+        if (!series) return;
+        
+        const num = parseInt(document.getElementById('seriesTotalInput').value) || 0;
+        const { error } = await supaClient
+            .from('series')
+            .update({ total_volumes: num })
+            .eq('id', currentSeriesId);
+        
+        if (error) {
+            alert("Помилка збереженя: " + error.message);
+            return;
         }
+        
+        series.total_volumes = num;
+        document.getElementById('seriesStatTotal').innerText = num > 0 ? num : '?';
+        closeSeriesTotalModal();
     }
     
     function openAddVolumeToSeries() {
