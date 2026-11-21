@@ -938,7 +938,7 @@
         </div>
         `;
     }
-
+    
     function searchItems() {
         const query = document.getElementById('searchInput').value.toLowerCase();
         const grid = document.getElementById('itemsGrid');
@@ -997,48 +997,6 @@
         grid.innerHTML = displayList.map(entry => 
             entry.isSeries ? renderSeriesCard(entry.series, entry.items) : renderCard(entry.item)
                                         ).join('');
-    }
-    
-    const filtered = loadedItems.filter(item => {
-        const series = allSeries.find(s => s.id === item.series_id);
-        const matchesTitle = item.title.toLowerCase().includes(query) || (series && series.title.toLowerCase().includes(query));
-        const matchesType = currentTypeFilter === 'ALL' || item.item_type === currentTypeFilter;
-        return matchesTitle && matchesType;
-    });
-    
-    if (filtered.length === 0) {
-        grid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1; color: var(--text-gray);">Нічого не знайдено</p>';
-        return;
-    }
-    
-    // Групуємо томи, які належать до однієї серії
-    const groupedMap = new Map();
-    const displayList = [];
-    
-    filtered.forEach(item => {
-        if (item.series_id) {
-            if (!groupedMap.has(item.series_id)) {
-                const seriesObj = allSeries.find(s => s.id === item.series_id);
-                if (seriesObj) {
-                    const entry = { isSeries: true, series: seriesObj, items: [item], sortTitle: seriesObj.title };
-                    groupedMap.set(item.series_id, entry);
-                    displayList.push(entry);
-                } else {
-                    displayList.push({ isSeries: false, item, sortTitle: item.title });
-                }
-            } else {
-                groupedMap.get(item.series_id).items.push(item);
-            }
-        } else {
-            displayList.push({ isSeries: false, item, sortTitle: item.title });
-        }
-    });
-    
-    displayList.sort((a, b) => a.sortTitle.localeCompare(b.sortTitle, 'uk', { numeric: true, sensitivity: 'base' }));
-    
-    grid.innerHTML = displayList.map(entry => 
-        entry.isSeries ? renderSeriesCard(entry.series, entry.items) : renderCard(entry.item)
-                                    ).join('');
     }
     
     async function openSeriesDetail(seriesId) {
