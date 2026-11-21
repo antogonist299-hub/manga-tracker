@@ -445,6 +445,83 @@
             font-weight: 600;
         }
         
+        /* Прогрес-бар на картці */
+        .card-progress-wrap {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        .card-progress-fill {
+            height: 100%;
+            background-color: var(--accent-green);
+            transition: width 0.3s ease;
+        }
+        .card-progress-badge {
+            position: absolute;
+            bottom: 8px;
+            right: 6px;
+            background-color: rgba(20, 20, 20, 0.85);
+            color: var(--accent-green);
+            border-radius: 6px;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: 700;
+            backdrop-filter: blur(4px);
+        }
+        
+        /* Блок прогресу на сторінці книги */
+        .progress-box {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .progress-inputs {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .progress-inputs input {
+            text-align: center;
+            font-weight: 600;
+        }
+        .progress-bar-bg {
+            width: 100%;
+            height: 8px;
+            background-color: #333;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--accent-green);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .progress-quick-btns {
+            display: flex;
+            gap: 8px;
+        }
+        .progress-quick-btn {
+            flex: 1;
+            background-color: #333;
+            border: none;
+            color: white;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .progress-quick-btn:hover {
+            background-color: #444;
+        }
+        
         /* ======================================================== */
         /* МАГІЯ ДЛЯ ПК ТА НОУТБУКІВ (АДАПТИВНІСТЬ ФУЛСКРІН)        */
         /* ======================================================== */
@@ -563,6 +640,7 @@
     <div id="mainApp">
         <!-- БОКОВЕ МЕНЮ (ПК) / НИЖНЄ МЕНЮ (Мобайл) -->
         <div class="bottom-nav">
+            <div class="nav-item" id="navReading" onclick="switchTab('reading')"><i class="ph ph-eyeglasses" id="iconReading"></i><span>Читаю</span></div>
             <div class="nav-item" id="navRead" onclick="switchTab('read')"><i class="ph ph-book-bookmark" id="iconRead"></i><span>Прочитані</span></div>
             <div class="nav-item active" id="navUnread" onclick="switchTab('unread')"><i class="ph-fill ph-book-open" id="iconUnread"></i><span>Не читані</span></div>
             <div class="nav-item" id="navPlanned" onclick="switchTab('planned')"><i class="ph ph-bookmark-simple" id="iconPlanned"></i><span>В планах</span></div>
@@ -685,9 +763,32 @@
                     <div class="detail-row">
                         <span class="detail-row-title">Статус</span>
                         <div class="pill-group" id="detailStatusGroup">
+                            <button type="button" class="pill-btn" onclick="updateBookStatus('reading')">Читаю</button>
                             <button type="button" class="pill-btn" onclick="updateBookStatus('read')">Прочитано</button>
                             <button type="button" class="pill-btn" onclick="updateBookStatus('unread')">Не прочитано</button>
                             <button type="button" class="pill-btn" onclick="updateBookStatus('planned')">В планах</button>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-row" id="detailProgressRow" style="display: none;">
+                        <div class="review-header">
+                            <span class="detail-row-title">Прогрес (стор. / розд.)</span>
+                            <span id="detailProgressPercent" style="color: var(--accent-green); font-weight: 600; font-size: 14px;">0%</span>
+                        </div>
+                        <div class="progress-box">
+                            <div class="progress-inputs">
+                                <input type="number" id="detailCurrentPage" class="modal-input" min="0" placeholder="Зараз" oninput="handleProgressChange()">
+                                <span style="color: var(--text-gray); font-weight: 600;">/</span>
+                                <input type="number" id="detailTotalPages" class="modal-input" min="0" placeholder="Всього" oninput="handleProgressChange()">
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill" id="detailProgressBarFill"></div>
+                            </div>
+                            <div class="progress-quick-btns">
+                                <button type="button" class="progress-quick-btn" onclick="addProgress(1)">+1</button>
+                                <button type="button" class="progress-quick-btn" onclick="addProgress(5)">+5</button>
+                                <button type="button" class="progress-quick-btn" onclick="addProgress(10)">+10</button>
+                            </div>
                         </div>
                     </div>
 
@@ -747,6 +848,7 @@
                 <div class="form-group">
                     <label>Статус</label>
                     <div class="pill-group" id="statusGroup">
+                        <button type="button" class="pill-btn" onclick="selectPill('status', 'reading')">Читаю</button>
                         <button type="button" class="pill-btn" onclick="selectPill('status', 'read')">Прочитано</button>
                         <button type="button" class="pill-btn active" onclick="selectPill('status', 'unread')">Не прочитано</button>
                         <button type="button" class="pill-btn" onclick="selectPill('status', 'planned')">В планах</button>
@@ -856,10 +958,18 @@
 
     // --- Трекер ---
    function renderCard(item) {
+       let progressHtml = '';
+       if (item.status === 'reading' && item.total_pages > 0) {
+           const pct = Math.min(100, Math.round(((item.current_page || 0) / item.total_pages) * 100));
+           progressHtml = `
+           <span class="card-progress-badge">${item.current_page || 0}/${item.total_pages}</span>
+           <div class="card-progress-wrap"><div class="card-progress-fill" style="width: ${pct}%"></div></div>
+           `;
+       }
        return `
         <div class="card" onclick="openBookDetail('${item.id}')">
             <div class="card-image-wrapper">
-                <img src="${item.cover_url || 'https://via.placeholder.com/150'}" alt="Обкладинка">
+                <img ${progressHtml} src="${item.cover_url || 'https://via.placeholder.com/150'}" alt="Обкладинка">
                 <button type="button" class="options-btn" onclick="toggleMenu(event, 'menu-${item.id}')"><i class="ph ph-dots-three"></i></button>
                 
                 <div id="menu-${item.id}" class="options-menu" onclick="event.stopPropagation()">
@@ -1026,7 +1136,7 @@
         
         // Рахуємо статистику
         const readCount = volumes.filter(v => v.status === 'read').length;
-        const ownedCount = volumes.filter(v => v.status === 'read' || v.status === 'unread').length;
+        const ownedCount = volumes.filter(v => v.status === 'read' || v.status === 'unread' || v.status === 'reading').length;
         const rated = volumes.filter(v => parseFloat(v.rating) > 0);
         const avgRating = rated.length > 0 
             ? (rated.reduce((sum, v) => sum + parseFloat(v.rating), 0) / rated.length).toFixed(1) 
@@ -1036,7 +1146,7 @@
         document.getElementById('seriesStatRead').innerText = readCount;
         document.getElementById('seriesStatRating').innerText = avgRating !== '—' ? `${avgRating} ★` : '—';
         
-        const statusLabels = { read: 'Прочитано', unread: 'Не читано', planned: 'В планах' };
+        const statusLabels = { read: 'Прочитано', unread: 'Не читано', planned: 'В планах', reading: 'Читаю' };
         const grid = document.getElementById('seriesVolumesGrid');
         grid.innerHTML = volumes.map(item => `
         <div class="card" onclick="openBookDetail('${item.id}')">
@@ -1064,7 +1174,7 @@
         currentSeriesId = null;
         document.getElementById('seriesDetailScreen').style.display = 'none';
         const activeNav = document.querySelector('.nav-item.active').id;
-        const tabMap = { 'navRead': 'read', 'navUnread': 'unread', 'navPlanned': 'planned' };
+        const tabMap = { 'navRead': 'read', 'navUnread': 'unread', 'navPlanned': 'planned', 'navReading': 'reading' };
         switchTab(tabMap[activeNav] || 'unread');
     }
     
@@ -1112,18 +1222,21 @@
 
     
     function switchTab(tabName) {
-        ['navRead', 'navPlanned', 'navUnread', 'navProfile'].forEach(id => document.getElementById(id).classList.remove('active'));
+        ['navReading', 'navRead', 'navPlanned', 'navUnread', 'navProfile'].forEach(id => document.getElementById(id).classList.remove('active'));
         document.getElementById('iconRead').className = "ph ph-book-bookmark";
         document.getElementById('iconPlanned').className = "ph ph-bookmark-simple";
         document.getElementById('iconUnread').className = "ph ph-book-open";
         document.getElementById('iconProfile').className = "ph ph-user";
+        document.getElementById('iconReading').className = "ph ph-eyeglasses";
 
         const trackerScreen = document.getElementById('trackerScreen');
         const profileScreen = document.getElementById('profileScreen');
         const headerSection = document.getElementById('headerSection');
 
-        if (tabName === 'read' || tabName === 'unread' || tabName === 'planned') {
-            const titles = { 'read': 'Прочитані', 'planned': 'В планах', 'unread': 'Не прочитані' };
+        if (tabName === 'read' || tabName === 'unread' || tabName === 'planned' || tabName === 'reading') {
+            const titles = { 'reading': 'Читаю зараз', 'read': 'Прочитані', 'planned': 'В планах', 'unread': 'Не прочитані' };
+            document.getElementById('navReading').classList.add('active');
+            document.getElementById('iconReading').className = "ph-fill ph-eyeglasses";
             document.getElementById('pageTitle').innerText = titles[tabName];
             
             document.getElementById(tabName === 'read' ? 'navRead' : (tabName === 'planned' ? 'navPlanned' : 'navUnread')).classList.add('active');
@@ -1189,6 +1302,11 @@
         }
         
         document.getElementById('bookDetailScreen').style.display = 'flex';
+
+        document.getElementById('detailCurrentPage').value = book.current_page || 0;
+        document.getElementById('detailTotalPages').value = book.total_pages || 0;
+        renderDetailProgress(book.current_page, book.total_pages);
+        document.getElementById('detailProgressRow').style.display = book.status === 'reading' ? 'flex' : 'none';
         
         // Важливо викликати ПІСЛЯ того, як екран став видимим, щоб правильно порахувати висоту
         autoResizeTextarea(reviewInput);
@@ -1210,7 +1328,7 @@
         }
         document.querySelector('.bottom-nav').style.display = ''; 
         const activeNav = document.querySelector('.nav-item.active').id;
-        const tabMap = { 'navRead': 'read', 'navUnread': 'unread', 'navPlanned': 'planned' };
+        const tabMap = { 'navRead': 'read', 'navUnread': 'unread', 'navPlanned': 'planned', 'navReading': 'reading'};
         switchTab(tabMap[activeNav]);
     }
     
@@ -1242,7 +1360,7 @@
         const buttons = document.getElementById('detailStatusGroup').getElementsByClassName('pill-btn');
         for (let btn of buttons) {
             btn.classList.remove('active');
-            if ((status === 'read' && btn.innerText === 'Прочитано') || (status === 'unread' && btn.innerText === 'Не прочитано') || (status === 'planned' && btn.innerText === 'В планах')) btn.classList.add('active');
+            if ((status === 'read' && btn.innerText === 'Прочитано') || (status === 'unread' && btn.innerText === 'Не прочитано') || (status === 'planned' && btn.innerText === 'В планах') || (status === 'reading' && btn.innerText === 'Читаю')) btn.classList.add('active');
         }
     }
 
@@ -1270,6 +1388,7 @@
         const book = loadedItems.find(b => b.id === currentBookId);
         if (book) book.status = newStatus;
         await supaClient.from('reading_items').update({ status: newStatus }).eq('id', currentBookId);
+        document.getElementById('detailProgressRow').style.display = newStatus === 'reading' ? 'flex' : 'none';
     }
 
     async function updateBookRating(event, starIndex) {
@@ -1323,6 +1442,7 @@
         let currentTab = 'unread';
         if (document.getElementById('navRead').classList.contains('active')) currentTab = 'read';
         if (document.getElementById('navPlanned').classList.contains('active')) currentTab = 'planned';
+        if (document.getElementById('navReading').classList.contains('active')) currentTab = 'reading';
         
         document.getElementById('addTitle').value = '';
         newItemData.existingCoverUrl = '';
@@ -1380,7 +1500,7 @@
         for (let btn of buttons) {
             btn.classList.remove('active');
             if ((group === 'type' && btn.innerText.toUpperCase() === value) ||
-                (group === 'status' && ((value === 'read' && btn.innerText === 'Прочитано') || (value === 'planned' && btn.innerText === 'В планах') || (value === 'unread' && btn.innerText === 'Не прочитано'))) ||
+                (group === 'status' && ((value === 'read' && btn.innerText === 'Прочитано') || (value === 'planned' && btn.innerText === 'В планах') || (value === 'unread' && btn.innerText === 'Не прочитано')) || (value === 'reading' && btn.innerText === 'Читаю')) ||
                 (group === 'cover' && ((value === 'gallery' && btn.innerText === 'Галерея') || (value === 'link' && btn.innerText === 'Посилання')))) {
                 btn.classList.add('active');
             }
@@ -1460,6 +1580,48 @@
             
         } catch (error) { alert("Помилка збереження: " + error.message); } 
         finally { btn.disabled = false; btn.innerText = "Зберегти"; }
+    }
+    
+    let progressSaveTimer = null;
+    
+    function renderDetailProgress(current, total) {
+        const cur = parseInt(current) || 0;
+        const tot = parseInt(total) || 0;
+        const percent = tot > 0 ? Math.min(100, Math.round((cur / tot) * 100)) : 0;
+        
+        document.getElementById('detailProgressPercent').innerText = `${percent}%`;
+        document.getElementById('detailProgressBarFill').style.width = `${percent}%`;
+    }
+    
+    function addProgress(amount) {
+        const curInput = document.getElementById('detailCurrentPage');
+        const totInput = document.getElementById('detailTotalPages');
+        let nextVal = (parseInt(curInput.value) || 0) + amount;
+        const tot = parseInt(totInput.value) || 0;
+        if (tot > 0 && nextVal > tot) nextVal = tot;
+        curInput.value = nextVal;
+        handleProgressChange();
+    }
+
+    function handleProgressChange() {
+        const cur = parseInt(document.getElementById('detailCurrentPage').value) || 0;
+        const tot = parseInt(document.getElementById('detailTotalPages').value) || 0;
+        renderDetailProgress(cur, tot);
+        
+        const book = loadedItems.find(b => b.id === currentBookId);
+        if (book) {
+            book.current_page = cur;
+            book.total_pages = tot;
+        }
+        
+        clearTimeout(progressSaveTimer);
+        progressSaveTimer = setTimeout(async () => {
+            if (!currentBookId) return;
+            await supaClient
+                .from('reading_items')
+                .update({ current_page: cur, total_pages: tot })
+                .eq('id', currentBookId);
+        }, 500);
     }
 
     // --- Профіль ---
