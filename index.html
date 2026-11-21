@@ -1222,6 +1222,18 @@
 
     
     function switchTab(tabName) {
+        // Якщо є незбережений відгук — зберігаємо перед виходом
+        if (typeof reviewSaveTimer !== 'undefined' && reviewSaveTimer) {
+            clearTimeout(reviewSaveTimer);
+            reviewSaveTimer = null;
+            updateBookReview();
+        }
+        
+        // Примусово закриваємо сторінку книги або серії
+        document.getElementById('bookDetailScreen').style.display = 'none';
+        document.getElementById('seriesDetailScreen').style.display = 'none';
+        currentSeriesId = null;
+        currentBookId = null;
         ['navReading', 'navRead', 'navPlanned', 'navUnread', 'navProfile'].forEach(id => document.getElementById(id).classList.remove('active'));
         document.getElementById('iconRead').className = "ph ph-book-bookmark";
         document.getElementById('iconPlanned').className = "ph ph-bookmark-simple";
