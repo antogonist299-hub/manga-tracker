@@ -1024,6 +1024,92 @@
                 width: 100%;
             }
         }
+
+        /* Міні-блок «Зараз читаю» у Кабінеті */
+        .profile-link-btn {
+            background: none;
+            border: none;
+            color: var(--accent-green);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 0;
+        }
+        .profile-link-btn:hover {
+            text-decoration: underline;
+        }
+
+        .reading-mini-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .reading-mini-card {
+            background-color: #1a1a1a;
+            border: 1px solid #2b2b2b;
+            border-radius: 12px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: border-color 0.2s, transform 0.15s;
+        }
+
+        .reading-mini-card:hover {
+            border-color: var(--accent-green);
+            transform: translateY(-2px);
+        }
+
+        .reading-mini-cover {
+            width: 48px;
+            height: 70px;
+            border-radius: 8px;
+            object-fit: cover;
+            background-color: #262626;
+            flex-shrink: 0;
+        }
+
+        .reading-mini-info {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .reading-mini-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-white);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .reading-mini-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+
+        .reading-mini-pct {
+            color: var(--accent-green);
+            font-weight: 700;
+        }
+
+        @media (min-width: 768px) {
+            .reading-mini-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 14px;
+            }
+        }
     </style>
 </head>
 <body onclick="closeAllMenus()">
@@ -1191,6 +1277,18 @@
                        </div>
                    </div>
                </div>
+
+               <!-- Міні-блок «Зараз читаю» -->
+               <div class="analytics-card" id="profileReadingSection">
+                   <div class="analytics-title">
+                       <span>Зараз читаю</span>
+                       <button type="button" class="profile-link-btn" onclick="switchTab('reading')">
+                           Усі <i class="ph ph-arrow-right"></i>
+                       </button>
+                   </div>
+                   <div class="reading-mini-grid" id="profileReadingGrid"></div>
+               </div>
+               
                <!-- Вітрина Топ-5 -->
                <div class="analytics-card" id="profileTopSection">
                    <div class="analytics-title">
@@ -2389,6 +2487,57 @@
                 }).join('');
             }
         }
+
+        // Міні-блок «Зараз читаю» (4 картки)
+        const readingGrid = document.getElementById('profileReadingGrid');
+        const readingSection = document.getElementById('profileReadingSection');
+        if (readingGrid && readingSection) {
+            profileReadingItems = data
+                .filter(i => i.status === 'reading')
+                .sort((a, b) => {
+                    // Спочатку ті, де вже вказано прогрес
+                    const hasProgA = (parseInt(a.current_page) || 0) > 0 ? 1 : 0;
+                    const hasProgB = (parseInt(b.current_page) || 0) > 0 ? 1 : 0;
+                    if (hasProgB !== hasProgA) return hasProgB - hasProgA;
+                    return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+                })
+                .slice(0, 4);
+            
+            if (profileReadingItems.length === 0) {
+                readingSection.style.display = 'none';
+            } else {
+                readingSection.style.display = 'flex';
+                readingGrid.innerHTML = profileReadingItems.map((item, idx) => {
+                    const cover = item.cover_url || item.image_url || '';
+                    const cur = parseInt(item.current_page) || 0;
+                    const tot = parseInt(item.total_pages) || 0;
+                    const pct = tot > 0 ? Math.min(100, Math.round((cur / tot) * 100)) : 0;
+                    
+                    let progressLabel = 'Прогрес не вказано';
+                    if (tot > 0) progressLabel = `${cur} / ${tot}`;
+                    else if (cur > 0) progressLabel = `Стор. / розд.: ${cur}`;
+                    
+                    return `
+                    <div class="reading-mini-card" onclick="openProfileReadingBook(${idx})">
+                        ${cover
+                            ? `<img class="reading-mini-cover" src="${cover}" alt="${item.title}" loading="lazy">`
+                            : `<div class="reading-mini-cover"></div>`
+                        }
+                        <div class="reading-mini-info">
+                            <div class="reading-mini-title">${item.title}</div>
+                            <div class="reading-mini-meta">
+                                <span>${progressLabel}</span>
+                                ${tot > 0 ? `<span class="reading-mini-pct">${pct}%</span>` : ''}
+                            </div>
+                            <div class="type-bar-track">
+                                <div class="type-bar-fill" style="width: ${pct}%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                }).join('');
+            }
+        }
     }
 
     let profileTopItems = [];
@@ -2398,6 +2547,20 @@
         if (!book) return;
         
         // Додаємо книгу в loadedItems, якщо її там немає (бо ти зараз у Кабінеті)
+        if (!loadedItems.some(b => b.id === book.id)) {
+            loadedItems.push(book);
+        }
+        
+        document.getElementById('profileScreen').style.display = 'none';
+        openBookDetail(book.id);
+    }
+
+    let profileReadingItems = [];
+    
+    function openProfileReadingBook(index) {
+        const book = profileReadingItems[index];
+        if (!book) return;
+        
         if (!loadedItems.some(b => b.id === book.id)) {
             loadedItems.push(book);
         }
