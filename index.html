@@ -1110,6 +1110,35 @@
                 gap: 14px;
             }
         }
+        
+        /* Фікс виходу карток за межі екрана через довгі назви */
+        #profileScreen {
+            overflow-x: hidden;
+            box-sizing: border-box;
+        }
+        
+        .analytics-card {
+            min-width: 0;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .reading-mini-grid {
+            grid-template-columns: minmax(0, 1fr);
+        }
+        
+        .reading-mini-card {
+            min-width: 0;
+            max-width: 100%;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+        
+        @media (min-width: 768px) {
+            .reading-mini-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
     </style>
 </head>
 <body onclick="closeAllMenus()">
