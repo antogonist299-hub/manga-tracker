@@ -123,6 +123,25 @@
             gap: 16px;
             z-index: 2;
         }
+
+        .profile-hero-bg {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            filter: blur(16px) brightness(0.45);
+            transform: scale(1.15);
+            z-index: 0;
+            transition: background-image 0.4s ease;
+        }
+        
+        .profile-hero::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(42, 87, 17, 0.78) 0%, rgba(18, 28, 12, 0.88) 100%);
+            z-index: 1;
+        }
         
         .profile-avatar-wrap {
             position: relative;
@@ -338,9 +357,11 @@
         /* Десктопна адаптація для Кабінету */
         @media (min-width: 768px) {
             #profileScreen {
-                padding: 32px;
-                gap: 20px;
+                max-width: 1320px;
+                padding: 32px 40px;
+                gap: 24px;
             }
+        }
             .profile-hero {
                 padding: 28px 32px;
             }
@@ -950,6 +971,7 @@
            <div id="profileScreen">
                <!-- Шапка профілю -->
                <div class="profile-hero">
+                   <div class="profile-hero-bg" id="profileHeroBg"></div>
                    <div class="profile-hero-left">
                        <div class="profile-avatar-wrap">
                            <img id="profileAvatarImg" src="" alt="Аватар" onerror="setFallbackAvatar(this)">
@@ -2132,9 +2154,19 @@
     async function loadProfileStats() {
         const { data, error } = await supaClient
             .from('reading_items')
-            .select('status, item_type, rating');
+            .select('id, title, status, item_type, rating, cover_url, current_page, total_pages');
         
         if (error || !data) return;
+
+        // Атмосферний банер з обкладинки найкращого твору
+        const heroBg = document.getElementById('profileHeroBg');
+        const withCovers = data
+            .filter(i => i.cover_url)
+            .sort((a, b) => (parseFloat(b.rating) || 0) - (parseFloat(a.rating) || 0));
+        
+        if (heroBg && withCovers.length > 0) {
+            heroBg.style.backgroundImage = `url('${withCovers[0].cover_url}')`;
+        }
         
         const total = data.length;
         const reading = data.filter(i => i.status === 'reading').length;
