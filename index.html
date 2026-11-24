@@ -1139,6 +1139,117 @@
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
         }
+        
+        /* Графік розподілу оцінок у Кабінеті */
+        .rating-peak-badge {
+            font-size: 12px;
+            font-weight: 600;
+            color: #f5b942;
+            background: rgba(245, 185, 66, 0.12);
+            padding: 3px 9px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .rating-chart-wrap {
+            display: flex;
+            align-items: flex-end;
+            gap: 5px;
+            padding-top: 22px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .rating-col {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .rating-bar-stage {
+            width: 100%;
+            height: 110px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            border-bottom: 1px solid #2b2b2b;
+            padding-bottom: 2px;
+        }
+        
+        .rating-bar {
+            width: 100%;
+            max-width: 52px;
+            position: relative;
+            border-radius: 6px 6px 2px 2px;
+            background: linear-gradient(180deg, #6bd026 0%, var(--accent-green) 100%);
+            transition: height 0.4s ease, filter 0.2s ease;
+            min-height: 8px;
+        }
+        
+        .rating-col:hover .rating-bar:not(.empty) {
+            filter: brightness(1.2);
+        }
+        
+        .rating-bar.peak {
+            background: linear-gradient(180deg, #86ef3c 0%, #53a518 100%);
+            box-shadow: 0 0 14px rgba(107, 208, 38, 0.35);
+        }
+        
+        .rating-bar.empty {
+            height: 4px !important;
+            min-height: 4px;
+            background: #2a2a2a;
+            border-radius: 2px;
+        }
+        
+        .rating-count {
+            position: absolute;
+            bottom: calc(100% + 5px);
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-gray);
+            line-height: 1;
+            white-space: nowrap;
+        }
+        
+        .rating-bar.peak .rating-count {
+            color: #fff;
+        }
+        
+        .rating-label {
+            margin-top: 8px;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-gray);
+            line-height: 1;
+        }
+
+        .rating-col.is-peak .rating-label {
+            color: var(--accent-green);
+        }
+
+        @media (min-width: 768px) {
+            .rating-chart-wrap {
+                gap: 10px;
+                padding-top: 26px;
+            }
+            .rating-bar-stage {
+                height: 145px;
+            }
+            .rating-count {
+                font-size: 12px;
+            }
+            .rating-label {
+                font-size: 12px;
+                margin-top: 10px;
+            }
+        }
     </style>
 </head>
 <body onclick="closeAllMenus()">
@@ -1305,6 +1416,15 @@
                            <div class="type-bar-track"><div class="type-bar-fill" id="typeBarComic" style="width: 0%;"></div></div>
                        </div>
                    </div>
+               </div>
+
+               <!-- Графік розподілу оцінок -->
+               <div class="analytics-card" id="profileRatingChartSection">
+                   <div class="analytics-title">
+                       <span>Розподіл оцінок</span>
+                       <span class="rating-peak-badge" id="ratingPeakBadge" style="display: none;"></span>
+                   </div>
+                   <div class="rating-chart-wrap" id="ratingChartWrap"></div>
                </div>
 
                <!-- Міні-блок «Зараз читаю» -->
@@ -2562,6 +2682,58 @@
                                 <div class="type-bar-fill" style="width: ${pct}%;"></div>
                             </div>
                         </div>
+                    </div>
+                `;
+                }).join('');
+            }
+        }
+
+        // Графік розподілу оцінок (0.5 – 5.0)
+        const chartWrap = document.getElementById('ratingChartWrap');
+        const peakBadge = document.getElementById('ratingPeakBadge');
+        if (chartWrap) {
+            const steps = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
+            const counts = Object.fromEntries(steps.map(s => [s, 0]));
+            const ratedItems = data.filter(i => parseFloat(i.rating) > 0);
+            
+            ratedItems.forEach(item => {
+                const val = parseFloat(item.rating);
+                const bucket = Math.min(5, Math.max(0.5, Math.round(val * 2) / 2));
+                counts[bucket] = (counts[bucket] || 0) + 1;
+            });
+            
+            const maxCount = Math.max(...Object.values(counts));
+            
+            if (ratedItems.length === 0 || maxCount === 0) {
+                if (peakBadge) peakBadge.style.display = 'none';
+                chartWrap.innerHTML = '<p style="color: var(--text-gray); font-size: 13px; margin: 0;">Постав оцінки прочитаним творам, щоб побачити графік</p>';
+            } else {
+                // Знаходимо найчастішу оцінку (якщо нічия — беремо вищу)
+                let peakStep = steps[0];
+                steps.forEach(s => {
+                    if (counts[s] >= counts[peakStep]) peakStep = s;
+                });
+                
+                if (peakBadge) {
+                    peakBadge.style.display = 'flex';
+                    peakBadge.innerHTML = `<i class="ph-fill ph-star"></i> Найчастіша: ${peakStep}`;
+                }
+                
+                chartWrap.innerHTML = steps.map(step => {
+                    const cnt = counts[step];
+                    const isPeak = cnt === maxCount;
+                    const heightPct = cnt > 0 ? Math.max(10, Math.round((cnt / maxCount) * 100)) : 0;
+                    const sharePct = Math.round((cnt / ratedItems.length) * 100);
+                    const tooltip = `Оцінка ${step}★: ${cnt} (${sharePct}%)`;
+                    
+                    return `
+                    <div class="rating-col ${isPeak ? 'is-peak' : ''}" title="${tooltip}">
+                        <div class="rating-bar-stage">
+                            <div class="rating-bar ${cnt === 0 ? 'empty' : ''} ${isPeak ? 'peak' : ''}" style="height: ${heightPct}%;">
+                                ${cnt > 0 ? `<span class="rating-count">${cnt}</span>` : ''}
+                            </div>
+                        </div>
+                        <span class="rating-label">${step}</span>
                     </div>
                 `;
                 }).join('');
