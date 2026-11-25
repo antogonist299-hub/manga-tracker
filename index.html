@@ -1343,6 +1343,184 @@
             font-size: 11px;
             color: var(--text-gray);
         }
+
+        /* Кнопка рулетки в шапці та модальне вікно */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .roulette-trigger-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            flex-shrink: 0;
+        }
+        
+        .roulette-trigger-btn:hover {
+            background: rgba(255, 255, 255, 0.24);
+            transform: rotate(18deg) scale(1.05);
+        }
+        
+        .roulette-trigger-btn:active {
+            transform: scale(0.94);
+        }
+        
+        .roulette-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.78);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 2000;
+            box-sizing: border-box;
+        }
+        
+        .roulette-card {
+            width: 100%;
+            max-width: 340px;
+            background: #181818;
+            border: 1px solid #2d2d2d;
+            border-radius: 22px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 14px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+            box-sizing: border-box;
+        }
+        
+        .roulette-header {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .roulette-header-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-white);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .roulette-header-title i {
+            color: var(--accent-green);
+            font-size: 20px;
+        }
+        
+        .roulette-cover-wrap {
+            width: 175px;
+            aspect-ratio: 2 / 3;
+            border-radius: 14px;
+            overflow: hidden;
+            background: #242424;
+            border: 2px solid #303030;
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+        
+        .roulette-cover-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .roulette-cover-wrap.spinning {
+            transform: scale(0.96);
+            border-color: #444;
+            filter: brightness(0.9);
+        }
+        
+        .roulette-cover-wrap.winner {
+            transform: scale(1.03);
+            border-color: var(--accent-green);
+            box-shadow: 0 0 26px rgba(107, 208, 38, 0.35);
+        }
+        
+        .roulette-badge {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+            color: var(--accent-green);
+            background: rgba(107, 208, 38, 0.12);
+            padding: 4px 10px;
+            border-radius: 999px;
+        }
+        
+        .roulette-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-white);
+            line-height: 1.3;
+            min-height: 44px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .roulette-sub {
+            font-size: 12px;
+            color: var(--text-gray);
+            margin-top: -6px;
+        }
+        
+        .roulette-actions {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 4px;
+        }
+        
+        .roulette-btn {
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: opacity 0.2s, transform 0.15s;
+        }
+        
+        .roulette-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+        
+        .roulette-btn-spin {
+            background: #262626;
+            color: var(--text-white);
+            border: 1px solid #353535;
+        }
+        
+        .roulette-btn-open {
+            background: var(--accent-green);
+            color: #0f0f0f;
+        }
     </style>
 </head>
 <body onclick="closeAllMenus()">
@@ -1382,7 +1560,10 @@
             <div class="header-section" id="headerSection">
                 <div class="header-top">
                     <h1 class="header-title" id="pageTitle">Не прочитані</h1>
-                    <button type="button" class="add-btn" onclick="openAddModal()"><i class="ph ph-plus"></i></button>
+                    <div class="header-actions">
+                        <button type="button" class="roulette-trigger-btn" id="rouletteBtn" onclick="openRouletteModal()" title="Що почитати?"><i class="ph ph-dice-five"></i></button>
+                        <button type="button" class="add-btn" onclick="openAddModal()"><i class="ph ph-plus"></i></button>
+                    </div>
                 </div>
                 <div class="search-box">
                     <input type="text" placeholder="Пошук" id="searchInput" oninput="searchItems()">
@@ -1732,6 +1913,36 @@
     </div>
 </div>
 
+<!-- Вікно рулетки «Що почитати?» -->
+    <div id="rouletteModalOverlay" class="roulette-overlay" onclick="closeRouletteModal()">
+        <div class="roulette-card" onclick="event.stopPropagation()">
+            <div class="roulette-header">
+                <div class="roulette-header-title">
+                    <i class="ph-fill ph-dice-five"></i>
+                    <span>Що почитати?</span>
+                </div>
+                <button type="button" class="modal-close" onclick="closeRouletteModal()"><i class="ph ph-x"></i></button>
+            </div>
+            
+            <div class="roulette-cover-wrap" id="rouletteCoverWrap">
+                <img id="rouletteCoverImg" src="" alt="Обкладинка">
+            </div>
+            
+            <span class="roulette-badge" id="rouletteBadge">МАНҐА</span>
+            <div class="roulette-title" id="rouletteTitle">Обираємо...</div>
+            <div class="roulette-sub" id="rouletteSub"></div>
+            
+            <div class="roulette-actions">
+                <button type="button" class="roulette-btn roulette-btn-spin" id="rouletteSpinBtn" onclick="spinRoulette()">
+                    <i class="ph ph-arrows-clockwise"></i> Ще раз
+                </button>
+                <button type="button" class="roulette-btn roulette-btn-open" id="rouletteOpenBtn" onclick="openRouletteWinner()">
+                    Відкрити <i class="ph ph-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
 <script>
     // ВСТАВ СВОЇ ДАНІ ТУТ:
     const SUPABASE_URL = 'https://eebgugxrflawjfnsrgal.supabase.co';
@@ -1769,6 +1980,10 @@
     
     // Реакція на системну кнопку «Назад» на телефоні
     window.addEventListener('popstate', () => {
+        if (isScreenOpen('rouletteModalOverlay')) {
+            closeRouletteModal(true);
+            return;
+        }
         if (isScreenOpen('addModalOverlay')) {
             document.getElementById('addModalOverlay').style.display = 'none';
             return;
@@ -2263,6 +2478,10 @@
         const trackerScreen = document.getElementById('trackerScreen');
         const profileScreen = document.getElementById('profileScreen');
         const headerSection = document.getElementById('headerSection');
+        const rouletteBtn = document.getElementById('rouletteBtn');
+        if (rouletteBtn) {
+            rouletteBtn.style.display = (tabName === 'unread' || tabName === 'reading') ? 'flex' : 'none';
+        }
 
         if (tabName === 'read' || tabName === 'unread' || tabName === 'planned' || tabName === 'reading') {
             const titles = { 'reading': 'Читаю зараз', 'read': 'Прочитані', 'planned': 'В планах', 'unread': 'Не прочитані' };
@@ -3036,6 +3255,182 @@
     }
     
     window.onload = checkUserSession;
+    
+    // --- Рулетка «Що почитати?» ---
+    let rouletteTimer = null;    
+    let currentRouletteWinner = null;
+    let lastRouletteId = null;
+    let pendingRouletteBookId = null;
+
+    function getRouletteCandidates() {
+        const normalize = str => (str || '').toUpperCase().replace(/Ґ/g, 'Г');
+
+        let activeType = 'ALL';
+        const activeFilterBtn = document.querySelector('#filterBar .filter-btn.active');
+        if (activeFilterBtn) {
+            const txt = normalize(activeFilterBtn.innerText.trim());
+            if (txt === 'КНИГИ') activeType = 'КНИГА';
+            else if (txt === 'МАНГА') activeType = 'МАНГА';
+            else if (txt === 'КОМІКСИ') activeType = 'КОМІКС';
+        }
+
+        const pool = loadedItems.filter(item => {
+            if (item.status !== currentActiveTab) return false;
+            if (activeType !== 'ALL' && normalize(item.item_type) !== activeType) return false;
+            return true;
+        });
+
+        const seriesMap = new Map();
+        const candidates = [];
+
+        pool.forEach(item => {
+            if (item.series_id) {
+                if (!seriesMap.has(item.series_id)) seriesMap.set(item.series_id, []);
+                seriesMap.get(item.series_id).push(item);
+            } else {
+                candidates.push({ book: item, seriesTitle: null, volumesCount: 1 });
+            }
+        });
+
+        seriesMap.forEach((vols, sId) => {
+            vols.sort((a, b) => a.title.localeCompare(b.title, 'uk', { numeric: true, sensitivity: 'base' }));
+            const seriesObj = allSeries.find(s => s.id === sId);
+            candidates.push({
+                book: vols[0],
+                seriesTitle: seriesObj ? seriesObj.title : null,
+                volumesCount: vols.length
+            });
+        });
+
+        return candidates;
+    }
+
+    function openRouletteModal() {
+        const candidates = getRouletteCandidates();
+        if (candidates.length === 0) {
+            alert('У цьому списку поки немає творів для вибору');
+            return;
+        }
+
+        const overlay = document.getElementById('rouletteModalOverlay');
+        if (!isScreenOpen('rouletteModalOverlay')) {
+            history.pushState({ appLayer: 'roulette' }, '');
+        }
+        overlay.style.display = 'flex';
+        spinRoulette();
+    }
+
+    function closeRouletteModal(fromPopState = false) {
+        if (rouletteTimer) {
+            clearTimeout(rouletteTimer);
+            rouletteTimer = null;
+        }
+
+        if (!fromPopState && history.state?.appLayer === 'roulette') {
+            history.back();
+            return;
+        }
+
+        document.getElementById('rouletteModalOverlay').style.display = 'none';
+
+        if (pendingRouletteBookId) {
+            const targetId = pendingRouletteBookId;
+            pendingRouletteBookId = null;
+            openBookDetail(targetId);
+        }
+    }
+
+    function spinRoulette() {
+        const candidates = getRouletteCandidates();
+        if (candidates.length === 0) return;
+
+        if (rouletteTimer) {
+            clearTimeout(rouletteTimer);
+            rouletteTimer = null;
+        }
+
+        const coverWrap = document.getElementById('rouletteCoverWrap');
+        const coverImg = document.getElementById('rouletteCoverImg');
+        const badgeEl = document.getElementById('rouletteBadge');
+        const titleEl = document.getElementById('rouletteTitle');
+        const subEl = document.getElementById('rouletteSub');
+        const spinBtn = document.getElementById('rouletteSpinBtn');
+        const openBtn = document.getElementById('rouletteOpenBtn');
+
+        const renderCandidate = (cand, isFinal) => {
+            coverImg.src = cand.book.cover_url || 'https://via.placeholder.com/300x450';
+            badgeEl.innerText = cand.seriesTitle ? `${cand.book.item_type} • СЕРІЯ` : (cand.book.item_type || 'ТВІР');
+            titleEl.innerText = cand.book.title;
+            if (isFinal) {
+                subEl.innerText = cand.seriesTitle && cand.volumesCount > 1
+                    ? `Перший доступний із ${cand.volumesCount} у цій вкладці`
+                    : (currentActiveTab === 'reading' ? 'Продовжуємо читати!' : 'Ідеальний вибір на зараз');
+            } else {
+                subEl.innerText = 'Крутимо бібліотеку...';
+            }
+        };
+
+        let winnerPool = candidates;
+        if (candidates.length > 1 && lastRouletteId) {
+            winnerPool = candidates.filter(c => c.book.id !== lastRouletteId);
+        }
+        const winner = winnerPool[Math.floor(Math.random() * winnerPool.length)];
+        currentRouletteWinner = winner.book;
+        lastRouletteId = winner.book.id;
+
+        if (candidates.length === 1) {
+            coverWrap.classList.remove('spinning');
+            coverWrap.classList.add('winner');
+            renderCandidate(winner, true);
+            spinBtn.disabled = false;
+            openBtn.disabled = false;
+            return;
+        }
+
+        spinBtn.disabled = true;
+        openBtn.disabled = true;
+        coverWrap.classList.remove('winner');
+        coverWrap.classList.add('spinning');
+
+        const delays = [55, 60, 65, 75, 85, 95, 110, 130, 155, 185, 225, 280];
+        let step = 0;
+        let prevIdx = -1;
+
+        const tick = () => {
+            if (step < delays.length) {
+                let rndIdx = Math.floor(Math.random() * candidates.length);
+                if (candidates.length > 1 && rndIdx === prevIdx) {
+                    rndIdx = (rndIdx + 1) % candidates.length;
+                }
+                prevIdx = rndIdx;
+                renderCandidate(candidates[rndIdx], false);
+                rouletteTimer = setTimeout(tick, delays[step]);
+                step++;
+            } else {
+                rouletteTimer = null;
+                renderCandidate(winner, true);
+                coverWrap.classList.remove('spinning');
+                coverWrap.classList.add('winner');
+                spinBtn.disabled = false;
+                openBtn.disabled = false;
+            }
+        };
+
+        tick();
+    }
+
+    function openRouletteWinner() {
+        if (!currentRouletteWinner) return;
+        const targetId = currentRouletteWinner.id;
+
+        if (history.state?.appLayer === 'roulette') {
+            pendingRouletteBookId = targetId;
+            history.back();
+        } else {
+            document.getElementById('rouletteModalOverlay').style.display = 'none';
+            openBookDetail(targetId);
+        }
+    }
 </script>
 </body>
 </html>
