@@ -2425,6 +2425,161 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
+
+        /* Картка запуску «Підсумки року» у Кабінеті */
+        .wrapped-launch-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 16px 18px;
+            background: linear-gradient(135deg, rgba(245, 185, 66, 0.14) 0%, rgba(107, 208, 38, 0.1) 50%, #1a1a1a 100%);
+            border: 1px solid rgba(245, 185, 66, 0.34);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: transform 0.15s ease, border-color 0.2s ease;
+            box-sizing: border-box;
+            width: 100%;
+            min-width: 0;
+        }
+        
+        .wrapped-launch-card:hover {
+            border-color: #f5b942;
+            transform: translateY(-2px);
+        }
+        
+        .wrapped-launch-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 0;
+        }
+        
+        .wrapped-launch-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            background: rgba(245, 185, 66, 0.16);
+            color: #f5b942;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        
+        .wrapped-launch-text {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            min-width: 0;
+        }
+        
+        .wrapped-launch-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-white);
+        }
+        
+        .wrapped-launch-sub {
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+        
+        .wrapped-launch-arrow {
+            color: #f5b942;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        
+        /* Модальне вікно «Підсумки року» */
+        .wrapped-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 14px;
+            z-index: 2160;
+            box-sizing: border-box;
+        }
+        
+        .wrapped-modal {
+            width: 100%;
+            max-width: 420px;
+            max-height: 92dvh;
+            background: #181818;
+            border: 1px solid #2d2d2d;
+            border-radius: 22px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75);
+            box-sizing: border-box;
+        }
+        
+        .wrapped-years-bar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 2px;
+            flex-shrink: 0;
+        }
+        
+        .wrapped-year-pill {
+            padding: 6px 14px;
+            border-radius: 999px;
+            border: 1px solid #303030;
+            background: #222;
+            color: var(--text-gray);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+        
+        .wrapped-year-pill.active {
+            background: rgba(245, 185, 66, 0.16);
+            border-color: #f5b942;
+            color: #f5b942;
+        }
+        
+        .wrapped-preview-box {
+            flex: 1;
+            min-height: 240px;
+            overflow-y: auto;
+            border-radius: 14px;
+            background: #101010;
+            border: 1px solid #262626;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        
+        .wrapped-preview-box img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            display: block;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+        }
+        
+        .wrapped-state-msg {
+            padding: 56px 18px;
+            text-align: center;
+            color: var(--text-gray);
+            font-size: 14px;
+            line-height: 1.45;
+        }
     </style>
 </head>
 <body onclick="closeAllMenus()">
@@ -2654,6 +2809,18 @@
                        </div>
                    </div>
                    <i class="ph ph-caret-right collage-launch-arrow"></i>
+               </div>
+
+               <!-- Кнопка запуску «Підсумки року» -->
+               <div class="wrapped-launch-card" onclick="openWrappedModal()">
+                   <div class="wrapped-launch-left">
+                       <div class="wrapped-launch-icon"><i class="ph-fill ph-sparkle"></i></div>
+                       <div class="wrapped-launch-text">
+                           <div class="wrapped-launch-title">Підсумки року</div>
+                           <div class="wrapped-launch-sub">Постер зі статистикою та Топ-3 у стилі Wrapped</div>
+                       </div>
+                   </div>
+                   <i class="ph ph-caret-right wrapped-launch-arrow"></i>
                </div>
 
                <!-- Щоденник читання -->
@@ -3008,6 +3175,35 @@
             </div>
         </div>
     
+    <!-- Вікно «Підсумки року» (Reading Wrapped) -->
+    <div id="wrappedModalOverlay" class="wrapped-overlay" onclick="closeWrappedModal()">
+        <div class="wrapped-modal" onclick="event.stopPropagation()">
+            <div class="poster-modal-header">
+                <div class="poster-modal-title">
+                    <i class="ph-fill ph-sparkle" style="color: #f5b942;"></i>
+                    <span>Підсумки року</span>
+                </div>
+                <button type="button" class="modal-close" onclick="closeWrappedModal()"><i class="ph ph-x"></i></button>
+            </div>
+            
+            <div class="wrapped-years-bar" id="wrappedYearsBar"></div>
+            
+            <div class="wrapped-preview-box">
+                <div class="wrapped-state-msg" id="wrappedStateMsg">Рахуємо твій рік...</div>
+                <img id="wrappedPreviewImg" src="" alt="Підсумки року" style="display: none;">
+            </div>
+            
+            <div class="poster-actions">
+                <button type="button" class="poster-btn poster-btn-secondary" id="wrappedDownloadBtn" onclick="downloadWrappedPoster()" disabled>
+                    <i class="ph ph-download-simple"></i> Зберегти
+                </button>
+                <button type="button" class="poster-btn poster-btn-primary" id="wrappedShareBtn" onclick="shareOrCopyWrappedPoster()" disabled>
+                    <i class="ph ph-share-network"></i> Поділитися
+                </button>
+            </div>
+        </div>
+    </div>
+    
 <script>
     // ВСТАВ СВОЇ ДАНІ ТУТ:
     const SUPABASE_URL = 'https://eebgugxrflawjfnsrgal.supabase.co';
@@ -3045,6 +3241,10 @@
     
     // Реакція на системну кнопку «Назад» на телефоні
     window.addEventListener('popstate', () => {
+        if (isScreenOpen('wrappedModalOverlay')) {
+            closeWrappedModal(true);
+            return;
+        }
         if (isScreenOpen('collagePickerOverlay')) {
             closeCollagePicker(true);
             return;
@@ -5999,6 +6199,724 @@
             dlBtn.innerHTML = prevDl;
             if (!shBtn.innerHTML.includes('Скопійовано')) shBtn.innerHTML = prevSh;
         }
+    }
+
+    // --- Підсумки року (Reading Wrapped 1080×1920) ---
+    let wrappedLibrary = [];
+    let wrappedSelectedYear = new Date().getFullYear();
+    let wrappedBlob = null;
+    let wrappedObjectUrl = null;
+    let wrappedFileName = 'reading-wrapped.png';
+
+    function wrappedPlural(n, one, few, many) {
+        const mod10 = n % 10;
+        const mod100 = n % 100;
+        if (mod10 === 1 && mod100 !== 11) return one;
+        if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return few;
+        return many;
+    }
+
+    function wrappedRoundRect(ctx, x, y, w, h, r) {
+        const radius = Math.min(r, w / 2, h / 2);
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.arcTo(x + w, y, x + w, y + h, radius);
+        ctx.arcTo(x + w, y + h, x, y + h, radius);
+        ctx.arcTo(x, y + h, x, y, radius);
+        ctx.arcTo(x, y, x + w, y, radius);
+        ctx.closePath();
+    }
+
+    function wrappedDrawCover(ctx, img, x, y, w, h) {
+        const imgRatio = img.naturalWidth / img.naturalHeight;
+        const boxRatio = w / h;
+        let sx = 0, sy = 0, sw = img.naturalWidth, sh = img.naturalHeight;
+        if (imgRatio > boxRatio) {
+            sw = img.naturalHeight * boxRatio;
+            sx = (img.naturalWidth - sw) / 2;
+        } else {
+            sh = img.naturalWidth / boxRatio;
+            sy = (img.naturalHeight - sh) / 2;
+        }
+        ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+    }
+
+    function wrappedLoadImg(url) {
+        if (!url) return Promise.resolve(null);
+        const tryLoad = (src) => new Promise((resolve) => {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => resolve(img);
+            img.onerror = () => resolve(null);
+            img.src = src;
+        });
+        const sep = url.includes('?') ? '&' : '?';
+        return tryLoad(`${url}${sep}wrapped_cors=1`).then(img => img || tryLoad(url));
+    }
+
+    function wrappedTruncateLines(ctx, text, maxW, maxLines = 2) {
+        const words = String(text || '').trim().split(/\s+/).filter(Boolean);
+        if (!words.length) return [];
+        const lines = [];
+        let cur = '';
+
+        for (let i = 0; i < words.length; i++) {
+            const word = words[i];
+            const candidate = cur ? `${cur} ${word}` : word;
+            if (ctx.measureText(candidate).width <= maxW) {
+                cur = candidate;
+            } else {
+                if (cur) lines.push(cur);
+                cur = word;
+                if (lines.length === maxLines - 1) {
+                    const rest = words.slice(i).join(' ');
+                    let clipped = rest;
+                    while (ctx.measureText(clipped).width > maxW && clipped.length > 2) {
+                        clipped = clipped.slice(0, -1);
+                    }
+                    if (clipped !== rest) clipped = clipped.trim() + '…';
+                    lines.push(clipped);
+                    return lines;
+                }
+            }
+        }
+        if (cur) lines.push(cur);
+        return lines.slice(0, maxLines);
+    }
+
+    async function ensureWrappedLibrary() {
+        if (typeof diaryAllItems !== 'undefined' && Array.isArray(diaryAllItems) && diaryAllItems.length > 0) {
+            wrappedLibrary = diaryAllItems;
+            return;
+        }
+        const { data: { session } } = await supaClient.auth.getSession();
+        if (!session) return;
+        const { data } = await supaClient
+            .from('reading_items')
+            .select('*')
+            .eq('user_id', session.user.id);
+        wrappedLibrary = data || [];
+    }
+
+    function getWrappedAvailableYears() {
+        const curYear = new Date().getFullYear();
+        const yearSet = new Set([curYear]);
+        wrappedLibrary.forEach(item => {
+            if (item.status === 'read' && item.finished_at) {
+                const y = parseInt(String(item.finished_at).slice(0, 4), 10);
+                if (!isNaN(y)) yearSet.add(y);
+            }
+        });
+        return Array.from(yearSet).sort((a, b) => b - a);
+    }
+
+    function renderWrappedYearPills(years) {
+        const bar = document.getElementById('wrappedYearsBar');
+        if (!bar) return;
+        bar.innerHTML = years.map(y => `
+            <button type="button" class="wrapped-year-pill ${y === wrappedSelectedYear ? 'active' : ''}" onclick="selectWrappedYear(${y})">${y}</button>
+        `).join('');
+    }
+
+    async function openWrappedModal() {
+        const overlay = document.getElementById('wrappedModalOverlay');
+        if (!isScreenOpen('wrappedModalOverlay')) {
+            history.pushState({ appLayer: 'wrapped' }, '');
+        }
+        overlay.style.display = 'flex';
+
+        await ensureWrappedLibrary();
+        const years = getWrappedAvailableYears();
+        if (!years.includes(wrappedSelectedYear)) wrappedSelectedYear = years[0];
+        renderWrappedYearPills(years);
+        await generateWrappedPreview(wrappedSelectedYear);
+    }
+
+    function closeWrappedModal(fromPopState = false) {
+        if (!fromPopState && history.state?.appLayer === 'wrapped') {
+            history.back();
+            return;
+        }
+        document.getElementById('wrappedModalOverlay').style.display = 'none';
+    }
+
+    async function selectWrappedYear(year) {
+        wrappedSelectedYear = year;
+        renderWrappedYearPills(getWrappedAvailableYears());
+        await generateWrappedPreview(year);
+    }
+
+    function computeWrappedStats(year) {
+        const items = wrappedLibrary.filter(item =>
+            item.status === 'read' &&
+            item.finished_at &&
+            String(item.finished_at).startsWith(String(year))
+        );
+
+        const total = items.length;
+        const rated = items.filter(i => parseFloat(i.rating) > 0);
+        const avgRating = rated.length > 0
+            ? (rated.reduce((sum, i) => sum + parseFloat(i.rating), 0) / rated.length).toFixed(1)
+            : '—';
+        const fiveStars = rated.filter(i => parseFloat(i.rating) >= 5).length;
+
+        // Найактивніший місяць
+        const monthNames = [
+            'Січень', 'Лютий', 'Березень', 'Квітень', 'Травень', 'Червень',
+            'Липень', 'Серпень', 'Вересень', 'Жовтень', 'Листопад', 'Грудень'
+        ];
+        const monthCounts = new Array(12).fill(0);
+        items.forEach(item => {
+            const parts = String(item.finished_at).slice(0, 10).split('-');
+            const mIdx = (parseInt(parts[1], 10) || 1) - 1;
+            if (mIdx >= 0 && mIdx < 12) monthCounts[mIdx]++;
+        });
+        let bestMonthIdx = -1;
+        let bestMonthCount = 0;
+        monthCounts.forEach((cnt, idx) => {
+            if (cnt > bestMonthCount) {
+                bestMonthCount = cnt;
+                bestMonthIdx = idx;
+            }
+        });
+
+        // Розподіл за типом
+        const normalize = s => String(s || '').toUpperCase().replace(/Ґ/g, 'Г');
+        let mangaCount = 0, comicCount = 0, bookCount = 0;
+        items.forEach(item => {
+            const t = normalize(item.item_type);
+            if (t === 'МАНГА') mangaCount++;
+            else if (t === 'КОМІКС') comicCount++;
+            else bookCount++;
+        });
+
+        // Співвідношення Папір / Веб
+        const webCount = items.filter(i => i.format === 'web').length;
+        const paperCount = total - webCount;
+
+        // Топ-3 обкладинки року (по 1 найкращому тому з кожної серії)
+        const sortedForTop = items.slice().sort((a, b) => {
+            const rDiff = (parseFloat(b.rating) || 0) - (parseFloat(a.rating) || 0);
+            if (rDiff !== 0) return rDiff;
+            const covA = (a.cover_url || a.image_url) ? 1 : 0;
+            const covB = (b.cover_url || b.image_url) ? 1 : 0;
+            if (covB !== covA) return covB - covA;
+            return String(b.finished_at).localeCompare(String(a.finished_at));
+        });
+
+        const top3 = [];
+        const usedSeries = new Set();
+        for (const item of sortedForTop) {
+            if (top3.length >= 3) break;
+            if (item.series_id) {
+                if (usedSeries.has(item.series_id)) continue;
+                usedSeries.add(item.series_id);
+            }
+            top3.push(item);
+        }
+        if (top3.length < 3) {
+            const usedIds = new Set(top3.map(t => t.id));
+            for (const item of sortedForTop) {
+                if (top3.length >= 3) break;
+                if (!usedIds.has(item.id)) {
+                    top3.push(item);
+                    usedIds.add(item.id);
+                }
+            }
+        }
+
+        // Річна ціль (якщо задана)
+        let goalTarget = null;
+        try {
+            const localGoals = JSON.parse(localStorage.getItem('tracker_reading_goals') || '{}');
+            const memGoals = (typeof cachedYearlyGoals !== 'undefined' && cachedYearlyGoals) ? cachedYearlyGoals : {};
+            const merged = { ...localGoals, ...memGoals };
+            if (merged[String(year)]) goalTarget = merged[String(year)];
+        } catch (e) {}
+
+        return {
+            year,
+            total,
+            avgRating,
+            ratedCount: rated.length,
+            fiveStars,
+            bestMonthName: bestMonthIdx >= 0 ? monthNames[bestMonthIdx] : '—',
+            bestMonthCount,
+            mangaCount,
+            comicCount,
+            bookCount,
+            paperCount,
+            webCount,
+            top3,
+            goalTarget
+        };
+    }
+
+    async function renderWrappedPosterCanvas(stats) {
+        const W = 1080;
+        const H = 1920;
+        const padX = 68;
+        const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent-green').trim() || '#6bd026';
+        const gold = '#f5b942';
+        const fontFamily = getComputedStyle(document.body).fontFamily || 'system-ui, -apple-system, sans-serif';
+
+        const topImages = await Promise.all(
+            stats.top3.map(item => wrappedLoadImg(item.cover_url || item.image_url || ''))
+        );
+
+        const canvas = document.createElement('canvas');
+        canvas.width = W;
+        canvas.height = H;
+        const ctx = canvas.getContext('2d');
+
+        // 1. Фон + атмосферне сяйво з головної обкладинки
+        ctx.fillStyle = '#0b0b0c';
+        ctx.fillRect(0, 0, W, H);
+
+        if (topImages[0]) {
+            ctx.save();
+            ctx.filter = 'blur(75px) saturate(1.35)';
+            ctx.globalAlpha = 0.34;
+            wrappedDrawCover(ctx, topImages[0], -100, -100, W + 200, H * 0.62);
+            ctx.restore();
+        }
+
+        const glow1 = ctx.createRadialGradient(W * 0.2, 260, 20, W * 0.2, 260, 620);
+        glow1.addColorStop(0, 'rgba(107, 208, 38, 0.22)');
+        glow1.addColorStop(1, 'rgba(11, 11, 12, 0)');
+        ctx.fillStyle = glow1;
+        ctx.fillRect(0, 0, W, H);
+
+        const glow2 = ctx.createRadialGradient(W * 0.85, 1380, 20, W * 0.85, 1380, 640);
+        glow2.addColorStop(0, 'rgba(245, 185, 66, 0.14)');
+        glow2.addColorStop(1, 'rgba(11, 11, 12, 0)');
+        ctx.fillStyle = glow2;
+        ctx.fillRect(0, 0, W, H);
+
+        const darkOverlay = ctx.createLinearGradient(0, 0, 0, H);
+        darkOverlay.addColorStop(0, 'rgba(10, 10, 12, 0.42)');
+        darkOverlay.addColorStop(0.5, 'rgba(11, 11, 13, 0.84)');
+        darkOverlay.addColorStop(1, 'rgba(10, 10, 12, 0.96)');
+        ctx.fillStyle = darkOverlay;
+        ctx.fillRect(0, 0, W, H);
+
+        // 2. Шапка: бейдж + великий рік
+        const pillText = 'ПІДСУМКИ РОКУ';
+        ctx.font = `800 22px ${fontFamily}`;
+        const pillW = ctx.measureText(pillText).width + 64;
+        const pillH = 48;
+        const pillX = (W - pillW) / 2;
+        const pillY = 76;
+
+        wrappedRoundRect(ctx, pillX, pillY, pillW, pillH, 24);
+        ctx.fillStyle = 'rgba(245, 185, 66, 0.15)';
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'rgba(245, 185, 66, 0.48)';
+        ctx.stroke();
+
+        ctx.fillStyle = gold;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(pillText, W / 2, pillY + pillH / 2 + 1);
+
+        ctx.font = `900 112px ${fontFamily}`;
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillText(String(stats.year), W / 2, 138);
+
+        // 3. Головна картка: скільки прочитано
+        const heroX = padX;
+        const heroY = 278;
+        const heroW = W - padX * 2;
+        const heroH = 224;
+
+        wrappedRoundRect(ctx, heroX, heroY, heroW, heroH, 32);
+        const heroGrad = ctx.createLinearGradient(heroX, heroY, heroX + heroW, heroY + heroH);
+        heroGrad.addColorStop(0, 'rgba(107, 208, 38, 0.16)');
+        heroGrad.addColorStop(1, 'rgba(255, 255, 255, 0.04)');
+        ctx.fillStyle = heroGrad;
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'rgba(107, 208, 38, 0.34)';
+        ctx.stroke();
+
+        ctx.font = `900 108px ${fontFamily}`;
+        ctx.fillStyle = accent;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillText(String(stats.total), W / 2, heroY + 26);
+
+        const totalWord = wrappedPlural(stats.total, 'прочитаний твір', 'прочитані твори', 'прочитаних творів');
+        let heroSub = totalWord.toUpperCase();
+        if (stats.goalTarget) {
+            const goalPct = Math.round((stats.total / stats.goalTarget) * 100);
+            heroSub += `  •  ЦІЛЬ ${goalPct}%`;
+        }
+        ctx.font = `700 24px ${fontFamily}`;
+        ctx.fillStyle = '#d8d8d8';
+        ctx.fillText(heroSub, W / 2, heroY + 158);
+
+        // 4. П'єдестал «Топ-3 року»
+        const topLabelY = 548;
+        ctx.font = `800 26px ${fontFamily}`;
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillText('ТОП ОБКЛАДИНКИ РОКУ', W / 2, topLabelY);
+
+        const podiumY = 602;
+        const countTop = stats.top3.length;
+
+        const drawPodiumCard = (item, img, rank, cx, topY, cw, ch, isFirst) => {
+            const x = cx - cw / 2;
+            const y = topY;
+
+            // Тінь / сяйво під #1
+            ctx.save();
+            ctx.shadowColor = isFirst ? 'rgba(245, 185, 66, 0.32)' : 'rgba(0, 0, 0, 0.65)';
+            ctx.shadowBlur = isFirst ? 44 : 28;
+            ctx.shadowOffsetY = 16;
+            wrappedRoundRect(ctx, x, y, cw, ch, 20);
+            ctx.fillStyle = '#1b1b1b';
+            ctx.fill();
+            ctx.restore();
+
+            ctx.save();
+            wrappedRoundRect(ctx, x, y, cw, ch, 20);
+            ctx.clip();
+            if (img) {
+                wrappedDrawCover(ctx, img, x, y, cw, ch);
+            } else {
+                ctx.fillStyle = '#222226';
+                ctx.fillRect(x, y, cw, ch);
+            }
+            ctx.restore();
+
+            wrappedRoundRect(ctx, x, y, cw, ch, 20);
+            ctx.lineWidth = isFirst ? 3.5 : 2;
+            ctx.strokeStyle = isFirst ? gold : 'rgba(255, 255, 255, 0.16)';
+            ctx.stroke();
+
+            // Бейдж місця (#1, #2, #3)
+            const badgeW = 58;
+            const badgeH = 38;
+            wrappedRoundRect(ctx, x + 12, y + 12, badgeW, badgeH, 12);
+            ctx.fillStyle = isFirst ? gold : 'rgba(15, 15, 15, 0.86)';
+            ctx.fill();
+
+            ctx.font = `800 22px ${fontFamily}`;
+            ctx.fillStyle = isFirst ? '#111111' : '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(`#${rank}`, x + 12 + badgeW / 2, y + 12 + badgeH / 2 + 1);
+
+            // Оцінка внизу справа обкладинки
+            const ratingVal = parseFloat(item.rating) || 0;
+            if (ratingVal > 0) {
+                const rText = `★ ${ratingVal}`;
+                ctx.font = `700 20px ${fontFamily}`;
+                const rw = ctx.measureText(rText).width + 24;
+                const rh = 34;
+                wrappedRoundRect(ctx, x + cw - rw - 10, y + ch - rh - 10, rw, rh, 10);
+                ctx.fillStyle = 'rgba(12, 12, 12, 0.88)';
+                ctx.fill();
+                ctx.fillStyle = gold;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(rText, x + cw - rw / 2 - 10, y + ch - rh / 2 - 9);
+            }
+
+            // Назва твору (або серії) під обкладинкою
+            const seriesObj = item.series_id && typeof allSeries !== 'undefined'
+                ? allSeries.find(s => s.id === item.series_id)
+                : null;
+            const displayTitle = seriesObj ? seriesObj.title : item.title;
+
+            ctx.font = `700 ${isFirst ? 23 : 20}px ${fontFamily}`;
+            ctx.fillStyle = isFirst ? '#ffffff' : '#cccccc';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            const tLines = wrappedTruncateLines(ctx, displayTitle, cw + 12, 2);
+            tLines.forEach((line, idx) => {
+                ctx.fillText(line, cx, y + ch + 16 + idx * 27);
+            });
+        };
+
+        if (countTop === 1) {
+            drawPodiumCard(stats.top3[0], topImages[0], 1, W / 2, podiumY, 290, 435, true);
+        } else if (countTop === 2) {
+            drawPodiumCard(stats.top3[0], topImages[0], 1, W / 2 - 165, podiumY, 276, 414, true);
+            drawPodiumCard(stats.top3[1], topImages[1], 2, W / 2 + 165, podiumY + 26, 252, 378, false);
+        } else if (countTop >= 3) {
+            // Зліва #2, справа #3, по центру #1
+            drawPodiumCard(stats.top3[1], topImages[1], 2, padX + 140, podiumY + 52, 256, 384, false);
+            drawPodiumCard(stats.top3[2], topImages[2], 3, W - padX - 140, podiumY + 52, 256, 384, false);
+            drawPodiumCard(stats.top3[0], topImages[0], 1, W / 2, podiumY, 304, 456, true);
+        }
+
+        // 5. Bento-сітка статистики (2 ряди × 2 картки + широка шкала формату)
+        const gridY = 1152;
+        const cardGap = 24;
+        const halfW = (W - padX * 2 - cardGap) / 2;
+        const cardH = 216;
+
+        const drawStatCard = (x, y, w, h, label, value, sub, valColor = '#ffffff') => {
+            wrappedRoundRect(ctx, x, y, w, h, 28);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.045)';
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.stroke();
+
+            ctx.font = `700 20px ${fontFamily}`;
+            ctx.fillStyle = '#9a9a9a';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'top';
+            ctx.fillText(label.toUpperCase(), x + 32, y + 28);
+
+            ctx.font = `800 54px ${fontFamily}`;
+            ctx.fillStyle = valColor;
+            ctx.fillText(value, x + 32, y + 72, w - 64);
+
+            ctx.font = `500 22px ${fontFamily}`;
+            ctx.fillStyle = '#b4b4b4';
+            ctx.fillText(sub, x + 32, y + 154, w - 64);
+        };
+
+        // Картка 1: Середня оцінка
+        const ratingSub = stats.fiveStars > 0
+            ? `Шедеврів на 5★: ${stats.fiveStars}`
+            : (stats.ratedCount > 0 ? `Оцінено творів: ${stats.ratedCount}` : 'Оцінки ще не виставлені');
+        drawStatCard(
+            padX, gridY, halfW, cardH,
+            'Середня оцінка',
+            stats.avgRating !== '—' ? `${stats.avgRating} ★` : '—',
+            ratingSub,
+            gold
+        );
+
+        // Картка 2: Найактивніший місяць
+        const monthSub = stats.bestMonthCount > 0
+            ? `${stats.bestMonthCount} ${wrappedPlural(stats.bestMonthCount, 'твір', 'твори', 'творів')} за місяць`
+            : 'Немає записів';
+        drawStatCard(
+            padX + halfW + cardGap, gridY, halfW, cardH,
+            'Пік активності',
+            stats.bestMonthName,
+            monthSub,
+            accent
+        );
+
+        // Картка 3 (широка): Розподіл по типах (Манґа / Комікси / Книги)
+        const typesY = gridY + cardH + cardGap;
+        const fullW = W - padX * 2;
+        const typesH = 178;
+
+        wrappedRoundRect(ctx, padX, typesY, fullW, typesH, 28);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.045)';
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.stroke();
+
+        ctx.font = `700 20px ${fontFamily}`;
+        ctx.fillStyle = '#9a9a9a';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.fillText('ЩО ЧИТАЛОСЯ НАЙБІЛЬШЕ', padX + 32, typesY + 26);
+
+        const typeRows = [
+            { name: 'Манґа', count: stats.mangaCount, color: accent },
+            { name: 'Комікси', count: stats.comicCount, color: '#60a5fa' },
+            { name: 'Книги', count: stats.bookCount, color: gold }
+        ];
+        const colW = (fullW - 64) / 3;
+        typeRows.forEach((tr, idx) => {
+            const cx = padX + 32 + idx * colW;
+            const pct = stats.total > 0 ? Math.round((tr.count / stats.total) * 100) : 0;
+
+            ctx.font = `800 44px ${fontFamily}`;
+            ctx.fillStyle = tr.count > 0 ? tr.color : '#444444';
+            ctx.fillText(String(tr.count), cx, typesY + 68);
+
+            ctx.font = `600 22px ${fontFamily}`;
+            ctx.fillStyle = '#d0d0d0';
+            ctx.fillText(`${tr.name} (${pct}%)`, cx, typesY + 124);
+        });
+
+        // Картка 4 (широка): Співвідношення Папір / Веб
+        const fmtY = typesY + typesH + cardGap;
+        const fmtH = 176;
+
+        wrappedRoundRect(ctx, padX, fmtY, fullW, fmtH, 28);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.045)';
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.stroke();
+
+        const paperPct = stats.total > 0 ? Math.round((stats.paperCount / stats.total) * 100) : 0;
+        const webPct = stats.total > 0 ? (100 - paperPct) : 0;
+
+        ctx.font = `700 20px ${fontFamily}`;
+        ctx.fillStyle = '#9a9a9a';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.fillText('ФОРМАТ: ПАПІР VS ВЕБ', padX + 32, fmtY + 26);
+
+        const barX = padX + 32;
+        const barY = fmtY + 72;
+        const barW = fullW - 64;
+        const barH = 26;
+
+        wrappedRoundRect(ctx, barX, barY, barW, barH, 13);
+        ctx.fillStyle = '#252528';
+        ctx.fill();
+
+        if (stats.total > 0) {
+            ctx.save();
+            wrappedRoundRect(ctx, barX, barY, barW, barH, 13);
+            ctx.clip();
+
+            const paperW = (barW * paperPct) / 100;
+            if (paperW > 0) {
+                ctx.fillStyle = accent;
+                ctx.fillRect(barX, barY, paperW, barH);
+            }
+            if (barW - paperW > 0) {
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(barX + paperW, barY, barW - paperW, barH);
+            }
+            ctx.restore();
+        }
+
+        ctx.font = `700 24px ${fontFamily}`;
+        ctx.textBaseline = 'top';
+        ctx.textAlign = 'left';
+        ctx.fillStyle = accent;
+        ctx.fillText(`Папір: ${paperPct}% (${stats.paperCount})`, barX, fmtY + 118);
+
+        ctx.textAlign = 'right';
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillText(`Веб: ${webPct}% (${stats.webCount})`, barX + barW, fmtY + 118);
+
+        // 6. Нижній підпис
+        const footerY = H - 68;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(padX, footerY - 36);
+        ctx.lineTo(W - padX, footerY - 36);
+        ctx.stroke();
+
+        const nickEl = document.getElementById('profileName') || document.getElementById('profileUsername');
+        const nickText = nickEl && nickEl.innerText.trim() && nickEl.innerText.trim() !== 'Читач'
+            ? `@${nickEl.innerText.trim()}`
+            : '';
+
+        ctx.font = `600 25px ${fontFamily}`;
+        ctx.textBaseline = 'middle';
+        if (nickText) {
+            ctx.fillStyle = '#8f8f8f';
+            ctx.textAlign = 'left';
+            ctx.fillText(nickText, padX, footerY);
+
+            ctx.fillStyle = accent;
+            ctx.textAlign = 'right';
+            ctx.fillText(`Reading Tracker • ${stats.year}`, W - padX, footerY);
+        } else {
+            ctx.fillStyle = '#888888';
+            ctx.textAlign = 'center';
+            ctx.fillText(`Reading Tracker • ${stats.year}`, W / 2, footerY);
+        }
+
+        return canvas;
+    }
+
+    async function generateWrappedPreview(year) {
+        const msgEl = document.getElementById('wrappedStateMsg');
+        const imgEl = document.getElementById('wrappedPreviewImg');
+        const dlBtn = document.getElementById('wrappedDownloadBtn');
+        const shBtn = document.getElementById('wrappedShareBtn');
+
+        imgEl.style.display = 'none';
+        msgEl.style.display = 'block';
+        msgEl.innerText = `Збираємо підсумки за ${year} рік...`;
+        dlBtn.disabled = true;
+        shBtn.disabled = true;
+
+        const stats = computeWrappedStats(year);
+        if (stats.total === 0) {
+            msgEl.innerText = `За ${year} рік поки немає прочитаних творів із вказаною датою. Простав дату прочитання на сторінках книг — і постер одразу збереться.`;
+            return;
+        }
+
+        try {
+            const canvas = await renderWrappedPosterCanvas(stats);
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+            if (!blob) throw new Error('Не вдалося сформувати PNG');
+
+            if (wrappedObjectUrl) URL.revokeObjectURL(wrappedObjectUrl);
+            wrappedBlob = blob;
+            wrappedObjectUrl = URL.createObjectURL(blob);
+            wrappedFileName = `reading-wrapped-${year}.png`;
+
+            imgEl.src = wrappedObjectUrl;
+            imgEl.style.display = 'block';
+            msgEl.style.display = 'none';
+            dlBtn.disabled = false;
+            shBtn.disabled = false;
+
+            const testFile = new File([blob], wrappedFileName, { type: 'image/png' });
+            const canNativeShare = !!(navigator.canShare && navigator.canShare({ files: [testFile] }));
+            shBtn.innerHTML = canNativeShare
+                ? '<i class="ph ph-share-network"></i> Поділитися'
+                : '<i class="ph ph-copy"></i> Копіювати';
+        } catch (err) {
+            console.error('Wrapped error:', err);
+            msgEl.innerText = 'Помилка генерації постера: ' + err.message;
+        }
+    }
+
+    function downloadWrappedPoster() {
+        if (!wrappedObjectUrl) return;
+        const a = document.createElement('a');
+        a.href = wrappedObjectUrl;
+        a.download = wrappedFileName;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+    }
+
+    async function shareOrCopyWrappedPoster() {
+        if (!wrappedBlob) return;
+        const shBtn = document.getElementById('wrappedShareBtn');
+        const file = new File([wrappedBlob], wrappedFileName, { type: 'image/png' });
+
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+                await navigator.share({ files: [file] });
+            } catch (e) {
+                if (e.name !== 'AbortError') downloadWrappedPoster();
+            }
+            return;
+        }
+
+        if (navigator.clipboard && window.ClipboardItem) {
+            try {
+                await navigator.clipboard.write([
+                    new ClipboardItem({ 'image/png': wrappedBlob })
+                ]);
+                const prevHtml = shBtn.innerHTML;
+                shBtn.innerHTML = '<i class="ph ph-check"></i> Скопійовано!';
+                setTimeout(() => { shBtn.innerHTML = prevHtml; }, 1800);
+                return;
+            } catch (e) {}
+        }
+
+        downloadWrappedPoster();
     }
 </script>
 </body>
