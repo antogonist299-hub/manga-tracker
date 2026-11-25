@@ -1973,6 +1973,458 @@
             background: var(--accent-green);
             color: #0f0f0f;
         }
+
+        /* Картка запуску Колажу 3×3 у Кабінеті */
+        .collage-launch-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 16px 18px;
+            background: linear-gradient(135deg, rgba(107, 208, 38, 0.12) 0%, #1a1a1a 65%);
+            border: 1px solid rgba(107, 208, 38, 0.28);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: transform 0.15s ease, border-color 0.2s ease, background-color 0.2s ease;
+            box-sizing: border-box;
+            width: 100%;
+            min-width: 0;
+        }
+        
+        .collage-launch-card:hover {
+            border-color: var(--accent-green);
+            transform: translateY(-2px);
+        }
+        
+        .collage-launch-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 0;
+        }
+        
+        .collage-launch-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            background: rgba(107, 208, 38, 0.18);
+            color: var(--accent-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        
+        .collage-launch-text {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            min-width: 0;
+        }
+        
+        .collage-launch-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-white);
+        }
+        
+        .collage-launch-sub {
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+        
+        .collage-launch-arrow {
+            color: var(--accent-green);
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        
+        /* Модальне вікно конструктора 3×3 */
+        .collage-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.84);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 14px;
+            z-index: 2150;
+            box-sizing: border-box;
+        }
+
+        .collage-modal {
+            width: 100%;
+            max-width: 440px;
+            max-height: 92dvh;
+            overflow-y: auto;
+            background: #181818;
+            border: 1px solid #2d2d2d;
+            border-radius: 22px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75);
+            box-sizing: border-box;
+        }
+
+        .collage-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .collage-tool-btn {
+            flex: 1;
+            padding: 9px 12px;
+            border-radius: 10px;
+            border: 1px solid #303030;
+            background: #222;
+            color: var(--text-white);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+        
+        .collage-tool-btn:hover {
+            border-color: var(--accent-green);
+            background: rgba(107, 208, 38, 0.12);
+        }
+        
+        .collage-tool-btn.danger:hover {
+            border-color: #ff5b5b;
+            background: rgba(255, 91, 91, 0.12);
+            color: #ff8a8a;
+        }
+        
+        .collage-swap-hint {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            background: rgba(107, 208, 38, 0.14);
+            border: 1px solid rgba(107, 208, 38, 0.4);
+            color: var(--accent-green);
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .collage-swap-hint.visible {
+            display: flex;
+        }
+        
+        .collage-swap-cancel {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: underline;
+            padding: 0;
+        }
+        
+        .collage-grid {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-rows: repeat(3, minmax(0, 1fr));
+            gap: 8px;
+            background: #101010;
+            padding: 8px;
+            border-radius: 14px;
+            border: 1px solid #262626;
+            box-sizing: border-box;
+        }
+        
+        .collage-slot {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #1b1b1b;
+            border: 1.5px dashed #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            cursor: pointer;
+            color: var(--text-gray);
+            transition: border-color 0.18s, transform 0.15s, box-shadow 0.18s;
+            user-select: none;
+        }
+        
+        .collage-slot.filled {
+            border-style: solid;
+            border-color: #2f2f2f;
+        }
+        
+        .collage-slot:hover {
+            border-color: var(--accent-green);
+        }
+        
+        .collage-slot.swap-selected {
+            border: 2px solid var(--accent-green);
+            box-shadow: 0 0 0 3px rgba(107, 208, 38, 0.25);
+            transform: scale(0.96);
+        }
+        
+        .collage-slot.drag-over {
+            border: 2px solid var(--accent-green);
+            transform: scale(0.95);
+        }
+        
+        .collage-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            pointer-events: none;
+        }
+        
+        .collage-slot-empty-plus {
+            font-size: 22px;
+            color: var(--accent-green);
+            line-height: 1;
+        }
+        
+        .collage-slot-empty-num {
+            font-size: 11px;
+            font-weight: 700;
+            color: #666;
+        }
+        
+        .collage-slot-actions {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            display: flex;
+            gap: 4px;
+            z-index: 3;
+        }
+        
+        .collage-slot-mini-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 7px;
+            border: none;
+            background: rgba(12, 12, 12, 0.8);
+            color: #fff;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+            transition: background-color 0.15s, color 0.15s;
+        }
+        
+        .collage-slot-mini-btn:hover {
+            background: var(--accent-green);
+            color: #0e0e0e;
+        }
+        
+        .collage-slot-mini-btn.remove:hover {
+            background: #e5484d;
+            color: #fff;
+        }
+        
+        .collage-slot-caption {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 14px 5px 4px;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.88) 100%);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 600;
+            line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            pointer-events: none;
+        }
+        
+        .collage-options-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .collage-title-input {
+            flex: 1;
+            min-width: 0;
+            padding: 10px 12px !important;
+            font-size: 13px !important;
+        }
+        
+        .collage-toggle-btn {
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid #303030;
+            background: #222;
+            color: var(--text-gray);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        
+        .collage-toggle-btn.active {
+            background: rgba(107, 208, 38, 0.16);
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+        
+        /* Пікер вибору твору для клітинки */
+        .collage-picker-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.86);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 14px;
+            z-index: 2250;
+            box-sizing: border-box;
+        }
+        
+        .collage-picker-modal {
+            width: 100%;
+            max-width: 460px;
+            height: 82dvh;
+            background: #181818;
+            border: 1px solid #2d2d2d;
+            border-radius: 22px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-sizing: border-box;
+        }
+        
+        .collage-picker-filters {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 2px;
+            flex-shrink: 0;
+        }
+        
+        .collage-picker-pill {
+            padding: 6px 12px;
+            border-radius: 999px;
+            border: 1px solid #303030;
+            background: #222;
+            color: var(--text-gray);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        
+        .collage-picker-pill.active {
+            background: rgba(107, 208, 38, 0.16);
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+        
+        .collage-picker-grid {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            align-content: start;
+            padding-right: 2px;
+        }
+        
+        .collage-pick-item {
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            min-width: 0;
+        }
+        
+        .collage-pick-cover {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 2 / 3;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #242424;
+            border: 1px solid #2e2e2e;
+        }
+        
+        .collage-pick-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .collage-pick-used {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            color: #0e0e0e;
+            font-size: 13px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+        }
+        
+        .collage-pick-rating {
+            position: absolute;
+            bottom: 5px;
+            left: 5px;
+            background: rgba(12, 12, 12, 0.84);
+            color: #f5b942;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 6px;
+        }
+        
+        .collage-pick-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-white);
+            line-height: 1.25;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
     </style>
 </head>
 <body onclick="closeAllMenus()">
@@ -2190,6 +2642,18 @@
                        <span style="font-size: 12px; color: var(--text-gray); font-weight: 500;">За найвищою оцінкою</span>
                    </div>
                    <div class="top-showcase-grid" id="profileTopGrid"></div>
+               </div>
+
+               <!-- Кнопка відкриття конструктора Колажу 3×3 -->
+               <div class="collage-launch-card" onclick="openCollageModal()">
+                   <div class="collage-launch-left">
+                       <div class="collage-launch-icon"><i class="ph-fill ph-squares-four"></i></div>
+                       <div class="collage-launch-text">
+                           <div class="collage-launch-title">Створити колаж 3×3</div>
+                           <div class="collage-launch-sub">Обери 9 уюблених обкладинок і збережи PNG</div>
+                       </div>
+                   </div>
+                   <i class="ph ph-caret-right collage-launch-arrow"></i>
                </div>
 
                <!-- Щоденник читання -->
@@ -2473,6 +2937,76 @@
             </div>
         </div>
     </div>
+
+    <!-- Конструктор колажу 3×3 -->
+        <div id="collageModalOverlay" class="collage-overlay" onclick="closeCollageModal()">
+            <div class="collage-modal" onclick="event.stopPropagation()">
+                <div class="poster-modal-header">
+                    <div class="poster-modal-title">
+                        <i class="ph-fill ph-squares-four"></i>
+                        <span>Колаж 3×3</span>
+                    </div>
+                    <button type="button" class="modal-close" onclick="closeCollageModal()"><i class="ph ph-x"></i></button>
+                </div>
+
+                <div class="collage-toolbar">
+                    <button type="button" class="collage-tool-btn" onclick="autoFillCollageTop9()">
+                        <i class="ph ph-sparkle"></i> Авто Топ-9
+                    </button>
+                    <button type="button" class="collage-tool-btn danger" onclick="clearCollageSlots()">
+                        <i class="ph ph-trash"></i> Очистити
+                    </button>
+                </div>
+
+                <div class="collage-swap-hint" id="collageSwapHint">
+                    <span>Обери клітинку, з якою поміняти місцями</span>
+                    <button type="button" class="collage-swap-cancel" onclick="cancelCollageSwap()">Скасувати</button>
+                </div>
+
+                <div class="collage-grid" id="collageGrid"></div>
+
+                <div class="collage-options-row">
+                    <input type="text" id="collageTitleInput" class="modal-input collage-title-input" placeholder="Заголовок (необов'язково)" oninput="saveCollageState()">
+                    <button type="button" class="collage-toggle-btn" id="collageShowTitlesBtn" onclick="toggleCollageTitles()">
+                        <i class="ph ph-text-aa"></i> Назви
+                    </button>
+                </div>
+
+                <div class="poster-actions">
+                    <button type="button" class="poster-btn poster-btn-secondary" id="collageDownloadBtn" onclick="exportCollage('download')">
+                        <i class="ph ph-download-simple"></i> Зберегти
+                    </button>
+                    <button type="button" class="poster-btn poster-btn-primary" id="collageShareBtn" onclick="exportCollage('share')">
+                        <i class="ph ph-share-network"></i> Поділитися
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Вікно вибору обкладинки для клітинки 3×3 -->
+        <div id="collagePickerOverlay" class="collage-picker-overlay" onclick="closeCollagePicker()">
+            <div class="collage-picker-modal" onclick="event.stopPropagation()">
+                <div class="poster-modal-header">
+                    <div class="poster-modal-title">
+                        <i class="ph-fill ph-books"></i>
+                        <span id="collagePickerTitle">Обрати твір</span>
+                    </div>
+                    <button type="button" class="modal-close" onclick="closeCollagePicker()"><i class="ph ph-x"></i></button>
+                </div>
+
+                <input type="text" id="collagePickerSearch" class="modal-input" placeholder="Пошук за назвою або серією..." oninput="renderCollagePickerList()">
+
+                <div class="collage-picker-filters" id="collagePickerFilters">
+                    <button type="button" class="collage-picker-pill active" onclick="setCollagePickerFilter('TOP', this)">Топ оцінки</button>
+                    <button type="button" class="collage-picker-pill" onclick="setCollagePickerFilter('ALL', this)">Всі</button>
+                    <button type="button" class="collage-picker-pill" onclick="setCollagePickerFilter('МАНҐА', this)">Манґа</button>
+                    <button type="button" class="collage-picker-pill" onclick="setCollagePickerFilter('КОМІКС', this)">Комікси</button>
+                    <button type="button" class="collage-picker-pill" onclick="setCollagePickerFilter('КНИГА', this)">Книги</button>
+                </div>
+
+                <div class="collage-picker-grid" id="collagePickerGrid"></div>
+            </div>
+        </div>
     
 <script>
     // ВСТАВ СВОЇ ДАНІ ТУТ:
@@ -2511,6 +3045,14 @@
     
     // Реакція на системну кнопку «Назад» на телефоні
     window.addEventListener('popstate', () => {
+        if (isScreenOpen('collagePickerOverlay')) {
+            closeCollagePicker(true);
+            return;
+        }
+        if (isScreenOpen('collageModalOverlay')) {
+            closeCollageModal(true);
+            return;
+        }
         if (isScreenOpen('sharePosterOverlay')) {
             closeSharePosterModal(true);
             return;
@@ -4829,6 +5371,634 @@
         }
 
         downloadSharePoster();
+    }
+
+    // --- Генератор колажу 3×3 ---
+    let collageLibrary = [];
+    let collageSlots = new Array(9).fill(null);
+    let collageShowTitles = false;
+    let collagePickerTargetIdx = null;
+    let collagePickerFilter = 'TOP';
+    let collageSwapSourceIdx = null;
+    let collageDragSourceIdx = null;
+
+    function collageEscapeHtml(str) {
+        return String(str || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    function saveCollageState() {
+        try {
+            const titleInput = document.getElementById('collageTitleInput');
+            const payload = {
+                slotIds: collageSlots.map(item => item ? item.id : null),
+                title: titleInput ? titleInput.value : '',
+                showTitles: collageShowTitles
+            };
+            localStorage.setItem('tracker_collage_3x3', JSON.stringify(payload));
+        } catch (e) {}
+    }
+
+    function restoreCollageState() {
+        try {
+            const raw = localStorage.getItem('tracker_collage_3x3');
+            if (!raw) return false;
+            const parsed = JSON.parse(raw);
+
+            if (Array.isArray(parsed.slotIds) && parsed.slotIds.length === 9) {
+                collageSlots = parsed.slotIds.map(id => {
+                    if (!id) return null;
+                    return collageLibrary.find(item => String(item.id) === String(id)) || null;
+                });
+            }
+
+            const titleInput = document.getElementById('collageTitleInput');
+            if (titleInput && typeof parsed.title === 'string') {
+                titleInput.value = parsed.title;
+            }
+
+            collageShowTitles = !!parsed.showTitles;
+            const toggleBtn = document.getElementById('collageShowTitlesBtn');
+            if (toggleBtn) toggleBtn.classList.toggle('active', collageShowTitles);
+
+            return collageSlots.some(Boolean);
+        } catch (e) {
+            return false;
+        }
+    }
+
+    async function ensureCollageLibrary() {
+        if (typeof diaryAllItems !== 'undefined' && Array.isArray(diaryAllItems) && diaryAllItems.length > 0) {
+            collageLibrary = diaryAllItems;
+            return;
+        }
+        const { data: { session } } = await supaClient.auth.getSession();
+        if (!session) return;
+        const { data } = await supaClient
+            .from('reading_items')
+            .select('*')
+            .eq('user_id', session.user.id);
+        collageLibrary = data || [];
+    }
+
+    async function openCollageModal() {
+        await ensureCollageLibrary();
+
+        const hasSaved = restoreCollageState();
+        if (!hasSaved && !collageSlots.some(Boolean)) {
+            autoFillCollageTop9(true);
+        }
+
+        collageSwapSourceIdx = null;
+        updateCollageSwapHint();
+        renderCollageGrid();
+
+        const overlay = document.getElementById('collageModalOverlay');
+        if (!isScreenOpen('collageModalOverlay')) {
+            history.pushState({ appLayer: 'collage' }, '');
+        }
+        overlay.style.display = 'flex';
+
+        const shareBtn = document.getElementById('collageShareBtn');
+        if (shareBtn) {
+            const hasNativeShare = !!(navigator.share && navigator.canShare);
+            shareBtn.innerHTML = hasNativeShare
+                ? '<i class="ph ph-share-network"></i> Поділитися'
+                : '<i class="ph ph-copy"></i> Копіювати';
+        }
+    }
+
+    function closeCollageModal(fromPopState = false) {
+        if (!fromPopState && history.state?.appLayer === 'collage') {
+            history.back();
+            return;
+        }
+        collageSwapSourceIdx = null;
+        updateCollageSwapHint();
+        document.getElementById('collageModalOverlay').style.display = 'none';
+    }
+
+    function autoFillCollageTop9(silent = false) {
+        const candidates = collageLibrary
+            .filter(item => item.cover_url || item.image_url)
+            .slice()
+            .sort((a, b) => {
+                const rDiff = (parseFloat(b.rating) || 0) - (parseFloat(a.rating) || 0);
+                if (rDiff !== 0) return rDiff;
+                const readA = a.status === 'read' ? 1 : 0;
+                const readB = b.status === 'read' ? 1 : 0;
+                if (readB !== readA) return readB - readA;
+                return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+            });
+
+        const picked = [];
+        const usedSeries = new Set();
+
+        // Спочатку беремо по 1 найкращому тому з кожної серії + окремі книги
+        for (const item of candidates) {
+            if (picked.length >= 9) break;
+            if (item.series_id) {
+                if (usedSeries.has(item.series_id)) continue;
+                usedSeries.add(item.series_id);
+            }
+            picked.push(item);
+        }
+
+        // Якщо унікальних менше 9 — добираємо решту з найвищим рейтингом
+        if (picked.length < 9) {
+            const pickedIds = new Set(picked.map(p => p.id));
+            for (const item of candidates) {
+                if (picked.length >= 9) break;
+                if (!pickedIds.has(item.id)) {
+                    picked.push(item);
+                    pickedIds.add(item.id);
+                }
+            }
+        }
+
+        collageSlots = new Array(9).fill(null);
+        picked.forEach((item, idx) => { collageSlots[idx] = item; });
+
+        collageSwapSourceIdx = null;
+        updateCollageSwapHint();
+        saveCollageState();
+        if (!silent) renderCollageGrid();
+    }
+
+    function clearCollageSlots() {
+        collageSlots = new Array(9).fill(null);
+        collageSwapSourceIdx = null;
+        updateCollageSwapHint();
+        saveCollageState();
+        renderCollageGrid();
+    }
+
+    function toggleCollageTitles() {
+        collageShowTitles = !collageShowTitles;
+        const btn = document.getElementById('collageShowTitlesBtn');
+        if (btn) btn.classList.toggle('active', collageShowTitles);
+        saveCollageState();
+        renderCollageGrid();
+    }
+
+    function updateCollageSwapHint() {
+        const hint = document.getElementById('collageSwapHint');
+        if (hint) hint.classList.toggle('visible', collageSwapSourceIdx !== null);
+    }
+
+    function cancelCollageSwap() {
+        collageSwapSourceIdx = null;
+        updateCollageSwapHint();
+        renderCollageGrid();
+    }
+
+    function startCollageSwap(event, idx) {
+        if (event) event.stopPropagation();
+        if (collageSwapSourceIdx === idx) {
+            collageSwapSourceIdx = null;
+        } else if (collageSwapSourceIdx !== null) {
+            swapCollageSlots(collageSwapSourceIdx, idx);
+            collageSwapSourceIdx = null;
+        } else {
+            collageSwapSourceIdx = idx;
+        }
+        updateCollageSwapHint();
+        renderCollageGrid();
+    }
+
+    function swapCollageSlots(idxA, idxB) {
+        if (idxA === idxB || idxA === null || idxB === null) return;
+        const tmp = collageSlots[idxA];
+        collageSlots[idxA] = collageSlots[idxB];
+        collageSlots[idxB] = tmp;
+        saveCollageState();
+    }
+
+    function removeCollageSlot(event, idx) {
+        if (event) event.stopPropagation();
+        collageSlots[idx] = null;
+        if (collageSwapSourceIdx === idx) collageSwapSourceIdx = null;
+        updateCollageSwapHint();
+        saveCollageState();
+        renderCollageGrid();
+    }
+
+    function handleCollageSlotClick(idx) {
+        if (collageSwapSourceIdx !== null) {
+            if (collageSwapSourceIdx !== idx) {
+                swapCollageSlots(collageSwapSourceIdx, idx);
+            }
+            collageSwapSourceIdx = null;
+            updateCollageSwapHint();
+            renderCollageGrid();
+            return;
+        }
+        openCollagePicker(idx);
+    }
+
+    function handleCollageDragStart(event, idx) {
+        if (!collageSlots[idx]) {
+            event.preventDefault();
+            return;
+        }
+        collageDragSourceIdx = idx;
+        event.dataTransfer.effectAllowed = 'move';
+    }
+
+    function handleCollageDragOver(event, idx) {
+        event.preventDefault();
+        event.currentTarget.classList.add('drag-over');
+    }
+
+    function handleCollageDragLeave(event) {
+        event.currentTarget.classList.remove('drag-over');
+    }
+
+    function handleCollageDrop(event, targetIdx) {
+        event.preventDefault();
+        event.currentTarget.classList.remove('drag-over');
+        if (collageDragSourceIdx !== null && collageDragSourceIdx !== targetIdx) {
+            swapCollageSlots(collageDragSourceIdx, targetIdx);
+            renderCollageGrid();
+        }
+        collageDragSourceIdx = null;
+    }
+
+    function renderCollageGrid() {
+        const grid = document.getElementById('collageGrid');
+        if (!grid) return;
+
+        grid.innerHTML = collageSlots.map((item, idx) => {
+            const isSwapSource = collageSwapSourceIdx === idx;
+
+            if (!item) {
+                return `
+                    <div class="collage-slot ${isSwapSource ? 'swap-selected' : ''}"
+                         onclick="handleCollageSlotClick(${idx})"
+                         ondragover="handleCollageDragOver(event, ${idx})"
+                         ondragleave="handleCollageDragLeave(event)"
+                         ondrop="handleCollageDrop(event, ${idx})">
+                        <span class="collage-slot-empty-plus"><i class="ph ph-plus"></i></span>
+                        <span class="collage-slot-empty-num">${idx + 1}</span>
+                    </div>
+                `;
+            }
+
+            const cover = item.cover_url || item.image_url || '';
+            const safeTitle = collageEscapeHtml(item.title);
+
+            return `
+                <div class="collage-slot filled ${isSwapSource ? 'swap-selected' : ''}"
+                     draggable="true"
+                     onclick="handleCollageSlotClick(${idx})"
+                     ondragstart="handleCollageDragStart(event, ${idx})"
+                     ondragover="handleCollageDragOver(event, ${idx})"
+                     ondragleave="handleCollageDragLeave(event)"
+                     ondrop="handleCollageDrop(event, ${idx})">
+                    <img src="${cover}" alt="${safeTitle}">
+                    <div class="collage-slot-actions">
+                        <button type="button" class="collage-slot-mini-btn" title="Поміняти місцями" onclick="startCollageSwap(event, ${idx})">
+                            <i class="ph ph-arrows-left-right"></i>
+                        </button>
+                        <button type="button" class="collage-slot-mini-btn remove" title="Прибрати" onclick="removeCollageSlot(event, ${idx})">
+                            <i class="ph ph-x"></i>
+                        </button>
+                    </div>
+                    ${collageShowTitles ? `<div class="collage-slot-caption">${safeTitle}</div>` : ''}
+                </div>
+            `;
+        }).join('');
+    }
+
+    function openCollagePicker(slotIdx) {
+        collagePickerTargetIdx = slotIdx;
+        const titleEl = document.getElementById('collagePickerTitle');
+        if (titleEl) titleEl.innerText = `Клітинка #${slotIdx + 1}`;
+
+        const searchEl = document.getElementById('collagePickerSearch');
+        if (searchEl) searchEl.value = '';
+
+        const overlay = document.getElementById('collagePickerOverlay');
+        if (!isScreenOpen('collagePickerOverlay')) {
+            history.pushState({ appLayer: 'collagePicker' }, '');
+        }
+        overlay.style.display = 'flex';
+        renderCollagePickerList();
+    }
+
+    function closeCollagePicker(fromPopState = false) {
+        if (!fromPopState && history.state?.appLayer === 'collagePicker') {
+            history.back();
+            return;
+        }
+        collagePickerTargetIdx = null;
+        document.getElementById('collagePickerOverlay').style.display = 'none';
+    }
+
+    function setCollagePickerFilter(filter, btnEl) {
+        collagePickerFilter = filter;
+        const pills = document.querySelectorAll('#collagePickerFilters .collage-picker-pill');
+        pills.forEach(p => p.classList.remove('active'));
+        if (btnEl) btnEl.classList.add('active');
+        renderCollagePickerList();
+    }
+
+    function selectCollageItem(itemId) {
+        if (collagePickerTargetIdx === null) return;
+        const found = collageLibrary.find(i => String(i.id) === String(itemId));
+        if (!found) return;
+
+        collageSlots[collagePickerTargetIdx] = found;
+        saveCollageState();
+        renderCollageGrid();
+        closeCollagePicker();
+    }
+
+    function renderCollagePickerList() {
+        const grid = document.getElementById('collagePickerGrid');
+        if (!grid) return;
+
+        const normalize = str => String(str || '').toUpperCase().replace(/Ґ/g, 'Г');
+        const q = (document.getElementById('collagePickerSearch')?.value || '').trim().toLowerCase();
+        const usedIds = new Set(collageSlots.filter(Boolean).map(i => String(i.id)));
+
+        let items = collageLibrary.filter(item => {
+            if (!(item.cover_url || item.image_url)) return false;
+
+            if (collagePickerFilter !== 'ALL' && collagePickerFilter !== 'TOP') {
+                if (normalize(item.item_type) !== normalize(collagePickerFilter)) return false;
+            }
+
+            if (q) {
+                const series = allSeries.find(s => s.id === item.series_id);
+                const inTitle = (item.title || '').toLowerCase().includes(q);
+                const inSeries = series && (series.title || '').toLowerCase().includes(q);
+                if (!inTitle && !inSeries) return false;
+            }
+            return true;
+        });
+
+        if (collagePickerFilter === 'TOP') {
+            items.sort((a, b) => {
+                const diff = (parseFloat(b.rating) || 0) - (parseFloat(a.rating) || 0);
+                if (diff !== 0) return diff;
+                return (a.title || '').localeCompare(b.title || '', 'uk', { numeric: true });
+            });
+        } else {
+            items.sort((a, b) => (a.title || '').localeCompare(b.title || '', 'uk', { numeric: true }));
+        }
+
+        if (items.length === 0) {
+            grid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: var(--text-gray); font-size: 13px; margin-top: 24px;">Нічого не знайдено</p>';
+            return;
+        }
+
+        grid.innerHTML = items.map(item => {
+            const cover = item.cover_url || item.image_url || '';
+            const isUsed = usedIds.has(String(item.id));
+            const safeTitle = collageEscapeHtml(item.title);
+            const ratingVal = parseFloat(item.rating) || 0;
+
+            return `
+                <div class="collage-pick-item" onclick="selectCollageItem('${item.id}')">
+                    <div class="collage-pick-cover">
+                        <img src="${cover}" alt="${safeTitle}" loading="lazy">
+                        ${isUsed ? '<div class="collage-pick-used"><i class="ph ph-check"></i></div>' : ''}
+                        ${ratingVal > 0 ? `<div class="collage-pick-rating">★ ${ratingVal}</div>` : ''}
+                    </div>
+                    <div class="collage-pick-title">${safeTitle}</div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function collageLoadImg(url) {
+        if (!url) return Promise.resolve(null);
+        const tryLoad = (src) => new Promise((resolve) => {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => resolve(img);
+            img.onerror = () => resolve(null);
+            img.src = src;
+        });
+        const sep = url.includes('?') ? '&' : '?';
+        return tryLoad(`${url}${sep}collage_cors=1`).then(img => img || tryLoad(url));
+    }
+
+    function collageRoundRect(ctx, x, y, w, h, r) {
+        const radius = Math.min(r, w / 2, h / 2);
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.arcTo(x + w, y, x + w, y + h, radius);
+        ctx.arcTo(x + w, y + h, x, y + h, radius);
+        ctx.arcTo(x, y + h, x, y, radius);
+        ctx.arcTo(x, y, x + w, y, radius);
+        ctx.closePath();
+    }
+
+    function collageDrawCover(ctx, img, x, y, w, h) {
+        const imgRatio = img.naturalWidth / img.naturalHeight;
+        const boxRatio = w / h;
+        let sx = 0, sy = 0, sw = img.naturalWidth, sh = img.naturalHeight;
+        if (imgRatio > boxRatio) {
+            sw = img.naturalHeight * boxRatio;
+            sx = (img.naturalWidth - sw) / 2;
+        } else {
+            sh = img.naturalWidth / boxRatio;
+            sy = (img.naturalHeight - sh) / 2;
+        }
+        ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+    }
+
+    function collageDrawTileCaption(ctx, title, x, y, w, h, fontFamily) {
+        const gradH = 115;
+        const grad = ctx.createLinearGradient(0, y + h - gradH, 0, y + h);
+        grad.addColorStop(0, 'rgba(0, 0, 0, 0)');
+        grad.addColorStop(1, 'rgba(0, 0, 0, 0.9)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(x, y + h - gradH, w, gradH);
+
+        ctx.font = `700 22px ${fontFamily}`;
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'bottom';
+
+        const maxW = w - 28;
+        const words = String(title || '').trim().split(/\s+/);
+        const lines = [];
+        let cur = '';
+        for (const word of words) {
+            const test = cur ? `${cur} ${word}` : word;
+            if (ctx.measureText(test).width <= maxW) {
+                cur = test;
+            } else {
+                if (cur) lines.push(cur);
+                cur = word;
+                if (lines.length === 1) break;
+            }
+        }
+        if (cur && lines.length < 2) lines.push(cur);
+
+        if (lines.length === 2) {
+            let second = lines[1];
+            while (ctx.measureText(second).width > maxW && second.length > 3) {
+                second = second.slice(0, -1);
+            }
+            if (second !== lines[1]) second = second.trim() + '…';
+            lines[1] = second;
+        }
+
+        const lineH = 26;
+        const bottomY = y + h - 14;
+        if (lines.length === 2) {
+            ctx.fillText(lines[0], x + 14, bottomY - lineH);
+            ctx.fillText(lines[1], x + 14, bottomY);
+        } else if (lines.length === 1) {
+            ctx.fillText(lines[0], x + 14, bottomY);
+        }
+    }
+
+    async function renderCollageCanvas() {
+        const W = 1080;
+        const pad = 24;
+        const gap = 12;
+        const tileSize = 336; // (1080 - 24*2 - 12*2) / 3 = 336
+        const titleText = (document.getElementById('collageTitleInput')?.value || '').trim();
+        const headerH = titleText ? 92 : 0;
+        const H = W + headerH;
+
+        const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent-green').trim() || '#6bd026';
+        const fontFamily = getComputedStyle(document.body).fontFamily || 'system-ui, -apple-system, sans-serif';
+
+        const loadedImages = await Promise.all(
+            collageSlots.map(item => item ? collageLoadImg(item.cover_url || item.image_url || '') : Promise.resolve(null))
+        );
+
+        const canvas = document.createElement('canvas');
+        canvas.width = W;
+        canvas.height = H;
+        const ctx = canvas.getContext('2d');
+
+        // Темний фон
+        ctx.fillStyle = '#0e0e0e';
+        ctx.fillRect(0, 0, W, H);
+
+        // Опційний заголовок
+        if (titleText) {
+            ctx.font = `800 40px ${fontFamily}`;
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(titleText, W / 2, headerH / 2 + 8, W - pad * 2);
+
+            ctx.fillStyle = accent;
+            collageRoundRect(ctx, W / 2 - 42, headerH - 6, 84, 4, 2);
+            ctx.fill();
+        }
+
+        // Малюємо 9 клітинок 3×3
+        for (let i = 0; i < 9; i++) {
+            const row = Math.floor(i / 3);
+            const col = i % 3;
+            const x = pad + col * (tileSize + gap);
+            const y = headerH + pad + row * (tileSize + gap);
+            const item = collageSlots[i];
+            const img = loadedImages[i];
+
+            ctx.save();
+            collageRoundRect(ctx, x, y, tileSize, tileSize, 16);
+            ctx.clip();
+
+            if (img) {
+                collageDrawCover(ctx, img, x, y, tileSize, tileSize);
+            } else {
+                ctx.fillStyle = '#181818';
+                ctx.fillRect(x, y, tileSize, tileSize);
+            }
+
+            if (item && collageShowTitles) {
+                collageDrawTileCaption(ctx, item.title, x, y, tileSize, tileSize, fontFamily);
+            }
+            ctx.restore();
+
+            collageRoundRect(ctx, x, y, tileSize, tileSize, 16);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+            ctx.stroke();
+        }
+
+        return canvas;
+    }
+
+    async function exportCollage(mode) {
+        if (!collageSlots.some(Boolean)) {
+            alert('Додай у колаж хоча б одну обкладинку');
+            return;
+        }
+
+        const dlBtn = document.getElementById('collageDownloadBtn');
+        const shBtn = document.getElementById('collageShareBtn');
+        const prevDl = dlBtn.innerHTML;
+        const prevSh = shBtn.innerHTML;
+
+        dlBtn.disabled = true;
+        shBtn.disabled = true;
+        if (mode === 'download') dlBtn.innerHTML = 'Генерація...';
+        else shBtn.innerHTML = 'Генерація...';
+
+        try {
+            const canvas = await renderCollageCanvas();
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+            if (!blob) throw new Error('Не вдалося створити PNG');
+
+            const fileName = 'my-3x3-collage.png';
+            const downloadFallback = () => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                setTimeout(() => URL.revokeObjectURL(url), 1500);
+            };
+
+            if (mode === 'download') {
+                downloadFallback();
+                return;
+            }
+
+            const file = new File([blob], fileName, { type: 'image/png' });
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({ files: [file] });
+                    return;
+                } catch (e) {
+                    if (e.name === 'AbortError') return;
+                }
+            }
+
+            if (navigator.clipboard && window.ClipboardItem) {
+                try {
+                    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+                    shBtn.innerHTML = '<i class="ph ph-check"></i> Скопійовано!';
+                    setTimeout(() => { shBtn.innerHTML = prevSh; }, 1800);
+                    return;
+                } catch (e) {}
+            }
+
+            downloadFallback();
+        } catch (err) {
+            alert('Помилка створення колажу: ' + err.message);
+        } finally {
+            dlBtn.disabled = false;
+            shBtn.disabled = false;
+            dlBtn.innerHTML = prevDl;
+            if (!shBtn.innerHTML.includes('Скопійовано')) shBtn.innerHTML = prevSh;
+        }
     }
 </script>
 </body>
