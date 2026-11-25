@@ -1826,6 +1826,153 @@
             pointer-events: none;
             z-index: 2;
         }
+
+        /* Кнопка «Поділитися» на сторінці книги та вікно постера */
+        .detail-share-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(15, 15, 15, 0.72);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            color: #fff;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 10;
+            transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease;
+        }
+        
+        .detail-share-btn:hover {
+            background: rgba(15, 15, 15, 0.9);
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+            transform: scale(1.06);
+        }
+        
+        .detail-share-btn:active {
+            transform: scale(0.94);
+        }
+        
+        .poster-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.84);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            z-index: 2100;
+            box-sizing: border-box;
+        }
+        
+        .poster-modal {
+            width: 100%;
+            max-width: 420px;
+            max-height: 92dvh;
+            background: #181818;
+            border: 1px solid #2d2d2d;
+            border-radius: 22px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+            box-sizing: border-box;
+        }
+        
+        .poster-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .poster-modal-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-white);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .poster-modal-title i {
+            color: var(--accent-green);
+            font-size: 20px;
+        }
+        
+        .poster-preview-scroll {
+            flex: 1;
+            min-height: 220px;
+            overflow-y: auto;
+            border-radius: 14px;
+            background: #111;
+            border: 1px solid #262626;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        
+        .poster-preview-scroll img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            display: block;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .poster-loading {
+            padding: 60px 20px;
+            color: var(--text-gray);
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        .poster-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .poster-btn {
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            transition: opacity 0.2s, transform 0.15s;
+        }
+        
+        .poster-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+        
+        .poster-btn-secondary {
+            background: #262626;
+            color: var(--text-white);
+            border: 1px solid #353535;
+        }
+        
+        .poster-btn-primary {
+            background: var(--accent-green);
+            color: #0f0f0f;
+        }
     </style>
 </head>
 <body onclick="closeAllMenus()">
@@ -2093,6 +2240,7 @@
             <div id="bookDetailScreen">
                 <div class="detail-cover-container">
                     <button type="button" class="detail-back-btn" onclick="closeBookDetail()"><i class="ph ph-caret-left"></i></button>
+                    <button type="button" class="detail-share-btn" onclick="openSharePosterModal()" title="Поділитися постером"><i class="ph ph-share-network"></i></button>
                     <img src="" alt="Обкладинка" id="detailCoverImg">
                 </div>
                 
@@ -2298,6 +2446,33 @@
             </div>
         </div>
     </div>
+
+    <!-- Вікно генератора постера для шерингу -->
+    <div id="sharePosterOverlay" class="poster-overlay" onclick="closeSharePosterModal()">
+        <div class="poster-modal" onclick="event.stopPropagation()">
+            <div class="poster-modal-header">
+                <div class="poster-modal-title">
+                    <i class="ph-fill ph-image"></i>
+                    <span>Постер для шерингу</span>
+                </div>
+                <button type="button" class="modal-close" onclick="closeSharePosterModal()"><i class="ph ph-x"></i></button>
+            </div>
+            
+            <div class="poster-preview-scroll">
+                <div class="poster-loading" id="posterLoadingState">Малюємо постер...</div>
+                <img id="sharePosterPreview" src="" alt="Постер" style="display: none;">
+            </div>
+            
+            <div class="poster-actions">
+                <button type="button" class="poster-btn poster-btn-secondary" id="posterDownloadBtn" onclick="downloadSharePoster()" disabled>
+                    <i class="ph ph-download-simple"></i> Зберегти
+                </button>
+                <button type="button" class="poster-btn poster-btn-primary" id="posterShareBtn" onclick="shareOrCopyPoster()" disabled>
+                    <i class="ph ph-share-network"></i> Поділитися
+                </button>
+            </div>
+        </div>
+    </div>
     
 <script>
     // ВСТАВ СВОЇ ДАНІ ТУТ:
@@ -2336,6 +2511,10 @@
     
     // Реакція на системну кнопку «Назад» на телефоні
     window.addEventListener('popstate', () => {
+        if (isScreenOpen('sharePosterOverlay')) {
+            closeSharePosterModal(true);
+            return;
+        }
         if (isScreenOpen('rouletteModalOverlay')) {
             closeRouletteModal(true);
             return;
@@ -4121,6 +4300,535 @@
         if (error) {
             alert('Помилка збереження формату: ' + error.message);
         }
+    }
+
+    // --- Генератор PNG-постера з повним відгуком ---
+    let currentPosterBlob = null;
+    let currentPosterUrl = null;
+    let currentPosterFileName = 'poster.png';
+
+    function drawPosterRoundedRect(ctx, x, y, w, h, r) {
+        const radius = Math.min(r, w / 2, h / 2);
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.arcTo(x + w, y, x + w, y + h, radius);
+        ctx.arcTo(x + w, y + h, x, y + h, radius);
+        ctx.arcTo(x, y + h, x, y, radius);
+        ctx.arcTo(x, y, x + w, y, radius);
+        ctx.closePath();
+    }
+
+    function drawPosterCoverImage(ctx, img, x, y, w, h) {
+        const imgRatio = img.naturalWidth / img.naturalHeight;
+        const boxRatio = w / h;
+        let sx = 0, sy = 0, sw = img.naturalWidth, sh = img.naturalHeight;
+
+        if (imgRatio > boxRatio) {
+            sw = img.naturalHeight * boxRatio;
+            sx = (img.naturalWidth - sw) / 2;
+        } else {
+            sh = img.naturalWidth / boxRatio;
+            sy = (img.naturalHeight - sh) / 2;
+        }
+        ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+    }
+
+    function buildPosterStarPath(ctx, cx, cy, outerR, innerR) {
+        ctx.beginPath();
+        for (let i = 0; i < 10; i++) {
+            const r = i % 2 === 0 ? outerR : innerR;
+            const angle = (Math.PI / 5) * i - Math.PI / 2;
+            const px = cx + Math.cos(angle) * r;
+            const py = cy + Math.sin(angle) * r;
+            if (i === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+        }
+        ctx.closePath();
+    }
+
+    function drawPosterStar(ctx, cx, cy, outerR, fillType) {
+        const innerR = outerR * 0.45;
+        buildPosterStarPath(ctx, cx, cy, outerR, innerR);
+        ctx.fillStyle = fillType === 'full' ? '#f5b942' : '#353535';
+        ctx.fill();
+
+        if (fillType === 'half') {
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(cx - outerR - 2, cy - outerR - 2, outerR + 2, outerR * 2 + 4);
+            ctx.clip();
+            buildPosterStarPath(ctx, cx, cy, outerR, innerR);
+            ctx.fillStyle = '#f5b942';
+            ctx.fill();
+            ctx.restore();
+        }
+    }
+
+    function wrapPosterText(ctx, text, maxWidth) {
+        if (!text) return [];
+        const lines = [];
+        const paragraphs = String(text).replace(/\r\n/g, '\n').split('\n');
+
+        paragraphs.forEach(para => {
+            const trimmed = para.trim();
+            if (!trimmed) {
+                lines.push('');
+                return;
+            }
+
+            const words = trimmed.split(/\s+/);
+            let currentLine = '';
+
+            words.forEach(word => {
+                const candidate = currentLine ? `${currentLine} ${word}` : word;
+                if (ctx.measureText(candidate).width <= maxWidth) {
+                    currentLine = candidate;
+                } else {
+                    if (currentLine) lines.push(currentLine);
+
+                    // Якщо одне слово довше за рядок — переносимо по символах
+                    if (ctx.measureText(word).width > maxWidth) {
+                        let chunk = '';
+                        for (const ch of word) {
+                            if (ctx.measureText(chunk + ch).width > maxWidth && chunk) {
+                                lines.push(chunk);
+                                chunk = ch;
+                            } else {
+                                chunk += ch;
+                            }
+                        }
+                        currentLine = chunk;
+                    } else {
+                        currentLine = word;
+                    }
+                }
+            });
+
+            if (currentLine) lines.push(currentLine);
+        });
+
+        // Прибираємо зайві порожні рядки на самому початку/кінці
+        while (lines.length && lines[0] === '') lines.shift();
+        while (lines.length && lines[lines.length - 1] === '') lines.pop();
+
+        return lines;
+    }
+
+    function loadPosterImage(url) {
+        if (!url) return Promise.resolve(null);
+
+        const tryLoad = (src) => new Promise((resolve) => {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => resolve(img);
+            img.onerror = () => resolve(null);
+            img.src = src;
+        });
+
+        // Додаємо параметр для обходу кешу без CORS-заголовків
+        const sep = url.includes('?') ? '&' : '?';
+        return tryLoad(`${url}${sep}poster_cors=1`).then(img => img || tryLoad(url));
+    }
+
+    function formatPosterDate(isoDate) {
+        if (!isoDate) return '';
+        const parts = String(isoDate).slice(0, 10).split('-');
+        if (parts.length !== 3) return '';
+        return `${parts[2]}.${parts[1]}.${parts[0]}`;
+    }
+
+    async function renderBookPosterCanvas(book) {
+        const W = 1080;
+        const padX = 76;
+        const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent-green').trim() || '#6bd026';
+        const fontFamily = getComputedStyle(document.body).fontFamily || 'system-ui, -apple-system, sans-serif';
+
+        const statusMap = {
+            read: 'Прочитано',
+            reading: 'Читаю зараз',
+            unread: 'Не прочитано',
+            planned: 'В планах'
+        };
+
+        // Беремо найсвіжіший текст відгуку прямо з поля вводу
+        const reviewInputEl = document.getElementById('detailReviewInput');
+        const fullReview = ((reviewInputEl ? reviewInputEl.value : book.review) || '').trim();
+        const ratingVal = parseFloat(book.rating) || 0;
+        const finishedStr = book.status === 'read' ? formatPosterDate(book.finished_at) : '';
+        const metaParts = [
+            (book.item_type || 'ТВІР').toUpperCase(),
+            book.format === 'web' ? 'ВЕБ' : null,
+            statusMap[book.status] ? statusMap[book.status].toUpperCase() : null
+        ].filter(Boolean);
+        const metaText = metaParts.join('  •  ');
+
+        const coverImg = await loadPosterImage(book.cover_url || book.image_url || '');
+
+        // Спочатку вимірюємо точні розміри тексту, щоб розрахувати висоту постера
+        const measureCanvas = document.createElement('canvas');
+        const mCtx = measureCanvas.getContext('2d');
+
+        mCtx.font = `800 50px ${fontFamily}`;
+        const titleLines = wrapPosterText(mCtx, book.title || 'Без назви', W - padX * 2);
+
+        const reviewBoxPadX = 52;
+        const reviewBoxPadTop = 64;
+        const reviewBoxPadBottom = 52;
+        const reviewFontSize = 31;
+        const reviewLineHeight = 49;
+        const reviewMaxW = W - padX * 2 - reviewBoxPadX * 2;
+
+        mCtx.font = `400 ${reviewFontSize}px ${fontFamily}`;
+        const reviewLines = fullReview ? wrapPosterText(mCtx, fullReview, reviewMaxW) : [];
+
+        // Рахуємо вертикальну геометрію
+        const topMargin = 82;
+        const pillH = 48;
+        const coverY = topMargin + pillH + 40;
+        const coverW = 420;
+        const coverH = 630;
+
+        const titleStartY = coverY + coverH + 62;
+        const titleLineH = 62;
+        const titleBlockH = titleLines.length * titleLineH;
+
+        const metaRowY = titleStartY + titleBlockH + 34;
+        const hasRatingOrDate = ratingVal > 0 || finishedStr;
+        const afterRatingY = hasRatingOrDate ? (metaRowY + 64) : (titleStartY + titleBlockH + 26);
+
+        let reviewBoxY = afterRatingY + 26;
+        let reviewBoxH = 0;
+        if (reviewLines.length > 0) {
+            const textHeight = reviewLines.reduce((acc, line) => acc + (line === '' ? reviewLineHeight * 0.55 : reviewLineHeight), 0);
+            reviewBoxH = reviewBoxPadTop + textHeight + reviewBoxPadBottom;
+        }
+
+        const footerH = 110;
+        const contentBottom = reviewBoxH > 0 ? (reviewBoxY + reviewBoxH) : afterRatingY;
+        const H = Math.max(1350, Math.ceil(contentBottom + footerH + 30));
+
+        // Створюємо фінальний Canvas
+        const canvas = document.createElement('canvas');
+        canvas.width = W;
+        canvas.height = H;
+        const ctx = canvas.getContext('2d');
+
+        // 1. Темний базовий фон
+        ctx.fillStyle = '#0e0e0e';
+        ctx.fillRect(0, 0, W, H);
+
+        // 2. Розмитий атмосферний фон із обкладинки
+        if (coverImg) {
+            ctx.save();
+            ctx.filter = 'blur(55px) saturate(1.25)';
+            ctx.globalAlpha = 0.42;
+            drawPosterCoverImage(ctx, coverImg, -80, -80, W + 160, Math.min(H + 160, 1700));
+            ctx.restore();
+        } else {
+            const rad = ctx.createRadialGradient(W / 2, 340, 40, W / 2, 420, 680);
+            rad.addColorStop(0, 'rgba(107, 208, 38, 0.22)');
+            rad.addColorStop(1, 'rgba(14, 14, 14, 0)');
+            ctx.fillStyle = rad;
+            ctx.fillRect(0, 0, W, H);
+        }
+
+        // Градієнтне затемнення поверх фону для контрасту тексту
+        const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
+        bgGrad.addColorStop(0, 'rgba(12, 12, 12, 0.58)');
+        bgGrad.addColorStop(0.45, 'rgba(14, 14, 14, 0.86)');
+        bgGrad.addColorStop(1, 'rgba(12, 12, 12, 0.97)');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, W, H);
+
+        // 3. Верхній бейдж (тип • формат • статус)
+        ctx.font = `700 22px ${fontFamily}`;
+        const pillTextW = ctx.measureText(metaText).width;
+        const pillW = Math.min(W - padX * 2, pillTextW + 52);
+        const pillX = (W - pillW) / 2;
+
+        drawPosterRoundedRect(ctx, pillX, topMargin, pillW, pillH, 24);
+        ctx.fillStyle = 'rgba(107, 208, 38, 0.14)';
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'rgba(107, 208, 38, 0.42)';
+        ctx.stroke();
+
+        ctx.fillStyle = accent;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(metaText, W / 2, topMargin + pillH / 2 + 1);
+
+        // 4. Обкладинка з тінню й заокругленням
+        const coverX = (W - coverW) / 2;
+
+        ctx.save();
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.72)';
+        ctx.shadowBlur = 48;
+        ctx.shadowOffsetY = 22;
+        drawPosterRoundedRect(ctx, coverX, coverY, coverW, coverH, 26);
+        ctx.fillStyle = '#1d1d1d';
+        ctx.fill();
+        ctx.restore();
+
+        ctx.save();
+        drawPosterRoundedRect(ctx, coverX, coverY, coverW, coverH, 26);
+        ctx.clip();
+        if (coverImg) {
+            drawPosterCoverImage(ctx, coverImg, coverX, coverY, coverW, coverH);
+        } else {
+            const phGrad = ctx.createLinearGradient(coverX, coverY, coverX + coverW, coverY + coverH);
+            phGrad.addColorStop(0, '#262626');
+            phGrad.addColorStop(1, '#161616');
+            ctx.fillStyle = phGrad;
+            ctx.fillRect(coverX, coverY, coverW, coverH);
+            ctx.fillStyle = '#666';
+            ctx.font = `600 28px ${fontFamily}`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('Без обкладинки', W / 2, coverY + coverH / 2);
+        }
+        ctx.restore();
+
+        // Тонка рамка навколо обкладинки
+        drawPosterRoundedRect(ctx, coverX, coverY, coverW, coverH, 26);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.16)';
+        ctx.stroke();
+
+        // 5. Назва твору
+        ctx.font = `800 50px ${fontFamily}`;
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        titleLines.forEach((line, idx) => {
+            ctx.fillText(line, W / 2, titleStartY + idx * titleLineH);
+        });
+
+        // 6. Зірки рейтингу та дата прочитання
+        if (hasRatingOrDate) {
+            const starR = 22;
+            const starGap = 14;
+            const starsTotalW = 5 * (starR * 2) + 4 * starGap;
+
+            let ratingNumStr = ratingVal > 0 ? `${ratingVal} / 5` : '';
+            ctx.font = `700 32px ${fontFamily}`;
+            const ratingNumW = ratingNumStr ? ctx.measureText(ratingNumStr).width + 20 : 0;
+
+            ctx.font = `500 26px ${fontFamily}`;
+            const dateBadgeStr = finishedStr ? `•  ${finishedStr}` : '';
+            const dateW = dateBadgeStr ? ctx.measureText(dateBadgeStr).width + 24 : 0;
+
+            const rowTotalW = (ratingVal > 0 ? starsTotalW + ratingNumW : 0) + dateW;
+            let cursorX = (W - rowTotalW) / 2;
+            const centerY = metaRowY + 24;
+
+            if (ratingVal > 0) {
+                for (let i = 1; i <= 5; i++) {
+                    let fillType = 'empty';
+                    if (ratingVal >= i) fillType = 'full';
+                    else if (ratingVal >= i - 0.5) fillType = 'half';
+
+                    drawPosterStar(ctx, cursorX + starR, centerY, starR, fillType);
+                    cursorX += starR * 2 + (i < 5 ? starGap : 0);
+                }
+
+                cursorX += 20;
+                ctx.font = `700 32px ${fontFamily}`;
+                ctx.fillStyle = '#f5b942';
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(ratingNumStr, cursorX, centerY + 2);
+                cursorX += ctx.measureText(ratingNumStr).width;
+            }
+
+            if (dateBadgeStr) {
+                cursorX += ratingVal > 0 ? 24 : 0;
+                ctx.font = `500 26px ${fontFamily}`;
+                ctx.fillStyle = '#a0a0a0';
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(ratingVal > 0 ? dateBadgeStr : finishedStr, cursorX, centerY + 2);
+            }
+        }
+
+        // 7. Блок повного відгуку
+        if (reviewLines.length > 0) {
+            const boxX = padX;
+            const boxW = W - padX * 2;
+
+            drawPosterRoundedRect(ctx, boxX, reviewBoxY, boxW, reviewBoxH, 30);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.11)';
+            ctx.stroke();
+
+            // Акуратна зелена акцентна лінія зліва всередині картки
+            drawPosterRoundedRect(ctx, boxX + 20, reviewBoxY + 34, 6, reviewBoxH - 68, 3);
+            ctx.fillStyle = accent;
+            ctx.globalAlpha = 0.75;
+            ctx.fill();
+            ctx.globalAlpha = 1;
+
+            // Маленький заголовок блоку
+            ctx.font = `700 20px ${fontFamily}`;
+            ctx.fillStyle = accent;
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'top';
+            ctx.fillText('ВІДГУК', boxX + reviewBoxPadX, reviewBoxY + 28);
+
+            // Повний текст відгуку
+            ctx.font = `400 ${reviewFontSize}px ${fontFamily}`;
+            ctx.fillStyle = '#efefef';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'top';
+
+            let textY = reviewBoxY + reviewBoxPadTop;
+            reviewLines.forEach(line => {
+                if (line === '') {
+                    textY += reviewLineHeight * 0.55;
+                } else {
+                    ctx.fillText(line, boxX + reviewBoxPadX, textY);
+                    textY += reviewLineHeight;
+                }
+            });
+        }
+
+        // 8. Нижній підпис
+        const footerY = H - 56;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(padX, footerY - 34);
+        ctx.lineTo(W - padX, footerY - 34);
+        ctx.stroke();
+
+        const nickEl = document.getElementById('profileName') || document.getElementById('profileUsername');
+        const nickText = nickEl && nickEl.innerText.trim() && nickEl.innerText.trim() !== 'Читач'
+            ? `@${nickEl.innerText.trim()}`
+            : '';
+
+        ctx.font = `600 24px ${fontFamily}`;
+        ctx.textBaseline = 'middle';
+        if (nickText) {
+            ctx.fillStyle = '#888888';
+            ctx.textAlign = 'left';
+            ctx.fillText(nickText, padX, footerY);
+
+            ctx.fillStyle = accent;
+            ctx.textAlign = 'right';
+            ctx.fillText('Reading Tracker', W - padX, footerY);
+        } else {
+            ctx.fillStyle = '#777777';
+            ctx.textAlign = 'center';
+            ctx.fillText('Reading Tracker', W / 2, footerY);
+        }
+
+        return canvas;
+    }
+
+    async function openSharePosterModal() {
+        const book = loadedItems.find(b => b.id === currentBookId);
+        if (!book) return;
+
+        const overlay = document.getElementById('sharePosterOverlay');
+        const previewImg = document.getElementById('sharePosterPreview');
+        const loadingEl = document.getElementById('posterLoadingState');
+        const dlBtn = document.getElementById('posterDownloadBtn');
+        const shareBtn = document.getElementById('posterShareBtn');
+
+        if (!isScreenOpen('sharePosterOverlay')) {
+            history.pushState({ appLayer: 'poster' }, '');
+        }
+
+        overlay.style.display = 'flex';
+        previewImg.style.display = 'none';
+        loadingEl.style.display = 'block';
+        loadingEl.innerText = 'Малюємо постер...';
+        dlBtn.disabled = true;
+        shareBtn.disabled = true;
+
+        try {
+            const canvas = await renderBookPosterCanvas(book);
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+            if (!blob) throw new Error('Не вдалося сформувати зображення');
+
+            if (currentPosterUrl) URL.revokeObjectURL(currentPosterUrl);
+            currentPosterBlob = blob;
+            currentPosterUrl = URL.createObjectURL(blob);
+
+            const cleanName = (book.title || 'poster')
+                .replace(/[\\/:*?"<>|]+/g, '')
+                .trim()
+                .slice(0, 40) || 'poster';
+            currentPosterFileName = `${cleanName}.png`;
+
+            previewImg.src = currentPosterUrl;
+            previewImg.style.display = 'block';
+            loadingEl.style.display = 'none';
+            dlBtn.disabled = false;
+            shareBtn.disabled = false;
+
+            const testFile = new File([blob], currentPosterFileName, { type: 'image/png' });
+            const canNativeShare = !!(navigator.canShare && navigator.canShare({ files: [testFile] }));
+            shareBtn.innerHTML = canNativeShare
+                ? '<i class="ph ph-share-network"></i> Поділитися'
+                : '<i class="ph ph-copy"></i> Копіювати';
+        } catch (err) {
+            console.error('Poster error:', err);
+            loadingEl.innerText = 'Помилка генерації постера: ' + err.message;
+        }
+    }
+
+    function closeSharePosterModal(fromPopState = false) {
+        if (!fromPopState && history.state?.appLayer === 'poster') {
+            history.back();
+            return;
+        }
+        document.getElementById('sharePosterOverlay').style.display = 'none';
+    }
+
+    function downloadSharePoster() {
+        if (!currentPosterUrl) return;
+        const a = document.createElement('a');
+        a.href = currentPosterUrl;
+        a.download = currentPosterFileName;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+    }
+
+    async function shareOrCopyPoster() {
+        if (!currentPosterBlob) return;
+        const shareBtn = document.getElementById('posterShareBtn');
+        const file = new File([currentPosterBlob], currentPosterFileName, { type: 'image/png' });
+
+        // На телефоні — системне меню «Поділитися» (Telegram, Instagram тощо)
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+                await navigator.share({ files: [file] });
+            } catch (e) {
+                if (e.name !== 'AbortError') downloadSharePoster();
+            }
+            return;
+        }
+
+        // На ПК — копіювання PNG у буфер обміну для миттєвого Ctrl+V
+        if (navigator.clipboard && window.ClipboardItem) {
+            try {
+                await navigator.clipboard.write([
+                    new ClipboardItem({ 'image/png': currentPosterBlob })
+                ]);
+                const prevHtml = shareBtn.innerHTML;
+                shareBtn.innerHTML = '<i class="ph ph-check"></i> Скопійовано!';
+                setTimeout(() => { shareBtn.innerHTML = prevHtml; }, 1800);
+                return;
+            } catch (e) {
+                console.warn('Clipboard copy fallback to download:', e);
+            }
+        }
+
+        downloadSharePoster();
     }
 </script>
 </body>
