@@ -1521,6 +1521,268 @@
             background: var(--accent-green);
             color: #0f0f0f;
         }
+        /* Поле дати прочитання на сторінці книги */
+        .detail-date-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+        }
+        
+        .diary-date-input {
+            flex: 1;
+            min-width: 0;
+            color-scheme: dark;
+            cursor: pointer;
+        }
+        
+        .detail-date-today-btn {
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            background: #222;
+            color: var(--accent-green);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        
+        .detail-date-today-btn:hover {
+            background: rgba(107, 208, 38, 0.14);
+            border-color: var(--accent-green);
+        }
+        
+        /* Річна ціль у Кабінеті */
+        .goal-edit-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid #303030;
+            color: var(--text-gray);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.2s, border-color 0.2s;
+        }
+        
+        .goal-edit-btn:hover {
+            color: var(--text-white);
+            border-color: var(--accent-green);
+        }
+        
+        .goal-stats-row {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .goal-big-numbers {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text-white);
+            line-height: 1;
+        }
+        
+        .goal-big-numbers span {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-gray);
+        }
+        
+        .goal-pct-badge {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--accent-green);
+            background: rgba(107, 208, 38, 0.12);
+            padding: 4px 10px;
+            border-radius: 999px;
+        }
+        
+        .goal-bar-track {
+            width: 100%;
+            height: 10px;
+            background: #262626;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+        
+        .goal-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #53a518 0%, #86ef3c 100%);
+            border-radius: 999px;
+            transition: width 0.45s ease;
+        }
+        
+        .goal-caption {
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+        
+        /* Щоденник читання у Кабінеті */
+        .diary-year-tabs {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        
+        .diary-year-btn {
+            background: #1f1f1f;
+            border: 1px solid #303030;
+            color: var(--text-gray);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .diary-year-btn.active {
+            background: rgba(107, 208, 38, 0.16);
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+        
+        .diary-months-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            width: 100%;
+            min-width: 0;
+        }
+        
+        .diary-month-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #262626;
+        }
+
+        .diary-month-name {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-gray);
+        }
+        
+        .diary-month-count {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent-green);
+        }
+        
+        .diary-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+            min-width: 0;
+        }
+        
+        .diary-entry {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            background: #1a1a1a;
+            border: 1px solid #282828;
+            border-radius: 12px;
+            cursor: pointer;
+            min-width: 0;
+            max-width: 100%;
+            overflow: hidden;
+            box-sizing: border-box;
+            transition: border-color 0.2s, transform 0.15s;
+        }
+        
+        .diary-entry:hover {
+            border-color: var(--accent-green);
+            transform: translateY(-1px);
+        }
+        
+        .diary-day-box {
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
+            background: #242424;
+            border: 1px solid #323232;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-white);
+            flex-shrink: 0;
+        }
+        
+        .diary-cover {
+            width: 34px;
+            height: 50px;
+            border-radius: 6px;
+            object-fit: cover;
+            background: #262626;
+            flex-shrink: 0;
+        }
+        
+        .diary-info {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        
+        .diary-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-white);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .diary-type {
+            font-size: 11px;
+            color: var(--text-gray);
+        }
+        
+        .diary-rating {
+            font-size: 13px;
+            font-weight: 700;
+            color: #f5b942;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        
+        .diary-expand-btn {
+            margin-top: 4px;
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #2d2d2d;
+            background: #1a1a1a;
+            color: var(--accent-green);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .diary-expand-btn:hover {
+            background: rgba(107, 208, 38, 0.1);
+        }
     </style>
 </head>
 <body onclick="closeAllMenus()">
@@ -1692,6 +1954,24 @@
                    </div>
                </div>
 
+               <!-- Річна ціль -->
+               <div class="analytics-card" id="profileGoalSection">
+                   <div class="analytics-title">
+                       <span id="goalSectionTitle">Ціль на рік</span>
+                       <button type="button" class="goal-edit-btn" onclick="editYearlyGoal()">
+                           <i class="ph ph-pencil-simple"></i> Змінити
+                       </button>
+                   </div>
+                   <div class="goal-stats-row">
+                       <div class="goal-big-numbers" id="goalNumbers">0 <span>/ 30</span></div>
+                       <div class="goal-pct-badge" id="goalPctBadge">0%</div>
+                   </div>
+                   <div class="goal-bar-track">
+                       <div class="goal-bar-fill" id="goalBarFill" style="width: 0%;"></div>
+                   </div>
+                   <div class="goal-caption" id="goalCaption"></div>
+               </div>
+
                <!-- Графік розподілу оцінок -->
                <div class="analytics-card" id="profileRatingChartSection">
                    <div class="analytics-title">
@@ -1719,6 +1999,15 @@
                        <span style="font-size: 12px; color: var(--text-gray); font-weight: 500;">За найвищою оцінкою</span>
                    </div>
                    <div class="top-showcase-grid" id="profileTopGrid"></div>
+               </div>
+
+               <!-- Щоденник читання -->
+               <div class="analytics-card" id="profileDiarySection">
+                   <div class="analytics-title">
+                       <span>Щоденник читання</span>
+                       <div class="diary-year-tabs" id="diaryYearTabs"></div>
+                   </div>
+                   <div class="diary-months-wrap" id="diaryMonthsWrap"></div>
                </div>
            </div>   
             
@@ -1798,6 +2087,14 @@
                                 <button type="button" class="progress-quick-btn" onclick="addProgress(5)">+5</button>
                                 <button type="button" class="progress-quick-btn" onclick="addProgress(10)">+10</button>
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-row" id="detailFinishedRow" style="display: none;">
+                        <span class="detail-row-title">Дата прочитання</span>
+                        <div class="detail-date-wrap">
+                            <input type="date" id="detailFinishedAt" class="modal-input diary-date-input" onchange="updateBookFinishedDate(this.value)">
+                            <button type="button" class="detail-date-today-btn" onclick="setBookFinishedToday()">Сьогодні</button>
                         </div>
                     </div>
 
@@ -2545,6 +2842,10 @@
         reviewInput.value = book.review || '';
         document.getElementById('reviewSaveStatus').classList.remove('visible');
         renderDetailStatusPills(book.status);
+        const finRow = document.getElementById('detailFinishedRow');
+        const finInput = document.getElementById('detailFinishedAt');
+        if (finRow) finRow.style.display = book.status === 'read' ? 'flex' : 'none';
+        if (finInput) finInput.value = book.finished_at ? String(book.finished_at).slice(0, 10) : '';
         renderDetailRatingStars(book.rating || 0);
         if (!isScreenOpen('bookDetailScreen')) {
             history.pushState({ appLayer: 'book' }, '');
@@ -2656,9 +2957,25 @@
     async function updateBookStatus(newStatus) {
         renderDetailStatusPills(newStatus);
         const book = loadedItems.find(b => b.id === currentBookId);
+        const updatePayload = { status: newStatus };
+        
+        if (newStatus === 'read' && book && !book.finished_at) {
+            const today = getLocalDateString();
+            updatePayload.finished_at = today;
+            book.finished_at = today;
+        }
+        
         if (book) book.status = newStatus;
-        await supaClient.from('reading_items').update({ status: newStatus }).eq('id', currentBookId);
+        await supaClient.from('reading_items').update(updatePayload).eq('id', currentBookId);
+
         document.getElementById('detailProgressRow').style.display = newStatus === 'reading' ? 'flex' : 'none';
+
+        const finRow = document.getElementById('detailFinishedRow');
+        const finInput = document.getElementById('detailFinishedAt');
+        if (finRow) finRow.style.display = newStatus === 'read' ? 'flex' : 'none';
+        if (finInput && newStatus === 'read') {
+            finInput.value = (book && book.finished_at) ? book.finished_at : '';
+        }
     }
 
     async function updateBookRating(event, starIndex) {
@@ -2844,6 +3161,7 @@
                 if (error) throw error;
             } else {
                 dbData.user_id = session.user.id;
+                if (newItemData.status === 'read') dbData.finished_at = getLocalDateString();
                 const { error } = await supaClient.from('reading_items').insert(dbData);
                 if (error) throw error;
             }
@@ -3223,6 +3541,7 @@
                 }).join('');
             }
         }
+        renderProfileGoalAndDiary(data);
     }
 
     let profileTopItems = [];
@@ -3430,6 +3749,244 @@
             document.getElementById('rouletteModalOverlay').style.display = 'none';
             openBookDetail(targetId);
         }
+    }
+
+    // --- Річна ціль та Щоденник читання ---
+    let diaryAllItems = [];
+    let selectedDiaryYear = new Date().getFullYear();
+    let diaryExpanded = false;
+    let cachedYearlyGoals = {};
+
+    function getLocalDateString() {
+        const d = new Date();
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+    }
+
+    async function updateBookFinishedDate(dateVal) {
+        if (!currentBookId) return;
+        const cleanDate = dateVal || null;
+        const book = loadedItems.find(b => b.id === currentBookId);
+        if (book) book.finished_at = cleanDate;
+        await supaClient.from('reading_items').update({ finished_at: cleanDate }).eq('id', currentBookId);
+    }
+
+    async function setBookFinishedToday() {
+        const today = getLocalDateString();
+        const finInput = document.getElementById('detailFinishedAt');
+        if (finInput) finInput.value = today;
+        await updateBookFinishedDate(today);
+    }
+
+    async function renderProfileGoalAndDiary(items) {
+        diaryAllItems = items || [];
+
+        // Підтягуємо збережену ціль із localStorage + метаданих Supabase
+        try {
+            const localGoals = JSON.parse(localStorage.getItem('tracker_reading_goals') || '{}');
+            cachedYearlyGoals = { ...cachedYearlyGoals, ...localGoals };
+        } catch (e) {}
+
+        renderGoalUI();
+        renderDiaryUI();
+
+        try {
+            const { data: { session } } = await supaClient.auth.getSession();
+            const metaGoals = session?.user?.user_metadata?.reading_goals;
+            if (metaGoals && typeof metaGoals === 'object') {
+                cachedYearlyGoals = { ...cachedYearlyGoals, ...metaGoals };
+                try {
+                    localStorage.setItem('tracker_reading_goals', JSON.stringify(cachedYearlyGoals));
+                } catch (e) {}
+                renderGoalUI();
+            }
+        } catch (e) {}
+    }
+
+    function renderGoalUI() {
+        const currentYear = new Date().getFullYear();
+        const goalTarget = cachedYearlyGoals[String(currentYear)] || 30;
+
+        const finishedThisYear = diaryAllItems.filter(item => {
+            if (item.status !== 'read' || !item.finished_at) return false;
+            return String(item.finished_at).startsWith(String(currentYear));
+        }).length;
+
+        const pct = Math.min(100, Math.round((finishedThisYear / goalTarget) * 100));
+        const realPct = Math.round((finishedThisYear / goalTarget) * 100);
+
+        const titleEl = document.getElementById('goalSectionTitle');
+        const numEl = document.getElementById('goalNumbers');
+        const pctEl = document.getElementById('goalPctBadge');
+        const fillEl = document.getElementById('goalBarFill');
+        const capEl = document.getElementById('goalCaption');
+
+        if (titleEl) titleEl.innerText = `Ціль на ${currentYear}`;
+        if (numEl) numEl.innerHTML = `${finishedThisYear} <span>/ ${goalTarget}</span>`;
+        if (pctEl) pctEl.innerText = `${realPct}%`;
+        if (fillEl) fillEl.style.width = `${pct}%`;
+
+        if (capEl) {
+            if (finishedThisYear >= goalTarget) {
+                capEl.innerText = `Ціль на ${currentYear} виконано! Ти крутий.`;
+            } else {
+                const left = goalTarget - finishedThisYear;
+                capEl.innerText = `Залишилось дочитати: ${left}`;
+            }
+        }
+    }
+
+    async function editYearlyGoal() {
+        const currentYear = String(new Date().getFullYear());
+        const currentGoal = cachedYearlyGoals[currentYear] || 30;
+        const input = prompt(`Скільки творів плануєш прочитати за ${currentYear} рік?`, currentGoal);
+        if (input === null) return;
+
+        const parsed = parseInt(input.trim(), 10);
+        if (isNaN(parsed) || parsed < 1 || parsed > 9999) {
+            alert('Введи число від 1 до 9999');
+            return;
+        }
+
+        cachedYearlyGoals[currentYear] = parsed;
+        try {
+            localStorage.setItem('tracker_reading_goals', JSON.stringify(cachedYearlyGoals));
+        } catch (e) {}
+
+        renderGoalUI();
+
+        try {
+            const { data: { session } } = await supaClient.auth.getSession();
+            if (session) {
+                const existingGoals = session.user.user_metadata?.reading_goals || {};
+                await supaClient.auth.updateUser({
+                    data: { reading_goals: { ...existingGoals, [currentYear]: parsed } }
+                });
+            }
+        } catch (err) {
+            console.error('Помилка збереження цілі:', err);
+        }
+    }
+
+    function setDiaryYear(year) {
+        selectedDiaryYear = year;
+        diaryExpanded = false;
+        renderDiaryUI();
+    }
+
+    function toggleDiaryExpand() {
+        diaryExpanded = !diaryExpanded;
+        renderDiaryUI();
+    }
+
+    function openDiaryBook(bookId) {
+        const book = diaryAllItems.find(b => String(b.id) === String(bookId));
+        if (!book) return;
+        if (!loadedItems.some(b => String(b.id) === String(book.id))) {
+            loadedItems.push(book);
+        }
+        document.getElementById('profileScreen').style.display = 'none';
+        openBookDetail(book.id);
+    }
+
+    function renderDiaryUI() {
+        const tabsWrap = document.getElementById('diaryYearTabs');
+        const monthsWrap = document.getElementById('diaryMonthsWrap');
+        if (!tabsWrap || !monthsWrap) return;
+
+        const datedItems = diaryAllItems.filter(i => i.status === 'read' && i.finished_at);
+        const currentYear = new Date().getFullYear();
+
+        const yearSet = new Set([currentYear]);
+        datedItems.forEach(item => {
+            const y = parseInt(String(item.finished_at).slice(0, 4), 10);
+            if (!isNaN(y)) yearSet.add(y);
+        });
+
+        const years = Array.from(yearSet).sort((a, b) => b - a);
+        if (!years.includes(selectedDiaryYear)) selectedDiaryYear = years[0];
+
+        tabsWrap.innerHTML = years.map(y => `
+            <button type="button" class="diary-year-btn ${y === selectedDiaryYear ? 'active' : ''}" onclick="setDiaryYear(${y})">${y}</button>
+        `).join('');
+
+        const yearItems = datedItems
+            .filter(i => String(i.finished_at).startsWith(String(selectedDiaryYear)))
+            .sort((a, b) => {
+                const cmp = String(b.finished_at).localeCompare(String(a.finished_at));
+                if (cmp !== 0) return cmp;
+                return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+            });
+
+        if (yearItems.length === 0) {
+            monthsWrap.innerHTML = `<p style="color: var(--text-gray); font-size: 13px; margin: 0;">За ${selectedDiaryYear} рік поки немає записів. Переведи твір у «Прочитані» або вкажи дату на сторінці книги.</p>`;
+            return;
+        }
+
+        const LIMIT = 10;
+        const visibleItems = diaryExpanded ? yearItems : yearItems.slice(0, LIMIT);
+
+        const monthNames = [
+            'Січень', 'Лютий', 'Березень', 'Квітень', 'Травень', 'Червень',
+            'Липень', 'Серпень', 'Вересень', 'Жовтень', 'Листопад', 'Грудень'
+        ];
+
+        const groups = new Map();
+        visibleItems.forEach(item => {
+            const parts = String(item.finished_at).slice(0, 10).split('-');
+            const mIdx = Math.max(0, Math.min(11, (parseInt(parts[1], 10) || 1) - 1));
+            const day = parseInt(parts[2], 10) || 1;
+            if (!groups.has(mIdx)) groups.set(mIdx, []);
+            groups.get(mIdx).push({ item, day });
+        });
+
+        let html = '';
+        groups.forEach((entries, mIdx) => {
+            const rowsHtml = entries.map(({ item, day }) => {
+                const cover = item.cover_url || item.image_url || '';
+                const safeTitle = (item.title || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                const ratingHtml = parseFloat(item.rating) > 0
+                    ? `<div class="diary-rating">★ ${item.rating}</div>`
+                    : '';
+
+                return `
+                    <div class="diary-entry" onclick="openDiaryBook('${item.id}')">
+                        <div class="diary-day-box">${day}</div>
+                        ${cover
+                            ? `<img class="diary-cover" src="${cover}" alt="" loading="lazy">`
+                            : `<div class="diary-cover"></div>`
+                        }
+                        <div class="diary-info">
+                            <div class="diary-title">${safeTitle}</div>
+                            <div class="diary-type">${item.item_type || ''}</div>
+                        </div>
+                        ${ratingHtml}
+                    </div>
+                `;
+            }).join('');
+
+            html += `
+                <div class="diary-month-block">
+                    <div class="diary-month-header">
+                        <span class="diary-month-name">${monthNames[mIdx]}</span>
+                        <span class="diary-month-count">${entries.length}</span>
+                    </div>
+                    <div class="diary-list">${rowsHtml}</div>
+                </div>
+            `;
+        });
+
+        if (yearItems.length > LIMIT) {
+            html += `
+                <button type="button" class="diary-expand-btn" onclick="toggleDiaryExpand()">
+                    ${diaryExpanded ? 'Згорнути' : `Показати всі за ${selectedDiaryYear} (${yearItems.length})`}
+                </button>
+            `;
+        }
+
+        monthsWrap.innerHTML = html;
     }
 </script>
 </body>
