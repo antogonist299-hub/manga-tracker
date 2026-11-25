@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Трекер читання</title>
     <!-- Налаштування для PWA -->
     <link rel="manifest" href="manifest.json">
@@ -1248,6 +1248,32 @@
             .rating-label {
                 font-size: 12px;
                 margin-top: 10px;
+            }
+        }
+        
+        /* Фікс нижньої панелі під кнопками телефону (тільки для мобільних) */
+        @media (max-width: 767px) {
+            html, body {
+                height: 100dvh !important;
+                max-height: 100dvh !important;
+            }
+            
+            .bottom-nav {
+                position: fixed !important;
+                left: 0 !important;
+                right: 0 !important;
+                bottom: 0 !important;
+                width: 100%;
+                height: auto !important;
+                min-height: 60px;
+                padding-top: 8px;
+                padding-bottom: max(10px, env(safe-area-inset-bottom));
+                z-index: 50;
+                box-sizing: border-box;
+            }
+            
+            #trackerScreen {
+                padding-bottom: calc(95px + env(safe-area-inset-bottom));
             }
         }
     </style>
