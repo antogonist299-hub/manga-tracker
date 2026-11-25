@@ -1668,6 +1668,27 @@
         });
     }
     
+    function isScreenOpen(id) {
+        const el = document.getElementById(id);
+        return el && getComputedStyle(el).display !== 'none';
+    }
+    
+    // Реакція на системну кнопку «Назад» на телефоні
+    window.addEventListener('popstate', () => {
+        if (isScreenOpen('addModalOverlay')) {
+            document.getElementById('addModalOverlay').style.display = 'none';
+            return;
+        }
+        if (isScreenOpen('bookDetailScreen')) {
+            closeBookDetail(true);
+            return;
+        }
+        if (isScreenOpen('seriesDetailScreen')) {
+            (true);
+            return;
+        }
+    });
+    
     let currentTypeFilter = 'ALL';
     let currentSortMode = 'alpha';
     let currentBookId = null;
@@ -1864,9 +1885,10 @@
                                         ).join('');
     }
     
-    async function openSeriesDetail(seriesId) {
-        if (document.getElementById('seriesDetailScreen').style.display !== 'flex') {
+    async function openSeriesDetail(seriesId, skipHistory = false) {
+        if (!skipHistory && !isScreenOpen('seriesDetailScreen')) {
             saveScrollPosition();
+            history.pushState({ appLayer: 'series' }, '');
         }
         currentSeriesId = seriesId;
         const series = allSeries.find(s => s.id === seriesId);
@@ -1928,11 +1950,15 @@
         document.getElementById('seriesDetailScreen').style.display = 'flex';
     }
     
-    function closeSeriesDetail() {
+    function closeSeriesDetail(fromPopState = false) {
+        if (!fromPopState && history.state?.appLayer === 'series') {
+            history.back();
+            return;
+        }
+        
         currentSeriesId = null;
         document.getElementById('seriesDetailScreen').style.display = 'none';
         
-        // Залишаємо лише томи, що належать до поточної вкладки
         loadedItems = loadedItems.filter(item => item.status === currentActiveTab);
         
         document.getElementById('headerSection').style.display = 'block';
@@ -2072,6 +2098,9 @@
         document.getElementById('reviewSaveStatus').classList.remove('visible');
         renderDetailStatusPills(book.status);
         renderDetailRatingStars(book.rating || 0);
+        if (!isScreenOpen('bookDetailScreen')) {
+            history.pushState({ appLayer: 'book' }, '');
+        }
         if (!currentSeriesId) saveScrollPosition();
         document.getElementById('headerSection').style.display = 'none';
         document.getElementById('trackerScreen').style.display = 'none';
@@ -2091,7 +2120,12 @@
         autoResizeTextarea(reviewInput);
     }
     
-    async function closeBookDetail() {
+    async function closeBookDetail(fromPopState = false) {
+        if (!fromPopState && history.state?.appLayer === 'book') {
+            history.back();
+            return;
+        }
+        
         if (typeof reviewSaveTimer !== 'undefined' && reviewSaveTimer) {
             clearTimeout(reviewSaveTimer);
             reviewSaveTimer = null;
@@ -2101,18 +2135,17 @@
         document.getElementById('bookDetailScreen').style.display = 'none';
         document.querySelector('.bottom-nav').style.display = '';
         
+        if (currentSeriesId) {
+            openSeriesDetail(currentSeriesId, true);
+            return;
+        }
+        
         if (currentActiveTab === 'profile') {
             document.getElementById('profileScreen').style.display = 'flex';
             loadProfileStats();
             return;
         }
         
-        if (currentSeriesId) {
-            openSeriesDetail(currentSeriesId);
-            return;
-        }
-        
-        // Прибираємо з поточного списку книги, яким щойно змінили статус
         loadedItems = loadedItems.filter(item => item.status === currentActiveTab);
         
         document.getElementById('headerSection').style.display = 'block';
@@ -2223,6 +2256,9 @@
 
     // --- Модальне Додавання / Редагування ---
     function openAddModal() {
+        if (!isScreenOpen('addModalOverlay')) {
+            history.pushState({ appLayer: 'modal' }, '');
+        }
         editModeId = null;
         document.getElementById('addSeriesInput').value = '';
         document.getElementById('modalFormTitle').innerText = "Додати твір";
