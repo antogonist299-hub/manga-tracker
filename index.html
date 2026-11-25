@@ -1276,6 +1276,73 @@
                 padding-bottom: calc(95px + env(safe-area-inset-bottom));
             }
         }
+        
+        /* Картка швидкого додавання наступного тому в серії */
+        .quick-add-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 2px dashed #333;
+            border-radius: 14px;
+            min-height: 240px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            color: var(--text-gray);
+            transition: border-color 0.2s, background-color 0.2s, color 0.2s, transform 0.15s;
+            box-sizing: border-box;
+        }
+        
+        .quick-add-card:hover {
+            border-color: var(--accent-green);
+            background: rgba(107, 208, 38, 0.06);
+            color: var(--text-white);
+            transform: translateY(-2px);
+        }
+        
+        .quick-add-card.loading {
+            pointer-events: none;
+            opacity: 0.65;
+            border-color: var(--accent-green);
+        }
+        
+        .quick-add-plus {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: var(--accent-green);
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        
+        .quick-add-card:hover .quick-add-plus {
+            transform: scale(1.08);
+            background: rgba(107, 208, 38, 0.16);
+        }
+        
+        .quick-add-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-white);
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hiddn;
+        }
+        
+        .quick-add-sub {
+            font-size: 11px;
+            color: var(--text-gray);
+        }
     </style>
 </head>
 <body onclick="closeAllMenus()">
@@ -1504,6 +1571,7 @@
                 </div>
                 <div class="series-volumes-section">
                     <div class="items-grid" id="seriesVolumesGrid"></div>
+                    <input type="file" id="quickVolumeFileInput" accept="image/*" style="display: none;" onchange="handleQuickVolumeFile(event)">
                 </div>
             </div>
 
@@ -1911,6 +1979,116 @@
                                         ).join('');
     }
     
+    let currentSeriesVolumes = [];
+    
+    function getNextVolumeTitle(seriesTitle, volumes) {
+        if (!volumes || volumes.length === 0) {
+            return `${seriesTitle}, том 1`;
+        }
+        
+        const explicitRegex = /(№|#|(?:^|[\s.,(—-])(?:том|т\.|vol\.?|випуск|ч\.|частина|книга))(\s*)(\d+)/i;
+        const fallbackRegex = /^(.*?)(\d+)([^\d]*)$/;
+        
+        let bestTitle = null;
+        let maxNum = -1;
+        let usedExplicit = false;
+        
+        volumes.forEach(v => {
+            const title = (v.title || '').trim();
+            if (!title) return;
+            
+            const expMatch = title.match(explicitRegex);
+            if (expMatch) {
+                const num = parseInt(expMatch[3], 10);
+                if (!usedExplicit || num > maxNum) {
+                    maxNum = num;
+                    bestTitle = title;
+                    usedExplicit = true;
+                }
+                return;
+            }
+            
+            if (!usedExplicit) {
+                const fbMatch = title.match(fallbackRegex);
+                if (fbMatch) {
+                    const num = parseInt(fbMatch[2], 10);
+                    if (num < 1900 && num > maxNum) {
+                        maxNum = num;
+                        bestTitle = title;
+                    }
+                }
+            }
+        });
+        
+        if (bestTitle && maxNum >= 0) {
+            if (usedExplicit) {
+                return bestTitle.replace(explicitRegex, `$1$2${maxNum + 1}`);
+            }
+            return bestTitle.replace(fallbackRegex, `$1${maxNum + 1}$3`);
+        }
+        
+        return `${seriesTitle}, том ${volumes.length + 1}`;
+    }
+    
+    function triggerQuickVolumeUpload() {
+        document.getElementById('quickVolumeFileInput').click();
+    }
+    
+    async function handleQuickVolumeFile(event) {
+        const file = event.target.files[0];
+        if (!file || !currentSeriesId) return;
+        
+        const series = allSeries.find(s => s.id === currentSeriesId);
+        if (!series) return;
+        
+        const card = document.getElementById('quickAddVolumeCard');
+        if (card) {
+            card.classList.add('loading');
+            card.querySelector('.quick-add-label').innerText = 'Завантаження...';
+        }
+        
+        try {
+            const { data: { session } } = await supaClient.auth.getSession();
+            if (!session) throw new Error('Немає активної сесії');
+            
+            const ext = file.name.split('.').pop();
+            const fileName = `${Date.now()}.${ext}`;
+            const { error: uploadError } = await supaClient.storage.from('covers').upload(fileName, file);
+            if (uploadError) throw uploadError;
+            
+            const finalCoverUrl = supaClient.storage.from('covers').getPublicUrl(fileName).data.publicUrl;
+            
+            const nextTitle = getNextVolumeTitle(series.title, currentSeriesVolumes);
+            const typeSource = currentSeriesVolumes.find(v => v.item_type);
+            const itemType = typeSource ? typeSource.item_type : 'МАНҐА';
+            
+            const targetStatus = ['reading', 'read', 'unread', 'planned'].includes(currentActiveTab)
+                ? currentActiveTab
+                : (currentSeriesVolumes[currentSeriesVolumes.length - 1]?.status || 'unread');
+            
+            const { error: insertError } = await supaClient.from('reading_items').insert({
+                user_id: session.user.id,
+                title: nextTitle,
+                item_type: itemType,
+                status: targetStatus,
+                cover_url: finalCoverUrl,
+                series_id: currentSeriesId
+            });
+            
+            if (insertError) throw insertError;
+            
+            await openSeriesDetail(currentSeriesId, true);
+        } catch (error) {
+            alert('Помилка додавання тому: ' + error.message);
+            if (card) {
+                card.classList.remove('loading');
+                card.querySelector('.quick-add-label').innerText = 'Спробувати ще раз';
+            }
+        } finally {
+            event.target.value = '';
+        }
+    }
+    
     async function openSeriesDetail(seriesId, skipHistory = false) {
         if (!skipHistory && !isScreenOpen('seriesDetailScreen')) {
             saveScrollPosition();
@@ -1953,8 +2131,12 @@
         document.getElementById('seriesStatRating').innerText = avgRating !== '—' ? `${avgRating} ★` : '—';
         
         const statusLabels = { read: 'Прочитано', unread: 'Не читано', planned: 'В планах', reading: 'Читаю' };
+        currentSeriesVolumes = volumes;
+
+        const statusLabels = { read: 'Прочитано', unread: 'Не читано', planned: 'В планах', reading: 'Читаю' };
         const grid = document.getElementById('seriesVolumesGrid');
-        grid.innerHTML = volumes.map(item => `
+
+        const volumesHtml = volumes.map(item => `
         <div class="card" onclick="openBookDetail('${item.id}')">
             <div class="card-image-wrapper">
                 <img src="${item.cover_url || 'https://via.placeholder.com/150'}" alt="Обкладинка">
@@ -1970,7 +2152,29 @@
             <div class="card-title">${item.title}</div>
         </div>
         `).join('');
-        
+
+        const totalPlanned = parseInt(series.total_volumes, 10) || 0;
+        const showQuickAdd = totalPlanned === 0 || volumes.length < totalPlanned;
+
+        let quickAddHtml = '';
+        if (showQuickAdd) {
+            const nextTitle = getNextVolumeTitle(series.title, volumes);
+            const targetStatus = ['reading', 'read', 'unread', 'planned'].includes(currentActiveTab)
+                ? currentActiveTab
+                : (volumes[volumes.length - 1]?.status || 'unread');
+            const safeTitle = nextTitle.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+            quickAddHtml = `
+            <div class="quick-add-card" id="quickAddVolumeCard" onclick="triggerQuickVolumeUpload()">
+                <div class="quick-add-plus"><i class="ph ph-plus"></i></div>
+                <div class="quick-add-label">${safeTitle}</div>
+                <div class="quick-add-sub">Обрати обкладинку • ${statusLabels[targetStatus] || ''}</div>
+            </div>
+            `;
+        }
+
+        grid.innerHTML = volumesHtml + quickAddHtml;
+
         document.getElementById('headerSection').style.display = 'none';
         document.getElementById('trackerScreen').style.display = 'none';
         document.getElementById('seriesDetailScreen').style.display = 'flex';
