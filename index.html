@@ -2610,6 +2610,267 @@
             color: #f5b942;
             box-shadow: inset 0 0 0 1px rgba(245, 185, 66, 0.42);
         }
+
+        /* Цитатник та нотатки під час читання */
+        .notes-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            width: 100%;
+        }
+        
+        .notes-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .notes-count-badge {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent-green);
+            background: rgba(107, 208, 38, 0.14);
+            padding: 2px 8px;
+            border-radius: 999px;
+        }
+        
+        .notes-add-toggle {
+            padding: 6px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(107, 208, 38, 0.35);
+            background: rgba(107, 208, 38, 0.12);
+            color: var(--accent-green);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        
+        .notes-add-toggle:hover {
+            background: rgba(107, 208, 38, 0.22);
+            border-color: var(--accent-green);
+        }
+        
+        .note-composer {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            padding: 12px;
+            background: #171717;
+            border: 1px solid #2c2c2c;
+            border-radius: 14px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .note-composer.open {
+            display: flex;
+        }
+        
+        .note-composer-top {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .note-type-pills {
+            display: inline-flex;
+            gap: 6px;
+        }
+        
+        .note-type-pill {
+            padding: 7px 12px;
+            border-radius: 10px;
+            border: 1px solid #303030;
+            background: #222;
+            color: var(--text-gray);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.18s ease;
+        }
+        
+        .note-type-pill.active {
+            background: rgba(107, 208, 38, 0.16);
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+        
+        .note-loc-input {
+            flex: 1;
+            min-width: 120px;
+            padding: 8px 11px !important;
+            font-size: 13px !important;
+        }
+        
+        .note-textarea {
+            min-height: 82px;
+            resize: vertical;
+            font-size: 14px !important;
+            line-height: 1.45;
+        }
+        
+        .note-composer-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+        
+        .note-action-btn {
+            padding: 8px 14px;
+            border-radius: 10px;
+            border: none;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        
+        .note-action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .note-action-cancel {
+            background: #262626;
+            color: var(--text-gray);
+        }
+        
+        .note-action-save {
+            background: var(--accent-green);
+            color: #0e0e0e;
+        }
+        
+        .notes-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+        
+        .note-card {
+            background: #171717;
+            border: 1px solid #282828;
+            border-left: 3px solid #4a6b8a;
+            border-radius: 12px;
+            padding: 12px 13px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-sizing: border-box;
+        }
+        
+        .note-card.is-quote {
+            border-left-color: var(--accent-green);
+            background: linear-gradient(135deg, rgba(107, 208, 38, 0.05) 0%, #171717 55%);
+        }
+        
+        .note-card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        
+        .note-card-meta {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            min-width: 0;
+        }
+        
+        .note-kind-tag {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(96, 165, 250, 0.14);
+            color: #7dbbff;
+        }
+        
+        .note-card.is-quote .note-kind-tag {
+            background: rgba(107, 208, 38, 0.14);
+            color: var(--accent-green);
+        }
+        
+        .note-loc-tag {
+            font-size: 11px;
+            font-weight: 600;
+            color: #d4d4d4;
+            background: #242424;
+            border: 1px solid #323232;
+            padding: 2px 7px;
+            border-radius: 6px;
+        }
+        
+        .note-date-tag {
+            font-size: 11px;
+            color: var(--text-gray);
+        }
+        
+        .note-card-actions {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+        
+        .note-icon-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            color: var(--text-gray);
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.15s, color 0.15s;
+        }
+        
+        .note-icon-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-white);
+        }
+        
+        .note-icon-btn.delete:hover {
+            background: rgba(229, 72, 77, 0.16);
+            color: #ff6b6b;
+        }
+        
+        .note-card-body {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #ececec;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        
+        .note-card.is-quote .note-card-body {
+            font-style: italic;
+            color: #f4f4f4;
+        }
+        
+        .notes-empty {
+            font-size: 13px;
+            color: var(--text-gray);
+            padding: 4px 2px;
+            margin: 0;
+        }
     </style>
 </head>
 <body onclick="closeAllMenus()">
@@ -2977,6 +3238,41 @@
                             <span class="save-status" id="reviewSaveStatus">Збережено ✓</span>
                         </div>
                         <textarea id="detailReviewInput" class="modal-input review-textarea" placeholder="Писати текст тут....." oninput="handleReviewInput(this)"></textarea>
+                    </div>
+
+                    <div class="detail-row" id="detailNotesRow" style="margin-top: 14px;">
+                        <div class="notes-section-header">
+                            <div class="notes-title-wrap">
+                                <span class="detail-row-title">Цитати та нотатки</span>
+                                <span class="notes-count-badge" id="detailNotesCount" style="display: none;">0</span>
+                            </div>
+                            <button type="button" class="notes-add-toggle" id="noteAddToggleBtn" onclick="toggleNoteComposer()">
+                                <i class="ph ph-plus"></i> Додати
+                            </button>
+                        </div>
+
+                        <div class="note-composer" id="noteComposer">
+                            <div class="note-composer-top">
+                                <div class="note-type-pills" id="noteTypeGroup">
+                                    <button type="button" class="note-type-pill active" data-type="quote" onclick="selectNoteType('quote')">
+                                        <i class="ph ph-quotes"></i> Цитата
+                                    </button>
+                                    <button type="button" class="note-type-pill" data-type="note" onclick="selectNoteType('note')">
+                                        <i class="ph ph-note-pencil"></i> Нотатка
+                                    </button>
+                                </div>
+                                <input type="text" id="noteLocInput" class="modal-input note-loc-input" placeholder="Стор. / розд. (необов'язк.)">
+                            </div>
+
+                            <textarea id="noteTextInput" class="modal-input note-textarea" placeholder="Влучна фраза або думка під час читання..." onkeydown="if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') saveBookNote()"></textarea>
+
+                            <div class="note-composer-actions">
+                                <button type="button" class="note-action-btn note-action-cancel" onclick="toggleNoteComposer(false)">Скасувати</button>
+                                <button type="button" class="note-action-btn note-action-save" id="noteSaveBtn" onclick="saveBookNote()">Зберегти</button>
+                            </div>
+                        </div>
+
+                        <div class="notes-list" id="detailNotesList"></div>
                     </div>
                 </div>
             </div>
@@ -3874,6 +4170,8 @@
         if (finRow) finRow.style.display = book.status === 'read' ? 'flex' : 'none';
         if (finInput) finInput.value = book.finished_at ? String(book.finished_at).slice(0, 10) : '';
         renderDetailRatingStars(book.rating || 0);
+        resetNoteComposer();
+        renderBookNotes(book);
         if (!isScreenOpen('bookDetailScreen')) {
             history.pushState({ appLayer: 'book' }, '');
         }
@@ -7166,6 +7464,282 @@
         }
 
         downloadWrappedPoster();
+    }
+
+    // --- Цитатник / Нотатки під час читання ---
+    let currentNoteDraftType = 'quote';
+    let editingNoteId = null;
+
+    function notesEscapeHtml(str) {
+        return String(str || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    function getBookNotes(book) {
+        if (!book || !book.notes) return [];
+        if (Array.isArray(book.notes)) return book.notes;
+        try {
+            const parsed = JSON.parse(book.notes);
+            return Array.isArray(parsed) ? parsed : [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function formatNoteDate(isoStr) {
+        if (!isoStr) return '';
+        const d = new Date(isoStr);
+        if (isNaN(d.getTime())) return '';
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        return `${day}.${month}.${d.getFullYear()}`;
+    }
+
+    function selectNoteType(type) {
+        currentNoteDraftType = type === 'note' ? 'note' : 'quote';
+        const pills = document.querySelectorAll('#noteTypeGroup .note-type-pill');
+        pills.forEach(p => p.classList.toggle('active', p.dataset.type === currentNoteDraftType));
+
+        const textEl = document.getElementById('noteTextInput');
+        if (textEl) {
+            textEl.placeholder = currentNoteDraftType === 'quote'
+                ? 'Влучна фраза чи діалог із твору...'
+                : 'Думка, теорія чи враження під час читання...';
+        }
+    }
+
+    function resetNoteComposer() {
+        editingNoteId = null;
+        const composer = document.getElementById('noteComposer');
+        const toggleBtn = document.getElementById('noteAddToggleBtn');
+        const locEl = document.getElementById('noteLocInput');
+        const textEl = document.getElementById('noteTextInput');
+        const saveBtn = document.getElementById('noteSaveBtn');
+
+        if (composer) composer.classList.remove('open');
+        if (toggleBtn) toggleBtn.innerHTML = '<i class="ph ph-plus"></i> Додати';
+        if (locEl) locEl.value = '';
+        if (textEl) textEl.value = '';
+        if (saveBtn) saveBtn.innerText = 'Зберегти';
+        selectNoteType('quote');
+    }
+
+    function toggleNoteComposer(forceState) {
+        const composer = document.getElementById('noteComposer');
+        const toggleBtn = document.getElementById('noteAddToggleBtn');
+        if (!composer) return;
+
+        const willOpen = typeof forceState === 'boolean'
+            ? forceState
+            : !composer.classList.contains('open');
+
+        if (!willOpen) {
+            resetNoteComposer();
+            return;
+        }
+
+        composer.classList.add('open');
+        if (toggleBtn) toggleBtn.innerHTML = '<i class="ph ph-x"></i> Закрити';
+
+        // Якщо додаємо новий запис — автоматично підставляємо поточний прогрес
+        const locEl = document.getElementById('noteLocInput');
+        if (!editingNoteId && locEl && !locEl.value.trim()) {
+            const curPageVal = document.getElementById('detailCurrentPage')?.value?.trim();
+            if (curPageVal && Number(curPageVal) > 0) {
+                locEl.value = curPageVal;
+            }
+        }
+
+        const textEl = document.getElementById('noteTextInput');
+        if (textEl) textEl.focus();
+    }
+
+    function renderBookNotes(book) {
+        const listEl = document.getElementById('detailNotesList');
+        const countEl = document.getElementById('detailNotesCount');
+        if (!listEl) return;
+
+        const notes = getBookNotes(book);
+
+        if (countEl) {
+            countEl.innerText = String(notes.length);
+            countEl.style.display = notes.length > 0 ? 'inline-block' : 'none';
+        }
+
+        if (notes.length === 0) {
+            listEl.innerHTML = '<p class="notes-empty">Поки порожньо — зберігай тут улюблені цитати або думки по ходу читання.</p>';
+            return;
+        }
+
+        listEl.innerHTML = notes.map(note => {
+            const isQuote = note.type !== 'note';
+            const safeText = notesEscapeHtml(note.text);
+            const rawLoc = (note.loc || '').trim();
+            const locDisplay = rawLoc
+                ? (/^\d+$/.test(rawLoc) ? `с. / розд. ${rawLoc}` : rawLoc)
+                : '';
+            const safeLoc = notesEscapeHtml(locDisplay);
+            const dateStr = formatNoteDate(note.created_at);
+
+            return `
+                <div class="note-card ${isQuote ? 'is-quote' : ''}">
+                    <div class="note-card-top">
+                        <div class="note-card-meta">
+                            <span class="note-kind-tag">
+                                <i class="ph ${isQuote ? 'ph-quotes' : 'ph-note-pencil'}"></i>
+                                ${isQuote ? 'Цитата' : 'Нотатка'}
+                            </span>
+                            ${safeLoc ? `<span class="note-loc-tag">${safeLoc}</span>` : ''}
+                            ${dateStr ? `<span class="note-date-tag">${dateStr}</span>` : ''}
+                        </div>
+                        <div class="note-card-actions">
+                            <button type="button" class="note-icon-btn" title="Копіювати" onclick="copyBookNote('${note.id}', this)">
+                                <i class="ph ph-copy"></i>
+                            </button>
+                            <button type="button" class="note-icon-btn" title="Редагувати" onclick="editBookNote('${note.id}')">
+                                <i class="ph ph-pencil-simple"></i>
+                            </button>
+                            <button type="button" class="note-icon-btn delete" title="Видалити" onclick="deleteBookNote('${note.id}')">
+                                <i class="ph ph-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="note-card-body">${isQuote ? `«${safeText}»` : safeText}</div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    async function persistBookNotes(book, updatedNotes) {
+        book.notes = updatedNotes;
+
+        // Синхронізуємо кеш Кабінету, якщо книга там є
+        if (typeof diaryAllItems !== 'undefined' && Array.isArray(diaryAllItems)) {
+            const cached = diaryAllItems.find(b => String(b.id) === String(book.id));
+            if (cached) cached.notes = updatedNotes;
+        }
+
+        const { error } = await supaClient
+            .from('reading_items')
+            .update({ notes: updatedNotes })
+            .eq('id', book.id);
+
+        if (error) {
+            alert('Помилка збереження нотатки: ' + error.message);
+            return false;
+        }
+        return true;
+    }
+
+    async function saveBookNote() {
+        const book = loadedItems.find(b => b.id === currentBookId);
+        if (!book) return;
+
+        const textEl = document.getElementById('noteTextInput');
+        const locEl = document.getElementById('noteLocInput');
+        const saveBtn = document.getElementById('noteSaveBtn');
+
+        const text = (textEl?.value || '').trim();
+        if (!text) {
+            if (textEl) textEl.focus();
+            return;
+        }
+        const loc = (locEl?.value || '').trim();
+
+        const currentNotes = getBookNotes(book).slice();
+        let updatedNotes;
+
+        if (editingNoteId) {
+            updatedNotes = currentNotes.map(n =>
+                n.id === editingNoteId
+                    ? { ...n, type: currentNoteDraftType, text, loc }
+                    : n
+            );
+        } else {
+            const newNote = {
+                id: `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+                type: currentNoteDraftType,
+                text,
+                loc,
+                created_at: new Date().toISOString()
+            };
+            updatedNotes = [newNote, ...currentNotes];
+        }
+
+        if (saveBtn) {
+            saveBtn.disabled = true;
+            saveBtn.innerText = 'Збереження...';
+        }
+
+        const ok = await persistBookNotes(book, updatedNotes);
+
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.innerText = 'Зберегти';
+        }
+
+        if (ok) {
+            resetNoteComposer();
+            renderBookNotes(book);
+        }
+    }
+
+    function editBookNote(noteId) {
+        const book = loadedItems.find(b => b.id === currentBookId);
+        if (!book) return;
+        const note = getBookNotes(book).find(n => n.id === noteId);
+        if (!note) return;
+
+        editingNoteId = note.id;
+        selectNoteType(note.type || 'quote');
+
+        const locEl = document.getElementById('noteLocInput');
+        const textEl = document.getElementById('noteTextInput');
+        const saveBtn = document.getElementById('noteSaveBtn');
+
+        if (locEl) locEl.value = note.loc || '';
+        if (textEl) textEl.value = note.text || '';
+        if (saveBtn) saveBtn.innerText = 'Оновити';
+
+        toggleNoteComposer(true);
+    }
+
+    async function deleteBookNote(noteId) {
+        const book = loadedItems.find(b => b.id === currentBookId);
+        if (!book) return;
+        if (!confirm('Видалити цей запис?')) return;
+
+        const updatedNotes = getBookNotes(book).filter(n => n.id !== noteId);
+        if (editingNoteId === noteId) resetNoteComposer();
+
+        const ok = await persistBookNotes(book, updatedNotes);
+        if (ok) renderBookNotes(book);
+    }
+
+    async function copyBookNote(noteId, btnEl) {
+        const book = loadedItems.find(b => b.id === currentBookId);
+        if (!book) return;
+        const note = getBookNotes(book).find(n => n.id === noteId);
+        if (!note) return;
+
+        const locStr = (note.loc || '').trim();
+        const locPart = locStr ? ` (${/^\d+$/.test(locStr) ? 'с./розд. ' + locStr : locStr})` : '';
+        const formatted = note.type !== 'note'
+            ? `«${note.text}»\n— ${book.title}${locPart}`
+            : `${note.text}\n— ${book.title}${locPart}`;
+
+        try {
+            await navigator.clipboard.writeText(formatted);
+            if (btnEl) {
+                btnEl.innerHTML = '<i class="ph ph-check" style="color: var(--accent-green);"></i>';
+                setTimeout(() => { btnEl.innerHTML = '<i class="ph ph-copy"></i>'; }, 1400);
+            }
+        } catch (e) {
+            alert('Не вдалося скопіювати текст');
+        }
     }
 </script>
 </body>
