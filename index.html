@@ -2580,6 +2580,36 @@
             font-size: 14px;
             line-height: 1.45;
         }
+
+        /* Перемикач періодів (Тиждень / Місяць / Рік) у Підсумках */
+        .wrapped-mode-switch {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            background: #121212;
+            padding: 4px;
+            border-radius: 12px;
+            border: 1px solid #282828;
+            flex-shrink: 0;
+        }
+        
+        .wrapped-mode-btn {
+            padding: 8px 10px;
+            border-radius: 9px;
+            border: none;
+            background: transparent;
+            color: var(--text-gray);
+            font-size: 13px;      
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .wrapped-mode-btn.active {
+            background: rgba(245, 185, 66, 0.18);
+            color: #f5b942;
+            box-shadow: inset 0 0 0 1px rgba(245, 185, 66, 0.42);
+        }
     </style>
 </head>
 <body onclick="closeAllMenus()">
@@ -2812,12 +2842,13 @@
                </div>
 
                <!-- Кнопка запуску «Підсумки року» -->
+               
                <div class="wrapped-launch-card" onclick="openWrappedModal()">
                    <div class="wrapped-launch-left">
                        <div class="wrapped-launch-icon"><i class="ph-fill ph-sparkle"></i></div>
                        <div class="wrapped-launch-text">
-                           <div class="wrapped-launch-title">Підсумки року</div>
-                           <div class="wrapped-launch-sub">Постер зі статистикою та Топ-3 у стилі Wrapped</div>
+                           <div class="wrapped-launch-title">Підсумки читання</div>
+                           <div class="wrapped-launch-sub">Постери за тиждень, місяць або рік у стилі Wrapped</div>
                        </div>
                    </div>
                    <i class="ph ph-caret-right wrapped-launch-arrow"></i>
@@ -3181,9 +3212,15 @@
             <div class="poster-modal-header">
                 <div class="poster-modal-title">
                     <i class="ph-fill ph-sparkle" style="color: #f5b942;"></i>
-                    <span>Підсумки року</span>
+                    <span>Підсумки читання</span>
                 </div>
                 <button type="button" class="modal-close" onclick="closeWrappedModal()"><i class="ph ph-x"></i></button>
+            </div>
+            
+            <div class="wrapped-mode-switch" id="wrappedModeSwitch">
+                <button type="button" class="wrapped-mode-btn" data-mode="week" onclick="selectWrappedMode('week')">Тиждень</button>
+                <button type="button" class="wrapped-mode-btn" data-mode="month" onclick="selectWrappedMode('month')">Місяць</button>
+                <button type="button" class="wrapped-mode-btn active" data-mode="year" onclick="selectWrappedMode('year')">Рік</button>
             </div>
             
             <div class="wrapped-years-bar" id="wrappedYearsBar"></div>
@@ -6200,13 +6237,26 @@
             if (!shBtn.innerHTML.includes('Скопійовано')) shBtn.innerHTML = prevSh;
         }
     }
-
-    // --- Підсумки року (Reading Wrapped 1080×1920) ---
+    
+    // --- Підсумки читання: Тиждень / Місяць / Рік (Reading Wrapped 1080×1920) ---
     let wrappedLibrary = [];
-    let wrappedSelectedYear = new Date().getFullYear();
+    let wrappedMode = 'year'; // 'week' | 'month' | 'year'
+    let wrappedSelectedKey = String(new Date().getFullYear());
     let wrappedBlob = null;
     let wrappedObjectUrl = null;
     let wrappedFileName = 'reading-wrapped.png';
+
+    const WRAPPED_MONTHS_NOM = [
+        'Січень', 'Лютий', 'Березень', 'Квітень', 'Травень', 'Червень',
+        'Липень', 'Серпень', 'Вересень', 'Жовтень', 'Листопад', 'Грудень'
+    ];
+    const WRAPPED_MONTHS_SHORT = [
+        'січ.', 'лют.', 'бер.', 'квіт.', 'трав.', 'черв.',
+        'лип.', 'серп.', 'вер.', 'жовт.', 'лист.', 'груд.'
+    ];
+    const WRAPPED_WEEKDAYS = [
+        'Понеділок', 'Вівторок', 'Середа', 'Четвер', 'Пʼятниця', 'Субота', 'Неділя'
+    ];
 
     function wrappedPlural(n, one, few, many) {
         const mod10 = n % 10;
@@ -6214,6 +6264,45 @@
         if (mod10 === 1 && mod100 !== 11) return one;
         if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return few;
         return many;
+    }
+
+    function wrappedParseISODate(isoStr) {
+        if (!isoStr) return null;
+        const parts = String(isoStr).slice(0, 10).split('-').map(Number);
+        if (parts.length !== 3 || parts.some(isNaN)) return null;
+        return new Date(parts[0], parts[1] - 1, parts[2]);
+    }
+
+    function wrappedFormatISODate(d) {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+    }
+
+    function wrappedGetMonday(d) {
+        const res = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        const diff = (res.getDay() + 6) % 7; // Понеділок = 0
+        res.setDate(res.getDate() - diff);
+        return res;
+    }
+
+    function wrappedFormatWeekRange(monDate, includeYear = false) {
+        const sunDate = new Date(monDate.getFullYear(), monDate.getMonth(), monDate.getDate() + 6);
+        const d1 = monDate.getDate();
+        const m1 = monDate.getMonth();
+        const y1 = monDate.getFullYear();
+        const d2 = sunDate.getDate();
+        const m2 = sunDate.getMonth();
+        const y2 = sunDate.getFullYear();
+
+        let range = '';
+        if (m1 === m2) {
+            range = `${d1}–${d2} ${WRAPPED_MONTHS_SHORT[m1]}`;
+        } else {
+            range = `${d1} ${WRAPPED_MONTHS_SHORT[m1]} – ${d2} ${WRAPPED_MONTHS_SHORT[m2]}`;
+        }
+        return includeYear ? `${range} ${y2}` : range;
     }
 
     function wrappedRoundRect(ctx, x, y, w, h, r) {
@@ -6298,23 +6387,109 @@
         wrappedLibrary = data || [];
     }
 
-    function getWrappedAvailableYears() {
-        const curYear = new Date().getFullYear();
-        const yearSet = new Set([curYear]);
-        wrappedLibrary.forEach(item => {
-            if (item.status === 'read' && item.finished_at) {
-                const y = parseInt(String(item.finished_at).slice(0, 4), 10);
-                if (!isNaN(y)) yearSet.add(y);
-            }
+    function getWrappedPeriods(mode) {
+        const now = new Date();
+        const curYear = now.getFullYear();
+        const datedRead = wrappedLibrary.filter(item => item.status === 'read' && item.finished_at);
+
+        if (mode === 'year') {
+            const set = new Set([curYear]);
+            datedRead.forEach(item => {
+                const d = wrappedParseISODate(item.finished_at);
+                if (d) set.add(d.getFullYear());
+            });
+            return Array.from(set)
+                .sort((a, b) => b - a)
+                .map(y => ({
+                    key: String(y),
+                    pillLabel: String(y),
+                    posterBadge: 'ПІДСУМКИ РОКУ',
+                    posterTitle: String(y),
+                    footerLabel: String(y),
+                    fileSuffix: String(y),
+                    emptyLabel: `За ${y} рік`
+                }));
+        }
+
+        if (mode === 'month') {
+            const curMonthKey = `${curYear}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            const set = new Set([curMonthKey]);
+            datedRead.forEach(item => {
+                const d = wrappedParseISODate(item.finished_at);
+                if (d) {
+                    set.add(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`);
+                }
+            });
+            return Array.from(set)
+                .sort((a, b) => b.localeCompare(a))
+                .map(key => {
+                    const [yStr, mStr] = key.split('-');
+                    const y = parseInt(yStr, 10);
+                    const mIdx = parseInt(mStr, 10) - 1;
+                    const monthNom = WRAPPED_MONTHS_NOM[mIdx] || '';
+                    return {
+                        key,
+                        pillLabel: y === curYear ? monthNom : `${monthNom} ${y}`,
+                        posterBadge: `ПІДСУМКИ МІСЯЦЯ • ${y}`,
+                        posterTitle: monthNom.toUpperCase(),
+                        footerLabel: `${monthNom} ${y}`,
+                        fileSuffix: key,
+                        emptyLabel: `За ${monthNom.toLowerCase()} ${y}`
+                    };
+                });
+        }
+
+        // mode === 'week'
+        const thisMon = wrappedGetMonday(now);
+        const prevMon = new Date(thisMon.getFullYear(), thisMon.getMonth(), thisMon.getDate() - 7);
+        const thisMonKey = wrappedFormatISODate(thisMon);
+        const prevMonKey = wrappedFormatISODate(prevMon);
+
+        const set = new Set([thisMonKey, prevMonKey]);
+        datedRead.forEach(item => {
+            const d = wrappedParseISODate(item.finished_at);
+            if (d) set.add(wrappedFormatISODate(wrappedGetMonday(d)));
         });
-        return Array.from(yearSet).sort((a, b) => b - a);
+
+        return Array.from(set)
+            .sort((a, b) => b.localeCompare(a))
+            .map(key => {
+                const monDate = wrappedParseISODate(key);
+                const sunDate = new Date(monDate.getFullYear(), monDate.getMonth(), monDate.getDate() + 6);
+                const displayYear = sunDate.getFullYear();
+                const shortRange = wrappedFormatWeekRange(monDate, false);
+
+                let pillLabel = shortRange;
+                if (key === thisMonKey) pillLabel = 'Цей тиждень';
+                else if (key === prevMonKey) pillLabel = 'Минулий тиждень';
+                else if (displayYear !== curYear) pillLabel = `${shortRange} ${displayYear}`;
+
+                return {
+                    key,
+                    startKey: key,
+                    endKey: wrappedFormatISODate(sunDate),
+                    pillLabel,
+                    posterBadge: `ПІДСУМКИ ТИЖНЯ • ${displayYear}`,
+                    posterTitle: shortRange.toUpperCase(),
+                    footerLabel: `${shortRange} ${displayYear}`,
+                    fileSuffix: `week-${key}`,
+                    emptyLabel: `За тиждень ${shortRange}`
+                };
+            });
     }
 
-    function renderWrappedYearPills(years) {
+    function renderWrappedModeSwitch() {
+        const btns = document.querySelectorAll('#wrappedModeSwitch .wrapped-mode-btn');
+        btns.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.mode === wrappedMode);
+        });
+    }
+
+    function renderWrappedPeriodPills(periods) {
         const bar = document.getElementById('wrappedYearsBar');
         if (!bar) return;
-        bar.innerHTML = years.map(y => `
-            <button type="button" class="wrapped-year-pill ${y === wrappedSelectedYear ? 'active' : ''}" onclick="selectWrappedYear(${y})">${y}</button>
+        bar.innerHTML = periods.map(p => `
+            <button type="button" class="wrapped-year-pill ${p.key === wrappedSelectedKey ? 'active' : ''}" onclick="selectWrappedPeriod('${p.key}')">${p.pillLabel}</button>
         `).join('');
     }
 
@@ -6326,10 +6501,14 @@
         overlay.style.display = 'flex';
 
         await ensureWrappedLibrary();
-        const years = getWrappedAvailableYears();
-        if (!years.includes(wrappedSelectedYear)) wrappedSelectedYear = years[0];
-        renderWrappedYearPills(years);
-        await generateWrappedPreview(wrappedSelectedYear);
+        renderWrappedModeSwitch();
+
+        const periods = getWrappedPeriods(wrappedMode);
+        if (!periods.some(p => p.key === wrappedSelectedKey)) {
+            wrappedSelectedKey = periods[0].key;
+        }
+        renderWrappedPeriodPills(periods);
+        await generateWrappedPreview();
     }
 
     function closeWrappedModal(fromPopState = false) {
@@ -6340,18 +6519,35 @@
         document.getElementById('wrappedModalOverlay').style.display = 'none';
     }
 
-    async function selectWrappedYear(year) {
-        wrappedSelectedYear = year;
-        renderWrappedYearPills(getWrappedAvailableYears());
-        await generateWrappedPreview(year);
+    async function selectWrappedMode(mode) {
+        if (wrappedMode === mode) return;
+        wrappedMode = mode;
+        renderWrappedModeSwitch();
+
+        const periods = getWrappedPeriods(wrappedMode);
+        wrappedSelectedKey = periods[0].key;
+        renderWrappedPeriodPills(periods);
+
+        const bar = document.getElementById('wrappedYearsBar');
+        if (bar) bar.scrollLeft = 0;
+
+        await generateWrappedPreview();
     }
 
-    function computeWrappedStats(year) {
-        const items = wrappedLibrary.filter(item =>
-            item.status === 'read' &&
-            item.finished_at &&
-            String(item.finished_at).startsWith(String(year))
-        );
+    async function selectWrappedPeriod(key) {
+        wrappedSelectedKey = key;
+        renderWrappedPeriodPills(getWrappedPeriods(wrappedMode));
+        await generateWrappedPreview();
+    }
+
+    function computeWrappedStats(mode, period) {
+        const items = wrappedLibrary.filter(item => {
+            if (item.status !== 'read' || !item.finished_at) return false;
+            const dateStr = String(item.finished_at).slice(0, 10);
+            if (mode === 'year') return dateStr.startsWith(period.key);
+            if (mode === 'month') return dateStr.startsWith(period.key);
+            return dateStr >= period.startKey && dateStr <= period.endKey;
+        });
 
         const total = items.length;
         const rated = items.filter(i => parseFloat(i.rating) > 0);
@@ -6360,25 +6556,57 @@
             : '—';
         const fiveStars = rated.filter(i => parseFloat(i.rating) >= 5).length;
 
-        // Найактивніший місяць
-        const monthNames = [
-            'Січень', 'Лютий', 'Березень', 'Квітень', 'Травень', 'Червень',
-            'Липень', 'Серпень', 'Вересень', 'Жовтень', 'Листопад', 'Грудень'
-        ];
-        const monthCounts = new Array(12).fill(0);
+        // Унікальні активні дні читання
+        const dayCounts = new Map();
         items.forEach(item => {
-            const parts = String(item.finished_at).slice(0, 10).split('-');
-            const mIdx = (parseInt(parts[1], 10) || 1) - 1;
-            if (mIdx >= 0 && mIdx < 12) monthCounts[mIdx]++;
+            const dKey = String(item.finished_at).slice(0, 10);
+            dayCounts.set(dKey, (dayCounts.get(dKey) || 0) + 1);
         });
-        let bestMonthIdx = -1;
-        let bestMonthCount = 0;
-        monthCounts.forEach((cnt, idx) => {
-            if (cnt > bestMonthCount) {
-                bestMonthCount = cnt;
-                bestMonthIdx = idx;
+        const activeDays = dayCounts.size;
+
+        // Картка піку активності (адаптується під Тиждень / Місяць / Рік)
+        let peakLabel = 'Пік активності';
+        let peakValue = '—';
+        let peakSub = 'Немає записів';
+
+        if (mode === 'year') {
+            const monthCounts = new Array(12).fill(0);
+            items.forEach(item => {
+                const d = wrappedParseISODate(item.finished_at);
+                if (d) monthCounts[d.getMonth()]++;
+            });
+            let bestIdx = -1, bestCnt = 0;
+            monthCounts.forEach((cnt, idx) => {
+                if (cnt > bestCnt) { bestCnt = cnt; bestIdx = idx; }
+            });
+            if (bestIdx >= 0) {
+                peakValue = WRAPPED_MONTHS_NOM[bestIdx];
+                peakSub = `${bestCnt} ${wrappedPlural(bestCnt, 'твір', 'твори', 'творів')} за місяць`;
             }
-        });
+        } else {
+            let bestDayKey = null, bestDayCnt = 0;
+            dayCounts.forEach((cnt, dKey) => {
+                if (cnt > bestDayCnt || (cnt === bestDayCnt && dKey > bestDayKey)) {
+                    bestDayCnt = cnt;
+                    bestDayKey = dKey;
+                }
+            });
+
+            if (bestDayKey) {
+                const dObj = wrappedParseISODate(bestDayKey);
+                const shortDate = `${dObj.getDate()} ${WRAPPED_MONTHS_SHORT[dObj.getMonth()]}`;
+                if (mode === 'week') {
+                    const wdIdx = (dObj.getDay() + 6) % 7;
+                    peakLabel = 'Пік тижня';
+                    peakValue = WRAPPED_WEEKDAYS[wdIdx];
+                    peakSub = `${shortDate} • ${bestDayCnt} ${wrappedPlural(bestDayCnt, 'твір', 'твори', 'творів')}`;
+                } else {
+                    peakLabel = 'Пік місяця';
+                    peakValue = shortDate;
+                    peakSub = `${bestDayCnt} ${wrappedPlural(bestDayCnt, 'твір', 'твори', 'творів')} за день`;
+                }
+            }
+        }
 
         // Розподіл за типом
         const normalize = s => String(s || '').toUpperCase().replace(/Ґ/g, 'Г');
@@ -6394,7 +6622,7 @@
         const webCount = items.filter(i => i.format === 'web').length;
         const paperCount = total - webCount;
 
-        // Топ-3 обкладинки року (по 1 найкращому тому з кожної серії)
+        // Топ-3 обкладинки (спершу унікальні серії, потім добираємо решту)
         const sortedForTop = items.slice().sort((a, b) => {
             const rDiff = (parseFloat(b.rating) || 0) - (parseFloat(a.rating) || 0);
             if (rDiff !== 0) return rDiff;
@@ -6425,23 +6653,28 @@
             }
         }
 
-        // Річна ціль (якщо задана)
+        // Річна ціль (для річного режиму)
         let goalTarget = null;
-        try {
-            const localGoals = JSON.parse(localStorage.getItem('tracker_reading_goals') || '{}');
-            const memGoals = (typeof cachedYearlyGoals !== 'undefined' && cachedYearlyGoals) ? cachedYearlyGoals : {};
-            const merged = { ...localGoals, ...memGoals };
-            if (merged[String(year)]) goalTarget = merged[String(year)];
-        } catch (e) {}
+        if (mode === 'year') {
+            try {
+                const localGoals = JSON.parse(localStorage.getItem('tracker_reading_goals') || '{}');
+                const memGoals = (typeof cachedYearlyGoals !== 'undefined' && cachedYearlyGoals) ? cachedYearlyGoals : {};
+                const merged = { ...localGoals, ...memGoals };
+                if (merged[period.key]) goalTarget = merged[period.key];
+            } catch (e) {}
+        }
 
         return {
-            year,
+            mode,
+            period,
             total,
+            activeDays,
             avgRating,
             ratedCount: rated.length,
             fiveStars,
-            bestMonthName: bestMonthIdx >= 0 ? monthNames[bestMonthIdx] : '—',
-            bestMonthCount,
+            peakLabel,
+            peakValue,
+            peakSub,
             mangaCount,
             comicCount,
             bookCount,
@@ -6463,6 +6696,14 @@
         const topImages = await Promise.all(
             stats.top3.map(item => wrappedLoadImg(item.cover_url || item.image_url || ''))
         );
+
+        // Перевіряємо, чи повторюються серії на п'єдесталі (щоб підписувати назви томів замість дублів серії)
+        const topSeriesCounts = new Map();
+        stats.top3.forEach(item => {
+            if (item.series_id) {
+                topSeriesCounts.set(item.series_id, (topSeriesCounts.get(item.series_id) || 0) + 1);
+            }
+        });
 
         const canvas = document.createElement('canvas');
         canvas.width = W;
@@ -6500,10 +6741,10 @@
         ctx.fillStyle = darkOverlay;
         ctx.fillRect(0, 0, W, H);
 
-        // 2. Шапка: бейдж + великий рік
-        const pillText = 'ПІДСУМКИ РОКУ';
+        // 2. Шапка: бейдж + заголовок періоду
+        const pillText = stats.period.posterBadge;
         ctx.font = `800 22px ${fontFamily}`;
-        const pillW = ctx.measureText(pillText).width + 64;
+        const pillW = Math.min(W - padX * 2, ctx.measureText(pillText).width + 64);
         const pillH = 48;
         const pillX = (W - pillW) / 2;
         const pillY = 76;
@@ -6520,11 +6761,13 @@
         ctx.textBaseline = 'middle';
         ctx.fillText(pillText, W / 2, pillY + pillH / 2 + 1);
 
-        ctx.font = `900 112px ${fontFamily}`;
+        const titleFontSize = stats.mode === 'year' ? 112 : (stats.mode === 'month' ? 86 : 74);
+        const titleTopY = stats.mode === 'year' ? 138 : (stats.mode === 'month' ? 154 : 162);
+        ctx.font = `900 ${titleFontSize}px ${fontFamily}`;
         ctx.fillStyle = '#ffffff';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'top';
-        ctx.fillText(String(stats.year), W / 2, 138);
+        ctx.fillText(stats.period.posterTitle, W / 2, titleTopY, W - padX * 2);
 
         // 3. Головна картка: скільки прочитано
         const heroX = padX;
@@ -6550,21 +6793,30 @@
 
         const totalWord = wrappedPlural(stats.total, 'прочитаний твір', 'прочитані твори', 'прочитаних творів');
         let heroSub = totalWord.toUpperCase();
-        if (stats.goalTarget) {
+        if (stats.mode === 'year' && stats.goalTarget) {
             const goalPct = Math.round((stats.total / stats.goalTarget) * 100);
             heroSub += `  •  ЦІЛЬ ${goalPct}%`;
+        } else if (stats.mode === 'month') {
+            const daysWord = wrappedPlural(stats.activeDays, 'АКТИВНИЙ ДЕНЬ', 'АКТИВНІ ДНІ', 'АКТИВНИХ ДНІВ');
+            heroSub += `  •  ${stats.activeDays} ${daysWord}`;
+        } else if (stats.mode === 'week') {
+            heroSub += `  •  ${stats.activeDays} З 7 ДНІВ`;
         }
         ctx.font = `700 24px ${fontFamily}`;
         ctx.fillStyle = '#d8d8d8';
-        ctx.fillText(heroSub, W / 2, heroY + 158);
+        ctx.fillText(heroSub, W / 2, heroY + 158, heroW - 48);
 
-        // 4. П'єдестал «Топ-3 року»
+        // 4. П'єдестал Топ обкладинок
+        const topHeading = stats.mode === 'year'
+            ? 'ТОП ОБКЛАДИНКИ РОКУ'
+            : (stats.mode === 'month' ? 'ТОП ОБКЛАДИНКИ МІСЯЦЯ' : 'ТОП ОБКЛАДИНКИ ТИЖНЯ');
+
         const topLabelY = 548;
         ctx.font = `800 26px ${fontFamily}`;
         ctx.fillStyle = '#ffffff';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'top';
-        ctx.fillText('ТОП ОБКЛАДИНКИ РОКУ', W / 2, topLabelY);
+        ctx.fillText(topHeading, W / 2, topLabelY);
 
         const podiumY = 602;
         const countTop = stats.top3.length;
@@ -6573,7 +6825,6 @@
             const x = cx - cw / 2;
             const y = topY;
 
-            // Тінь / сяйво під #1
             ctx.save();
             ctx.shadowColor = isFirst ? 'rgba(245, 185, 66, 0.32)' : 'rgba(0, 0, 0, 0.65)';
             ctx.shadowBlur = isFirst ? 44 : 28;
@@ -6599,7 +6850,6 @@
             ctx.strokeStyle = isFirst ? gold : 'rgba(255, 255, 255, 0.16)';
             ctx.stroke();
 
-            // Бейдж місця (#1, #2, #3)
             const badgeW = 58;
             const badgeH = 38;
             wrappedRoundRect(ctx, x + 12, y + 12, badgeW, badgeH, 12);
@@ -6612,7 +6862,6 @@
             ctx.textBaseline = 'middle';
             ctx.fillText(`#${rank}`, x + 12 + badgeW / 2, y + 12 + badgeH / 2 + 1);
 
-            // Оцінка внизу справа обкладинки
             const ratingVal = parseFloat(item.rating) || 0;
             if (ratingVal > 0) {
                 const rText = `★ ${ratingVal}`;
@@ -6628,8 +6877,8 @@
                 ctx.fillText(rText, x + cw - rw / 2 - 10, y + ch - rh / 2 - 9);
             }
 
-            // Назва твору (або серії) під обкладинкою
-            const seriesObj = item.series_id && typeof allSeries !== 'undefined'
+            const hasDuplicateSeries = item.series_id && (topSeriesCounts.get(item.series_id) || 0) > 1;
+            const seriesObj = (!hasDuplicateSeries && item.series_id && typeof allSeries !== 'undefined')
                 ? allSeries.find(s => s.id === item.series_id)
                 : null;
             const displayTitle = seriesObj ? seriesObj.title : item.title;
@@ -6650,13 +6899,12 @@
             drawPodiumCard(stats.top3[0], topImages[0], 1, W / 2 - 165, podiumY, 276, 414, true);
             drawPodiumCard(stats.top3[1], topImages[1], 2, W / 2 + 165, podiumY + 26, 252, 378, false);
         } else if (countTop >= 3) {
-            // Зліва #2, справа #3, по центру #1
             drawPodiumCard(stats.top3[1], topImages[1], 2, padX + 140, podiumY + 52, 256, 384, false);
             drawPodiumCard(stats.top3[2], topImages[2], 3, W - padX - 140, podiumY + 52, 256, 384, false);
             drawPodiumCard(stats.top3[0], topImages[0], 1, W / 2, podiumY, 304, 456, true);
         }
 
-        // 5. Bento-сітка статистики (2 ряди × 2 картки + широка шкала формату)
+        // 5. Bento-сітка статистики
         const gridY = 1152;
         const cardGap = 24;
         const halfW = (W - padX * 2 - cardGap) / 2;
@@ -6697,19 +6945,16 @@
             gold
         );
 
-        // Картка 2: Найактивніший місяць
-        const monthSub = stats.bestMonthCount > 0
-            ? `${stats.bestMonthCount} ${wrappedPlural(stats.bestMonthCount, 'твір', 'твори', 'творів')} за місяць`
-            : 'Немає записів';
+        // Картка 2: Пік активності (місяць / день місяця / день тижня)
         drawStatCard(
             padX + halfW + cardGap, gridY, halfW, cardH,
-            'Пік активності',
-            stats.bestMonthName,
-            monthSub,
+            stats.peakLabel,
+            stats.peakValue,
+            stats.peakSub,
             accent
         );
 
-        // Картка 3 (широка): Розподіл по типах (Манґа / Комікси / Книги)
+        // Картка 3: Розподіл по типах
         const typesY = gridY + cardH + cardGap;
         const fullW = W - padX * 2;
         const typesH = 178;
@@ -6746,7 +6991,7 @@
             ctx.fillText(`${tr.name} (${pct}%)`, cx, typesY + 124);
         });
 
-        // Картка 4 (широка): Співвідношення Папір / Веб
+        // Картка 4: Співвідношення Папір / Веб
         const fmtY = typesY + typesH + cardGap;
         const fmtH = 176;
 
@@ -6825,31 +7070,35 @@
 
             ctx.fillStyle = accent;
             ctx.textAlign = 'right';
-            ctx.fillText(`Reading Tracker • ${stats.year}`, W - padX, footerY);
+            ctx.fillText(`Reading Tracker • ${stats.period.footerLabel}`, W - padX, footerY);
         } else {
             ctx.fillStyle = '#888888';
             ctx.textAlign = 'center';
-            ctx.fillText(`Reading Tracker • ${stats.year}`, W / 2, footerY);
+            ctx.fillText(`Reading Tracker • ${stats.period.footerLabel}`, W / 2, footerY);
         }
 
         return canvas;
     }
 
-    async function generateWrappedPreview(year) {
+    async function generateWrappedPreview() {
         const msgEl = document.getElementById('wrappedStateMsg');
         const imgEl = document.getElementById('wrappedPreviewImg');
         const dlBtn = document.getElementById('wrappedDownloadBtn');
         const shBtn = document.getElementById('wrappedShareBtn');
 
+        const periods = getWrappedPeriods(wrappedMode);
+        const period = periods.find(p => p.key === wrappedSelectedKey) || periods[0];
+        if (!period) return;
+
         imgEl.style.display = 'none';
         msgEl.style.display = 'block';
-        msgEl.innerText = `Збираємо підсумки за ${year} рік...`;
+        msgEl.innerText = `Збираємо підсумки (${period.pillLabel})...`;
         dlBtn.disabled = true;
         shBtn.disabled = true;
 
-        const stats = computeWrappedStats(year);
+        const stats = computeWrappedStats(wrappedMode, period);
         if (stats.total === 0) {
-            msgEl.innerText = `За ${year} рік поки немає прочитаних творів із вказаною датою. Простав дату прочитання на сторінках книг — і постер одразу збереться.`;
+            msgEl.innerText = `${period.emptyLabel} поки немає прочитаних творів із вказаною датою. Простав дату на сторінці книги — і постер одразу збереться.`;
             return;
         }
 
@@ -6861,7 +7110,7 @@
             if (wrappedObjectUrl) URL.revokeObjectURL(wrappedObjectUrl);
             wrappedBlob = blob;
             wrappedObjectUrl = URL.createObjectURL(blob);
-            wrappedFileName = `reading-wrapped-${year}.png`;
+            wrappedFileName = `reading-wrapped-${period.fileSuffix}.png`;
 
             imgEl.src = wrappedObjectUrl;
             imgEl.style.display = 'block';
