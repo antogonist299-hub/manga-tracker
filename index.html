@@ -2871,6 +2871,137 @@
             padding: 4px 2px;
             margin: 0;
         }
+
+        /* Кастомне вікно підтвердження (заміна confirm) */
+        .confirm-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 2300;
+            box-sizing: border-box;
+            animation: confirmFadeIn 0.16s ease;
+        }
+        
+        @keyframes confirmFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .confirm-card {
+            width: 100%;
+            max-width: 340px;
+            background: #181818;
+            border: 1px solid #2d2d2d;
+            border-radius: 22px;
+            padding: 22px 20px 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 12px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.72);
+            box-sizing: border-box;
+            animation: confirmScaleIn 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        
+        @keyframes confirmScaleIn {
+            from { opacity: 0; transform: scale(0.92) translateY(8px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        
+        .confirm-icon-circle {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: rgba(229, 72, 77, 0.14);
+            border: 1px solid rgba(229, 72, 77, 0.34);
+            color: #ff6b6b;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .confirm-title {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-white);
+        }
+        
+        .confirm-text {
+            margin: 0;
+            font-size: 13px;
+            line-height: 1.45;
+            color: var(--text-gray);
+        }
+        
+        .confirm-preview {
+            display: none;
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: #121212;
+            border: 1px solid #262626;
+            color: #dcdcdc;
+            font-size: 13px;
+            font-style: italic;
+            line-height: 1.4;
+            text-align: left;
+            box-sizing: border-box;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            word-break: break-word;
+        }
+        
+        .confirm-actions {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 6px;
+        }
+        
+        .confirm-btn {
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.12s ease, opacity 0.18s ease, background-color 0.18s ease;
+        }
+        
+        .confirm-btn:active {
+            transform: scale(0.96);
+        }
+        
+        .confirm-btn-cancel {
+            background: #262626;
+            color: var(--text-white);
+            border: 1px solid #353535;
+        }
+        
+        .confirm-btn-cancel:hover {
+            background: #2f2f2f;
+        }
+        
+        .confirm-btn-danger {
+            background: #e5484d;
+            color: #ffffff;
+        }
+
+        .confirm-btn-danger:hover {
+            background: #f0555a;
+        }
     </style>
 </head>
 <body onclick="closeAllMenus()">
@@ -3536,6 +3667,22 @@
             </div>
         </div>
     </div>
+
+    <!-- Кастомне вікно підтвердження видалення -->
+    <div id="customConfirmOverlay" class="confirm-overlay" onclick="resolveConfirmModal(false)">
+        <div class="confirm-card" onclick="event.stopPropagation()">
+            <div class="confirm-icon-circle">
+                <i class="ph ph-trash" id="confirmModalIcon"></i>
+            </div>
+            <h3 class="confirm-title" id="confirmModalTitle">Видалити запис?</h3>
+            <p class="confirm-text" id="confirmModalText">Цю дію неможливо буде скасувати.</p>
+            <div class="confirm-preview" id="confirmModalPreview" style="display: none;"></div>
+            <div class="confirm-actions">
+                <button type="button" class="confirm-btn confirm-btn-cancel" id="confirmCancelBtn" onclick="resolveConfirmModal(false)">Скасувати</button>
+                <button type="button" class="confirm-btn confirm-btn-danger" id="confirmOkBtn" onclick="resolveConfirmModal(true)">Видалити</button>
+            </div>
+        </div>
+    </div>
     
 <script>
     // ВСТАВ СВОЇ ДАНІ ТУТ:
@@ -3574,6 +3721,10 @@
     
     // Реакція на системну кнопку «Назад» на телефоні
     window.addEventListener('popstate', () => {
+        if (isScreenOpen('customConfirmOverlay')) {
+            closeConfirmModalFromPopState();
+            return;
+        }
         if (isScreenOpen('wrappedModalOverlay')) {
             closeWrappedModal(true);
             return;
@@ -7710,7 +7861,17 @@
     async function deleteBookNote(noteId) {
         const book = loadedItems.find(b => b.id === currentBookId);
         if (!book) return;
-        if (!confirm('Видалити цей запис?')) return;
+        const note = getBookNotes(book).find(n => n.id === noteId);
+        if (!note) return;
+
+        const isQuote = note.type !== 'note';
+        const confirmed = await showConfirmModal({
+            title: isQuote ? 'Видалити цитату?' : 'Видалити нотатку?',
+            text: 'Цей запис зникне зі сторінки твору назавжди.',
+            preview: isQuote ? `«${note.text}»` : note.text,
+            confirmText: 'Видалити'
+        });
+        if (!confirmed) return;
 
         const updatedNotes = getBookNotes(book).filter(n => n.id !== noteId);
         if (editingNoteId === noteId) resetNoteComposer();
@@ -7740,6 +7901,74 @@
         } catch (e) {
             alert('Не вдалося скопіювати текст');
         }
+    }
+
+    // --- Кастомне вікно підтвердження ---
+    let confirmModalResolver = null;
+    let confirmPendingResult = null;
+
+    function showConfirmModal({
+        title = 'Підтвердження',
+        text = 'Ти впевнений?',
+        preview = '',
+        confirmText = 'Видалити',
+        cancelText = 'Скасувати'
+    } = {}) {
+        return new Promise((resolve) => {
+            const overlay = document.getElementById('customConfirmOverlay');
+            const titleEl = document.getElementById('confirmModalTitle');
+            const textEl = document.getElementById('confirmModalText');
+            const previewEl = document.getElementById('confirmModalPreview');
+            const okBtn = document.getElementById('confirmOkBtn');
+            const cancelBtn = document.getElementById('confirmCancelBtn');
+
+            if (titleEl) titleEl.innerText = title;
+            if (textEl) textEl.innerText = text;
+            if (okBtn) okBtn.innerText = confirmText;
+            if (cancelBtn) cancelBtn.innerText = cancelText;
+
+            if (previewEl) {
+                if (preview && preview.trim()) {
+                    previewEl.innerText = preview.trim();
+                    previewEl.style.display = '-webkit-box';
+                } else {
+                    previewEl.style.display = 'none';
+                    previewEl.innerText = '';
+                }
+            }
+
+            confirmModalResolver = resolve;
+            confirmPendingResult = null;
+
+            if (!isScreenOpen('customConfirmOverlay')) {
+                history.pushState({ appLayer: 'confirm' }, '');
+            }
+            overlay.style.display = 'flex';
+        });
+    }
+
+    function finalizeConfirmModal(result) {
+        const overlay = document.getElementById('customConfirmOverlay');
+        if (overlay) overlay.style.display = 'none';
+
+        const resolver = confirmModalResolver;
+        confirmModalResolver = null;
+        confirmPendingResult = null;
+        if (resolver) resolver(result);
+    }
+
+    function resolveConfirmModal(result) {
+        if (history.state?.appLayer === 'confirm') {
+            confirmPendingResult = result;
+            history.back();
+            return;
+        }
+        finalizeConfirmModal(result);
+    }
+
+    function closeConfirmModalFromPopState() {
+        const result = confirmPendingResult !== null ? confirmPendingResult : false;
+        finalizeConfirmModal(result);
     }
 </script>
 </body>
