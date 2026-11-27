@@ -4383,6 +4383,12 @@
         currentSeriesId = null;
         document.getElementById('seriesDetailScreen').style.display = 'none';
         
+        if (currentActiveTab === 'profile') {
+            document.getElementById('profileScreen').style.display = 'flex';
+            loadProfileStats();
+            return;
+        }
+        
         loadedItems = loadedItems.filter(item => item.status === currentActiveTab);
         
         document.getElementById('headerSection').style.display = 'block';
