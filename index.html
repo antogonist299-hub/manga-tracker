@@ -3002,6 +3002,197 @@
         .confirm-btn-danger:hover {
             background: #f0555a;
         }
+
+        /* Трекер збору серій («Що докупити») у Кабінеті */
+        .collection-meta-badge {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent-green);
+            background: rgba(107, 208, 38, 0.12);
+            padding: 3px 9px;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+        
+        .collection-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        
+        .collection-pill {
+            padding: 6px 11px;
+            border-radius: 999px;
+            border: 1px solid #303030;
+            background: #1f1f1f;
+            color: var(--text-gray);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.18s ease;
+        }
+
+        .collection-pill.active {
+            background: rgba(107, 208, 38, 0.16);
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+        
+        .collection-pill-paper {
+            margin-left: auto;
+        }
+        
+        .collection-list {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+            width: 100%;
+            min-width: 0;
+        }
+        
+        .collection-row {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 9px 11px;
+            background: #1a1a1a;
+            border: 1px solid #282828;
+            border-radius: 13px;
+            cursor: pointer;
+            min-width: 0;
+            box-sizing: border-box;
+            transition: border-color 0.2s, transform 0.15s;
+        }
+        
+        .collection-row:hover {
+            border-color: var(--accent-green);
+            transform: translateY(-1px);
+        }
+        
+        .collection-row.almost-done {
+            border-color: rgba(245, 185, 66, 0.34);
+            background: linear-gradient(135deg, rgba(245, 185, 66, 0.06) 0%, #1a1a1a 60%);
+        }
+        
+        .collection-row.almost-done:hover {
+            border-color: #f5b942;
+        }
+        
+        .collection-cover {
+            width: 38px;
+            height: 54px;
+            border-radius: 7px;
+            object-fit: cover;
+            background: #262626;
+            flex-shrink: 0;
+        }
+        
+        .collection-info {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .collection-row-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            min-width: 0;
+        }
+        
+        .collection-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 0;
+        }
+        
+        .collection-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-white);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .collection-web-tag {
+            font-size: 10px;
+            font-weight: 700;
+            color: #9ae6ff;
+            background: rgba(56, 189, 248, 0.14);
+            padding: 1px 6px;
+            border-radius: 5px;
+            flex-shrink: 0;
+        }
+        
+        .collection-pct {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--accent-green);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        
+        .collection-row.almost-done .collection-pct {
+            color: #f5b942;
+        }
+        
+        .collection-bar-track {
+            width: 100%;
+            height: 6px;
+            border-radius: 999px;
+            background: #272727;
+            overflow: hidden;
+        }
+        
+        .collection-bar-fill {
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #53a518 0%, #86ef3c 100%);
+            transition: width 0.35s ease;
+        }
+        
+        .collection-row.almost-done .collection-bar-fill {
+            background: linear-gradient(90deg, #d99b26 0%, #f7cf68 100%);
+        }
+        
+        .collection-row-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+        
+        .collection-counts strong {
+            color: var(--text-white);
+            font-weight: 700;
+        }
+        
+        .collection-missing {
+            font-weight: 600;
+            color: #d0d0d0;
+            white-space: nowrap;
+        }
+        
+        .collection-row.almost-done .collection-missing {
+            color: #f5b942;
+        }
+        
+        .collection-planned-hint {
+            color: var(--text-gray);
+            font-weight: 500;
+        }
     </style>
 </head>
 <body onclick="closeAllMenus()">
@@ -3244,6 +3435,26 @@
                        </div>
                    </div>
                    <i class="ph ph-caret-right wrapped-launch-arrow"></i>
+               </div>
+
+               <!-- Трекер збору серій («Що докупити») -->
+               <div class="analytics-card" id="profileCollectionSection">
+                   <div class="analytics-title">
+                       <span>Що докупити</span>
+                       <span class="collection-meta-badge" id="collectionHeaderMeta" style="display: none;"></span>
+                   </div>
+                   <div class="collection-controls" id="collectionControls" style="display: none;">
+                       <button type="button" class="collection-pill active" id="collectionSortPctBtn" onclick="setCollectionSort('percent')">
+                           Ближче до 100%
+                       </button>
+                       <button type="button" class="collection-pill" id="collectionSortMissingBtn" onclick="setCollectionSort('missing')">
+                           Менше томів
+                       </button>
+                       <button type="button" class="collection-pill collection-pill-paper" id="collectionPaperBtn" onclick="toggleCollectionPaperOnly()">
+                           <i class="ph ph-book-open"></i> Лише папір
+                       </button>
+                   </div>
+                   <div class="collection-list" id="collectionTrackerList"></div>
                </div>
 
                <!-- Щоденник читання -->
@@ -5272,6 +5483,7 @@
 
         renderGoalUI();
         renderDiaryUI();
+        renderCollectionTracker(diaryAllItems);
 
         try {
             const { data: { session } } = await supaClient.auth.getSession();
@@ -7969,6 +8181,230 @@
     function closeConfirmModalFromPopState() {
         const result = confirmPendingResult !== null ? confirmPendingResult : false;
         finalizeConfirmModal(result);
+    }
+
+    // --- Трекер збору серій («Що докупити») ---
+    let collectionItemsCache = [];
+    let collectionSortMode = 'percent'; // 'percent' | 'missing'
+    let collectionPaperOnly = false;
+    let collectionExpanded = false;
+
+    function collectionPlural(n, one, few, many) {
+        const mod10 = n % 10;
+        const mod100 = n % 100;
+        if (mod10 === 1 && mod100 !== 11) return one;
+        if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return few;
+        return many;
+    }
+
+    function collectionEscapeHtml(str) {
+        return String(str || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    function setCollectionSort(mode) {
+        collectionSortMode = mode === 'missing' ? 'missing' : 'percent';
+        const pctBtn = document.getElementById('collectionSortPctBtn');
+        const missBtn = document.getElementById('collectionSortMissingBtn');
+        if (pctBtn) pctBtn.classList.toggle('active', collectionSortMode === 'percent');
+        if (missBtn) missBtn.classList.toggle('active', collectionSortMode === 'missing');
+        renderCollectionTrackerUI();
+    }
+
+    function toggleCollectionPaperOnly() {
+        collectionPaperOnly = !collectionPaperOnly;
+        const btn = document.getElementById('collectionPaperBtn');
+        if (btn) btn.classList.toggle('active', collectionPaperOnly);
+        collectionExpanded = false;
+        renderCollectionTrackerUI();
+    }
+
+    function toggleCollectionExpand() {
+        collectionExpanded = !collectionExpanded;
+        renderCollectionTrackerUI();
+    }
+
+    function openSeriesFromProfile(seriesId) {
+        const prof = document.getElementById('profileScreen');
+        if (prof) prof.style.display = 'none';
+        openSeriesDetail(seriesId);
+    }
+
+    async function renderCollectionTracker(items) {
+        collectionItemsCache = Array.isArray(items) ? items : [];
+
+        // Якщо серії ще не підвантажені в пам'ять — завантажуємо з бази
+        if (typeof allSeries !== 'undefined' && allSeries.length === 0) {
+            try {
+                const { data: { session } } = await supaClient.auth.getSession();
+                if (session) {
+                    const { data } = await supaClient
+                        .from('series')
+                        .select('*')
+                        .eq('user_id', session.user.id);
+                    if (Array.isArray(data)) {
+                        allSeries.splice(0, allSeries.length, ...data);
+                    }
+                }
+            } catch (e) {
+                console.error('Series fetch error:', e);
+            }
+        }
+
+        renderCollectionTrackerUI();
+    }
+
+    function renderCollectionTrackerUI() {
+        const listEl = document.getElementById('collectionTrackerList');
+        const metaEl = document.getElementById('collectionHeaderMeta');
+        const controlsEl = document.getElementById('collectionControls');
+        if (!listEl) return;
+
+        const seriesList = (typeof allSeries !== 'undefined' && Array.isArray(allSeries)) ? allSeries : [];
+
+        // Групуємо всі твори за series_id
+        const bySeries = new Map();
+        collectionItemsCache.forEach(item => {
+            if (!item.series_id) return;
+            if (!bySeries.has(item.series_id)) bySeries.set(item.series_id, []);
+            bySeries.get(item.series_id).push(item);
+        });
+
+        let trackedWithTotal = 0;
+        const allIncomplete = [];
+
+        seriesList.forEach(series => {
+            const total = parseInt(series.total_volumes, 10) || 0;
+            if (total <= 0) return;
+
+            const vols = bySeries.get(series.id) || [];
+            if (vols.length === 0) return;
+
+            trackedWithTotal++;
+
+            const ownedVols = vols.filter(v =>
+                v.status === 'read' || v.status === 'unread' || v.status === 'reading'
+            );
+            const plannedCount = vols.filter(v => v.status === 'planned').length;
+            const ownedCount = ownedVols.length;
+
+            if (ownedCount >= total) return;
+
+            const missing = total - ownedCount;
+            const pct = Math.min(99, Math.round((ownedCount / total) * 100));
+            const isWebOnly = vols.every(v => v.format === 'web');
+
+            // Беремо обкладинку першого за номером тому
+            const sortedVols = vols.slice().sort((a, b) =>
+                (a.title || '').localeCompare(b.title || '', 'uk', { numeric: true, sensitivity: 'base' })
+            );
+            const coverObj = sortedVols.find(v => v.cover_url || v.image_url);
+            const coverUrl = coverObj ? (coverObj.cover_url || coverObj.image_url) : '';
+
+            allIncomplete.push({
+                series,
+                ownedCount,
+                total,
+                missing,
+                plannedCount,
+                pct,
+                isWebOnly,
+                coverUrl
+            });
+        });
+
+        if (allIncomplete.length === 0) {
+            if (metaEl) metaEl.style.display = 'none';
+            if (controlsEl) controlsEl.style.display = 'none';
+
+            if (trackedWithTotal === 0) {
+                listEl.innerHTML = '<p style="color: var(--text-gray); font-size: 13px; margin: 0;">Вкажи загальну кількість томів («Всього ✎») на сторінці серії — і вона автоматично зʼявиться тут.</p>';
+            } else {
+                listEl.innerHTML = '<p style="color: var(--accent-green); font-size: 13px; font-weight: 600; margin: 0;">Усі відстежувані серії зібрано на 100%! 🎉</p>';
+            }
+            return;
+        }
+
+        if (controlsEl) controlsEl.style.display = 'flex';
+
+        let entries = collectionPaperOnly
+            ? allIncomplete.filter(e => !e.isWebOnly)
+            : allIncomplete.slice();
+
+        if (entries.length === 0) {
+            if (metaEl) metaEl.style.display = 'none';
+            listEl.innerHTML = '<p style="color: var(--text-gray); font-size: 13px; margin: 0;">Неповних паперових серій немає — усі паперові серії вже зібрані.</p>';
+            return;
+        }
+
+        // Сортування: за % завершення або за мінімальною кількістю томів до докупівлі
+        entries.sort((a, b) => {
+            if (collectionSortMode === 'missing') {
+                if (a.missing !== b.missing) return a.missing - b.missing;
+                if (b.pct !== a.pct) return b.pct - a.pct;
+            } else {
+                if (b.pct !== a.pct) return b.pct - a.pct;
+                if (a.missing !== b.missing) return a.missing - b.missing;
+            }
+            return (a.series.title || '').localeCompare(b.series.title || '', 'uk', { numeric: true, sensitivity: 'base' });
+        });
+
+        const totalMissing = entries.reduce((sum, e) => sum + e.missing, 0);
+        if (metaEl) {
+            const serWord = collectionPlural(entries.length, 'серія', 'серії', 'серій');
+            metaEl.innerText = `${entries.length} ${serWord} • ще ${totalMissing} т.`;
+            metaEl.style.display = 'inline-block';
+        }
+
+        const LIMIT = 5;
+        const visible = collectionExpanded ? entries : entries.slice(0, LIMIT);
+
+        let html = visible.map(entry => {
+            const safeTitle = collectionEscapeHtml(entry.series.title);
+            const isAlmostDone = entry.pct >= 75 || entry.missing === 1;
+            const missWord = collectionPlural(entry.missing, 'том', 'томи', 'томів');
+            const plannedText = entry.plannedCount > 0
+                ? ` <span class="collection-planned-hint">(в планах: ${entry.plannedCount})</span>`
+                : '';
+
+            return `
+                <div class="collection-row ${isAlmostDone ? 'almost-done' : ''}" onclick="openSeriesFromProfile('${entry.series.id}')">
+                    ${entry.coverUrl
+                        ? `<img class="collection-cover" src="${entry.coverUrl}" alt="" loading="lazy">`
+                        : `<div class="collection-cover"></div>`
+                    }
+                    <div class="collection-info">
+                        <div class="collection-row-top">
+                            <div class="collection-title-wrap">
+                                <div class="collection-title">${safeTitle}</div>
+                                ${entry.isWebOnly ? '<span class="collection-web-tag">Веб</span>' : ''}
+                            </div>
+                            <span class="collection-pct">${entry.pct}%</span>
+                        </div>
+                        <div class="collection-bar-track">
+                            <div class="collection-bar-fill" style="width: ${Math.max(4, entry.pct)}%;"></div>
+                        </div>
+                        <div class="collection-row-meta">
+                            <span class="collection-counts">Маю <strong>${entry.ownedCount}</strong> / ${entry.total}${plannedText}</span>
+                            <span class="collection-missing">Ще ${entry.missing} ${missWord}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        if (entries.length > LIMIT) {
+            html += `
+                <button type="button" class="diary-expand-btn" onclick="toggleCollectionExpand()">
+                    ${collectionExpanded ? 'Згорнути' : `Показати всі неповні (${entries.length})`}
+                </button>
+            `;
+        }
+
+        listEl.innerHTML = html;
     }
 </script>
 </body>
