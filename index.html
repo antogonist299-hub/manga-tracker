@@ -4620,20 +4620,20 @@
     </div>
     
     <!-- Пікер створення / наповнення полиці -->
-    <div id="shelfPickerOverlay" class="shelf-picker-overlay" onclick="closeShelfPicker()">
-        <div class="shelf-modal shelf-picker-modal" onclick="event.stopPropagation()">
-            <div class="poster-modal-header">
-                <div class="poster-modal-title">
-                    <i class="ph-fill ph-squares-four"></i>
-                    <span id="shelfPickerHeaderTitle">Нова полиця</span>
+        <div id="shelfPickerOverlay" class="shelf-picker-overlay" onclick="closeShelfPicker()">
+            <div class="shelf-modal shelf-picker-modal" onclick="event.stopPropagation()">
+                <div class="poster-modal-header">
+                    <div class="poster-modal-title">
+                        <i class="ph-fill ph-squares-four"></i>
+                        <span id="shelfPickerHeaderTitle">Нова полиця</span>
+                    </div>
+                    <button type="button" class="modal-close" onclick="closeShelfPicker()"><i class="ph ph-x"></i></button>
                 </div>
-                <button type="button" class="modal-close" onclick="closeShelfPicker()"><i class="ph ph-x"></i></button>
 
-                
                 <input type="text" id="shelfPickerNameInput" class="modal-input" placeholder="Назва полиці (напр. Найкраща мальовка)...">
-                
+
                 <input type="text" id="shelfPickerSearchInput" class="modal-input" placeholder="Пошук твору, серії чи автора..." oninput="renderShelfPickerGrid()">
-                
+
                 <div class="collage-picker-filters" id="shelfPickerFilters">
                     <button type="button" class="collage-picker-pill active" onclick="setShelfPickerFilter('ALL', this)">Всі</button>
                     <button type="button" class="collage-picker-pill" onclick="setShelfPickerFilter('read', this)">Прочитані</button>
@@ -4643,7 +4643,7 @@
                 </div>
 
                 <div class="collage-picker-grid" id="shelfPickerGrid"></div>
-                
+
                 <div class="shelf-picker-footer">
                     <span class="shelf-picker-selected-count" id="shelfPickerSelectedCount">Обрано: <strong>0</strong></span>
                     <button type="button" class="poster-btn poster-btn-primary" id="shelfPickerSaveBtn" onclick="saveShelfPickerSelection()" style="padding: 10px 18px;">
