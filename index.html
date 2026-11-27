@@ -3193,6 +3193,253 @@
             color: var(--text-gray);
             font-weight: 500;
         }
+        
+        /* Поле автора на сторінці книги */
+        .author-series-btn {
+            margin-top: 6px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(107, 208, 38, 0.32);
+            background: rgba(107, 208, 38, 0.1);
+            color: var(--accent-green);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            align-self: flex-start;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        
+        .author-series-btn:hover {
+            background: rgba(107, 208, 38, 0.2);
+            border-color: var(--accent-green);
+        }
+        
+        .author-series-btn:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+        
+        /* Статистика по авторах у Кабінеті */
+        .authors-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+            min-width: 0;
+        }
+        
+        .author-row {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 9px 11px;
+            background: #1a1a1a;
+            border: 1px solid #282828;
+            border-radius: 13px;
+            cursor: pointer;
+            min-width: 0;
+            box-sizing: border-box;
+            transition: border-color 0.2s, transform 0.15s;
+        }
+        
+        .author-row:hover {
+            border-color: var(--accent-green);
+            transform: translateY(-1px);
+        }
+        
+        .author-rank {
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
+            background: #242424;
+            border: 1px solid #323232;
+            color: var(--text-gray);
+            font-size: 12px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .author-rank.top-1 {
+            background: rgba(245, 185, 66, 0.18);
+            border-color: rgba(245, 185, 66, 0.45);
+            color: #f5b942;
+        }
+        
+        .author-rank.top-2,
+        .author-rank.top-3 {
+            background: rgba(107, 208, 38, 0.14);
+            border-color: rgba(107, 208, 38, 0.35);
+            color: var(--accent-green);
+        }
+        
+        .author-cover {
+            width: 34px;
+            height: 48px;
+            border-radius: 6px;
+            object-fit: cover;
+            background: #262626;
+            flex-shrink: 0;
+        }
+        
+        .author-info {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        
+        .author-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-white);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .author-sub {
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+        
+        .author-sub strong {
+            color: var(--text-white);
+            font-weight: 600;
+        }
+        
+        .author-rating-pill {
+            font-size: 13px;
+            font-weight: 700;
+            color: #f5b942;
+            background: rgba(245, 185, 66, 0.1);
+            border: 1px solid rgba(245, 185, 66, 0.24);
+            padding: 3px 8px;
+            border-radius: 8px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        
+        /* Модалка всіх робіт обраного автора */
+        .author-works-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.84);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 14px;
+            z-index: 2180;
+            box-sizing: border-box;
+        }
+        
+        .author-works-modal {
+            width: 100%;
+            max-width: 480px;
+            max-height: 86dvh;
+            background: #181818;
+            border: 1px solid #2d2d2d;
+            border-radius: 22px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75);
+            box-sizing: border-box;
+        }
+        
+        .author-works-meta {
+            font-size: 13px;
+            color: var(--text-gray);
+            margin-top: -4px;
+        }
+        
+        .author-works-grid {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            align-content: start;
+            padding-right: 2px;
+        }
+        
+        .author-work-card {
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            min-width: 0;
+        }
+        
+        .author-work-cover {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 2 / 3;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #242424;
+            border: 1px solid #2e2e2e;
+            transition: border-color 0.2s, transform 0.15s;
+        }
+        
+        .author-work-card:hover .author-work-cover {
+            border-color: var(--accent-green);
+            transform: translateY(-2px);
+        }
+        
+        .author-work-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .author-work-status {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: rgba(12, 12, 12, 0.85);
+            color: #eaeaea;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 5px;
+            backdrop-filter: blur(4px);
+        }
+        
+        .author-work-rating {
+            position: absolute;
+            bottom: 5px;
+            left: 5px;
+            background: rgba(12, 12, 12, 0.86);
+            color: #f5b942;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 6px;
+        }
+        
+        .author-work-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-white);
+            line-height: 1.25;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
     </style>
 </head>
 <body onclick="closeAllMenus()">
@@ -3457,6 +3704,23 @@
                    <div class="collection-list" id="collectionTrackerList"></div>
                </div>
 
+               <!-- Статистика по авторах -->
+               <div class="analytics-card" id="profileAuthorsSection">
+                   <div class="analytics-title">
+                       <span>Твої автори</span>
+                       <span class="collection-meta-badge" id="authorsHeaderMeta" style="display: none;"></span>
+                   </div>
+                   <div class="collection-controls" id="authorsControls" style="display: none;">
+                       <button type="button" class="collection-pill active" id="authorsSortReadBtn" onclick="setAuthorsSort('read')">
+                           Найчитаніші
+                       </button>
+                       <button type="button" class="collection-pill" id="authorsSortRatingBtn" onclick="setAuthorsSort('rating')">
+                           Топ оцінка
+                       </button>
+                   </div>
+                   <div class="authors-list" id="authorsStatsList"></div>
+               </div>
+
                <!-- Щоденник читання -->
                <div class="analytics-card" id="profileDiarySection">
                    <div class="analytics-title">
@@ -3513,6 +3777,32 @@
                     <div class="detail-header">
                         <span class="detail-type" id="detailItemType">МАНҐА</span>
                         <h2 class="detail-title" id="detailItemTitle">Назва книги</h2>
+                    </div>
+
+                    <div class="detail-row" id="detailAuthorRow">
+                        <div class="review-header">
+                            <span class="detail-row-title">Автор / Манґака</span>
+                            <span class="save-status" id="authorSaveStatus">Збережено ✓</span>
+                        </div>
+                        <div class="series-autocomplete" onclick="event.stopPropagation()">
+                            <input type="text" id="detailAuthorInput" class="modal-input" autocomplete="off" placeholder="Вказати автора..." onfocus="showAuthorDropdown('detailAuthorInput', 'detailAuthorDropdown')" oninput="handleDetailAuthorInput()" onblur="saveBookAuthor()" onkeydown="if (event.key === 'Enter') { this.blur(); }">
+                            <div id="detailAuthorDropdown" class="series-dropdown"></div>
+                        </div>
+                        <button type="button" class="author-series-btn" id="applyAuthorSeriesBtn" style="display: none;" onclick="applyAuthorToWholeSeries()">
+                            <i class="ph ph-stack"></i> Застосувати до всієї серії
+                        </button>
+                    </div><div class="detail-row" id="detailAuthorRow">
+                        <div class="review-header">
+                            <span class="detail-row-title">Автор / Манґака</span>
+                            <span class="save-status" id="authorSaveStatus">Збережено ✓</span>
+                        </div>
+                        <div class="series-autocomplete" onclick="event.stopPropagation()">
+                            <input type="text" id="detailAuthorInput" class="modal-input" autocomplete="off" placeholder="Вказати автора..." onfocus="showAuthorDropdown('detailAuthorInput', 'detailAuthorDropdown')" oninput="handleDetailAuthorInput()" onblur="saveBookAuthor()" onkeydown="if (event.key === 'Enter') { this.blur(); }">
+                            <div id="detailAuthorDropdown" class="series-dropdown"></div>
+                        </div>
+                        <button type="button" class="author-series-btn" id="applyAuthorSeriesBtn" style="display: none;" onclick="applyAuthorToWholeSeries()">
+                            <i class="ph ph-stack"></i> Застосувати до всієї серії
+                        </button>
                     </div>
                     
                     <div class="detail-row">
@@ -3639,6 +3929,14 @@
                     <div class="series-autocomplete" onclick="event.stopPropagation()">
                         <input type="text" id="addSeriesInput" class="modal-input" autocomplete="off" placeholder="Наприклад: Сага про Вінланд" onfocus="showSeriesDropdown()" oninput="showSeriesDropdown()">
                         <div id="seriesDropdown" class="series-dropdown"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Автор / Манґака <span style="color: var(--text-gray); font-size: 12px;">(необов'язково)</span></label>
+                    <div class="series-autocomplete" onclick="event.stopPropagation()">
+                        <input type="text" id="addAuthorInput" class="modal-input" autocomplete="off" placeholder="Наприклад: Макото Юкімура" onfocus="showAuthorDropdown('addAuthorInput', 'authorDropdown')" oninput="showAuthorDropdown('addAuthorInput', 'authorDropdown')">
+                        <div id="authorDropdown" class="series-dropdown"></div>
                     </div>
                 </div>
                 
@@ -3894,6 +4192,21 @@
             </div>
         </div>
     </div>
+
+    <!-- Вікно всіх робіт обраного автора -->
+    <div id="authorWorksOverlay" class="author-works-overlay" onclick="closeAuthorWorksModal()">
+        <div class="author-works-modal" onclick="event.stopPropagation()">
+            <div class="poster-modal-header">
+                <div class="poster-modal-title">
+                    <i class="ph-fill ph-pen-nib"></i>
+                    <span id="authorWorksTitle">Автор</span>
+                </div>
+                <button type="button" class="modal-close" onclick="closeAuthorWorksModal()"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="author-works-meta" id="authorWorksMeta"></div>
+            <div class="author-works-grid" id="authorWorksGrid"></div>
+        </div>
+    </div>
     
 <script>
     // ВСТАВ СВОЇ ДАНІ ТУТ:
@@ -3932,6 +4245,10 @@
     
     // Реакція на системну кнопку «Назад» на телефоні
     window.addEventListener('popstate', () => {
+        if (isScreenOpen('authorWorksOverlay')) {
+            closeAuthorWorksModal(true);
+            return;
+        }
         if (isScreenOpen('customConfirmOverlay')) {
             closeConfirmModalFromPopState();
             return;
@@ -4119,7 +4436,7 @@
         
         const filtered = loadedItems.filter(item => {
             const series = allSeries.find(s => s.id === item.series_id);
-            const matchesTitle = item.title.toLowerCase().includes(query) || (series && series.title.toLowerCase().includes(query));
+            const matchesTitle = item.title.toLowerCase().includes(query) || (series && series.title.toLowerCase().includes(query)) || (item.author && item.author.toLowerCase().includes(query));
             const matchesType = currentTypeFilter === 'ALL' || item.item_type === currentTypeFilter;
             const itemFormat = item.format || 'paper';
             const matchesFormat = currentFormatFilter === 'ALL' || itemFormat === currentFormatFilter;
@@ -4254,6 +4571,8 @@
             const itemType = typeSource ? typeSource.item_type : 'МАНҐА';
             const formatSource = currentSeriesVolumes.find(v => v.format);
             const itemFormat = formatSource ? formatSource.format : 'paper';
+            const authorSource = currentSeriesVolumes.find(v => v.author && v.author.trim());
+            const itemAuthor = authorSource ? authorSource.author.trim() : null;
             
             const targetStatus = ['reading', 'read', 'unread', 'planned'].includes(currentActiveTab)
                 ? currentActiveTab
@@ -4262,6 +4581,7 @@
             const { error: insertError } = await supaClient.from('reading_items').insert({
                 user_id: session.user.id,
                 title: nextTitle,
+                author: itemAuthor,
                 item_type: itemType,
                 format: itemFormat,
                 status: targetStatus,
@@ -4532,6 +4852,7 @@
         reviewInput.value = book.review || '';
         document.getElementById('reviewSaveStatus').classList.remove('visible');
         renderDetailStatusPills(book.status);
+        renderDetailAuthorField(book);
         renderDetailFormatPills(book.format || 'paper');
         const finRow = document.getElementById('detailFinishedRow');
         const finInput = document.getElementById('detailFinishedAt');
@@ -4728,6 +5049,8 @@
         if (document.getElementById('navReading').classList.contains('active')) currentTab = 'reading';
         
         document.getElementById('addTitle').value = '';
+        const authEl = document.getElementById('addAuthorInput');
+        if (authEl) authEl.value = '';
         newItemData.existingCoverUrl = '';
         newItemData.coverFile = null;
         document.getElementById('coverGalleryInputDisplay').value = 'Обрати зображення...';
@@ -4748,6 +5071,8 @@
         editModeId = id;
         document.getElementById('modalFormTitle').innerText = "Редагування";
         document.getElementById('addTitle').value = book.title;
+        const authEl = document.getElementById('addAuthorInput');
+        if (authEl) authEl.value = book.author || '';
         newItemData.existingCoverUrl = book.cover_url || '';
         newItemData.coverFile = null;
         
@@ -4844,8 +5169,10 @@
                 }
             }
             
+            const authorVal = (document.getElementById('addAuthorInput')?.value || '').trim() || null;
             const dbData = {
                 title: title,
+                author: authorVal,
                 item_type: newItemData.type,
                 format: newItemData.format || 'paper',
                 status: newItemData.status,
@@ -4862,7 +5189,8 @@
                 const { error } = await supaClient.from('reading_items').insert(dbData);
                 if (error) throw error;
             }
-
+            
+            registerKnownAuthor(authorVal);
             closeAddModal();
             if (currentSeriesId) openSeriesDetail(currentSeriesId); else switchTab(newItemData.status);
             
@@ -5490,6 +5818,7 @@
         renderGoalUI();
         renderDiaryUI();
         renderCollectionTracker(diaryAllItems);
+        renderAuthorsStats(diaryAllItems);
 
         try {
             const { data: { session } } = await supaClient.auth.getSession();
@@ -8411,6 +8740,470 @@
         }
 
         listEl.innerHTML = html;
+    }
+
+    // --- Поле «Автор» (автодоповнення, збереження, статистика в Кабінеті) ---
+    let allKnownAuthors = new Set();
+    let knownAuthorsLoaded = false;
+    let currentAuthorSuggestions = [];
+    let authorStatsItemsCache = [];
+    let renderedAuthorsList = [];
+    let authorsSortMode = 'read'; // 'read' | 'rating'
+    let authorsExpanded = false;
+    let pendingAuthorBookId = null;
+    let authorSaveTimer = null;
+
+    function splitAuthors(rawStr) {
+        if (!rawStr) return [];
+        return String(rawStr)
+            .split(/[,;]+/)
+            .map(s => s.trim())
+            .filter(Boolean);
+    }
+
+    function authorsEscapeHtml(str) {
+        return String(str || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    function authorsPlural(n, one, few, many) {
+        const mod10 = n % 10;
+        const mod100 = n % 100;
+        if (mod10 === 1 && mod100 !== 11) return one;
+        if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return few;
+        return many;
+    }
+
+    function registerKnownAuthor(rawStr) {
+        splitAuthors(rawStr).forEach(name => {
+            const lower = name.toLowerCase();
+            const already = Array.from(allKnownAuthors).some(a => a.toLowerCase() === lower);
+            if (!already) allKnownAuthors.add(name);
+        });
+    }
+
+    async function ensureKnownAuthorsLoaded() {
+        if (Array.isArray(loadedItems)) {
+            loadedItems.forEach(i => registerKnownAuthor(i.author));
+        }
+        if (typeof diaryAllItems !== 'undefined' && Array.isArray(diaryAllItems)) {
+            diaryAllItems.forEach(i => registerKnownAuthor(i.author));
+        }
+        if (knownAuthorsLoaded) return;
+        knownAuthorsLoaded = true;
+
+        try {
+            const { data: { session } } = await supaClient.auth.getSession();
+            if (!session) return;
+            const { data } = await supaClient
+                .from('reading_items')
+                .select('author')
+                .eq('user_id', session.user.id)
+                .not('author', 'is', null);
+            if (Array.isArray(data)) {
+                data.forEach(row => registerKnownAuthor(row.author));
+            }
+        } catch (e) {
+            knownAuthorsLoaded = false;
+        }
+    }
+
+    async function showAuthorDropdown(inputId, dropdownId) {
+        const input = document.getElementById(inputId);
+        const dropdown = document.getElementById(dropdownId);
+        if (!input || !dropdown) return;
+
+        await ensureKnownAuthorsLoaded();
+
+        const rawVal = input.value || '';
+        const parts = rawVal.split(',');
+        const lastToken = (parts[parts.length - 1] || '').trim().toLowerCase();
+        const alreadyTyped = new Set(parts.slice(0, -1).map(p => p.trim().toLowerCase()).filter(Boolean));
+
+        const matches = Array.from(allKnownAuthors)
+            .filter(name => {
+                const lower = name.toLowerCase();
+                if (alreadyTyped.has(lower)) return false;
+                return !lastToken || lower.includes(lastToken);
+            })
+            .sort((a, b) => a.localeCompare(b, 'uk', { sensitivity: 'base' }))
+            .slice(0, 8);
+
+        currentAuthorSuggestions = matches;
+
+        if (matches.length === 0) {
+            dropdown.style.display = 'none';
+            return;
+        }
+
+        dropdown.innerHTML = matches.map((name, idx) => `
+            <div class="series-dropdown-item" onmousedown="event.preventDefault(); selectAuthorSuggestion('${inputId}', '${dropdownId}', ${idx})">
+                ${authorsEscapeHtml(name)}
+            </div>
+        `).join('');
+        dropdown.style.display = 'block';
+    }
+
+    function selectAuthorSuggestion(inputId, dropdownId, idx) {
+        const picked = currentAuthorSuggestions[idx];
+        const input = document.getElementById(inputId);
+        const dropdown = document.getElementById(dropdownId);
+        if (!picked || !input) return;
+
+        const parts = (input.value || '').split(',');
+        if (parts.length > 1) {
+            const prefix = parts.slice(0, -1).map(p => p.trim()).filter(Boolean);
+            prefix.push(picked);
+            input.value = prefix.join(', ');
+        } else {
+            input.value = picked;
+        }
+
+        if (dropdown) dropdown.style.display = 'none';
+
+        if (inputId === 'detailAuthorInput') {
+            saveBookAuthor();
+        }
+    }
+
+    document.addEventListener('click', () => {
+        const d1 = document.getElementById('authorDropdown');
+        const d2 = document.getElementById('detailAuthorDropdown');
+        if (d1) d1.style.display = 'none';
+        if (d2) d2.style.display = 'none';
+    });
+
+    function renderDetailAuthorField(book) {
+        const input = document.getElementById('detailAuthorInput');
+        const statusEl = document.getElementById('authorSaveStatus');
+        const seriesBtn = document.getElementById('applyAuthorSeriesBtn');
+        const dropdown = document.getElementById('detailAuthorDropdown');
+
+        if (input) input.value = book.author || '';
+        if (statusEl) statusEl.classList.remove('visible');
+        if (dropdown) dropdown.style.display = 'none';
+
+        if (seriesBtn) {
+            seriesBtn.style.display = book.series_id ? 'inline-flex' : 'none';
+            seriesBtn.disabled = false;
+            seriesBtn.innerHTML = '<i class="ph ph-stack"></i> Застосувати до всієї серії';
+        }
+    }
+
+    function handleDetailAuthorInput() {
+        showAuthorDropdown('detailAuthorInput', 'detailAuthorDropdown');
+        const statusEl = document.getElementById('authorSaveStatus');
+        if (statusEl) statusEl.classList.remove('visible');
+
+        if (authorSaveTimer) clearTimeout(authorSaveTimer);
+        authorSaveTimer = setTimeout(() => {
+            saveBookAuthor();
+        }, 900);
+    }
+
+    async function saveBookAuthor() {
+        if (authorSaveTimer) {
+            clearTimeout(authorSaveTimer);
+            authorSaveTimer = null;
+        }
+        const book = loadedItems.find(b => b.id === currentBookId);
+        const input = document.getElementById('detailAuthorInput');
+        if (!book || !input) return;
+
+        const cleanAuthor = input.value.trim() || null;
+        if ((book.author || null) === cleanAuthor) return;
+
+        book.author = cleanAuthor;
+        registerKnownAuthor(cleanAuthor);
+
+        if (typeof diaryAllItems !== 'undefined' && Array.isArray(diaryAllItems)) {
+            const cached = diaryAllItems.find(b => String(b.id) === String(book.id));
+            if (cached) cached.author = cleanAuthor;
+        }
+
+        const { error } = await supaClient
+            .from('reading_items')
+            .update({ author: cleanAuthor })
+            .eq('id', book.id);
+
+        if (error) {
+            alert('Помилка збереження автора: ' + error.message);
+            return;
+        }
+
+        const statusEl = document.getElementById('authorSaveStatus');
+        if (statusEl) {
+            statusEl.classList.add('visible');
+            setTimeout(() => statusEl.classList.remove('visible'), 1800);
+        }
+    }
+
+    async function applyAuthorToWholeSeries() {
+        const book = loadedItems.find(b => b.id === currentBookId);
+        const input = document.getElementById('detailAuthorInput');
+        const btn = document.getElementById('applyAuthorSeriesBtn');
+        if (!book || !book.series_id || !input || !btn) return;
+
+        const cleanAuthor = input.value.trim() || null;
+        if (!cleanAuthor) {
+            input.focus();
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="ph ph-spinner"></i> Оновлення...';
+
+        const { error } = await supaClient
+            .from('reading_items')
+            .update({ author: cleanAuthor })
+            .eq('series_id', book.series_id);
+
+        if (error) {
+            alert('Помилка оновлення серії: ' + error.message);
+            btn.disabled = false;
+            btn.innerHTML = '<i class="ph ph-stack"></i> Застосувати до всієї серії';
+            return;
+        }
+
+        registerKnownAuthor(cleanAuthor);
+        loadedItems.forEach(item => {
+            if (item.series_id === book.series_id) item.author = cleanAuthor;
+        });
+        if (typeof diaryAllItems !== 'undefined' && Array.isArray(diaryAllItems)) {
+            diaryAllItems.forEach(item => {
+                if (item.series_id === book.series_id) item.author = cleanAuthor;
+            });
+        }
+
+        btn.innerHTML = '<i class="ph ph-check"></i> Оновлено для всієї серії!';
+        setTimeout(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="ph ph-stack"></i> Застосувати до всієї серії';
+        }, 2000);
+    }
+
+    function setAuthorsSort(mode) {
+        authorsSortMode = mode === 'rating' ? 'rating' : 'read';
+        const readBtn = document.getElementById('authorsSortReadBtn');
+        const rateBtn = document.getElementById('authorsSortRatingBtn');
+        if (readBtn) readBtn.classList.toggle('active', authorsSortMode === 'read');
+        if (rateBtn) rateBtn.classList.toggle('active', authorsSortMode === 'rating');
+        renderAuthorsStatsUI();
+    }
+
+    function toggleAuthorsExpand() {
+        authorsExpanded = !authorsExpanded;
+        renderAuthorsStatsUI();
+    }
+
+    function renderAuthorsStats(items) {
+        authorStatsItemsCache = Array.isArray(items) ? items : [];
+        authorStatsItemsCache.forEach(i => registerKnownAuthor(i.author));
+        knownAuthorsLoaded = true;
+        renderAuthorsStatsUI();
+    }
+
+    function renderAuthorsStatsUI() {
+        const listEl = document.getElementById('authorsStatsList');
+        const metaEl = document.getElementById('authorsHeaderMeta');
+        const controlsEl = document.getElementById('authorsControls');
+        if (!listEl) return;
+
+        const map = new Map();
+
+        authorStatsItemsCache.forEach(item => {
+            const names = splitAuthors(item.author);
+            if (names.length === 0) return;
+
+            names.forEach(name => {
+                const key = name.toLowerCase();
+                if (!map.has(key)) {
+                    map.set(key, {
+                        name,
+                        items: [],
+                        readCount: 0,
+                        ratingSum: 0,
+                        ratedCount: 0
+                    });
+                }
+                const entry = map.get(key);
+                entry.items.push(item);
+                if (item.status === 'read') entry.readCount++;
+                const r = parseFloat(item.rating) || 0;
+                if (r > 0) {
+                    entry.ratingSum += r;
+                    entry.ratedCount++;
+                }
+            });
+        });
+
+        const authors = Array.from(map.values()).map(entry => {
+            const avgRating = entry.ratedCount > 0 ? (entry.ratingSum / entry.ratedCount) : 0;
+            const bestCoverItem = entry.items
+                .slice()
+                .sort((a, b) => (parseFloat(b.rating) || 0) - (parseFloat(a.rating) || 0))
+                .find(i => i.cover_url || i.image_url);
+
+            return {
+                ...entry,
+                totalCount: entry.items.length,
+                avgRating,
+                avgRatingStr: entry.ratedCount > 0 ? avgRating.toFixed(1) : '—',
+                coverUrl: bestCoverItem ? (bestCoverItem.cover_url || bestCoverItem.image_url) : ''
+            };
+        });
+
+        if (authors.length === 0) {
+            if (metaEl) metaEl.style.display = 'none';
+            if (controlsEl) controlsEl.style.display = 'none';
+            listEl.innerHTML = '<p style="color: var(--text-gray); font-size: 13px; margin: 0;">Вкажи автора на сторінці твору або при додаванні — і тут зʼявиться твій рейтинг авторів.</p>';
+            return;
+        }
+
+        authors.sort((a, b) => {
+            if (authorsSortMode === 'rating') {
+                if (b.avgRating !== a.avgRating) return b.avgRating - a.avgRating;
+                if (b.readCount !== a.readCount) return b.readCount - a.readCount;
+                if (b.totalCount !== a.totalCount) return b.totalCount - a.totalCount;
+            } else {
+                if (b.readCount !== a.readCount) return b.readCount - a.readCount;
+                if (b.totalCount !== a.totalCount) return b.totalCount - a.totalCount;
+                if (b.avgRating !== a.avgRating) return b.avgRating - a.avgRating;
+            }
+            return a.name.localeCompare(b.name, 'uk', { sensitivity: 'base' });
+        });
+
+        renderedAuthorsList = authors;
+
+        if (controlsEl) controlsEl.style.display = 'flex';
+        if (metaEl) {
+            const word = authorsPlural(authors.length, 'автор', 'автори', 'авторів');
+            metaEl.innerText = `${authors.length} ${word}`;
+            metaEl.style.display = 'inline-block';
+        }
+
+        const LIMIT = 5;
+        const visible = authorsExpanded ? authors : authors.slice(0, LIMIT);
+
+        let html = visible.map((author, idx) => {
+            const rankClass = idx === 0 ? 'top-1' : (idx === 1 ? 'top-2' : (idx === 2 ? 'top-3' : ''));
+            const safeName = authorsEscapeHtml(author.name);
+            const totalWord = authorsPlural(author.totalCount, 'твір', 'твори', 'творів');
+            const subText = author.readCount === author.totalCount
+                ? `Прочитано: <strong>${author.readCount}</strong>`
+                : `Прочитано: <strong>${author.readCount}</strong> • всього ${author.totalCount} ${totalWord}`;
+
+            return `
+                <div class="author-row" onclick="openAuthorWorksModal(${idx})">
+                    <div class="author-rank ${rankClass}">${idx + 1}</div>
+                    ${author.coverUrl
+                        ? `<img class="author-cover" src="${author.coverUrl}" alt="" loading="lazy">`
+                        : `<div class="author-cover"></div>`
+                    }
+                    <div class="author-info">
+                        <div class="author-name">${safeName}</div>
+                        <div class="author-sub">${subText}</div>
+                    </div>
+                    ${author.ratedCount > 0 ? `<div class="author-rating-pill">★ ${author.avgRatingStr}</div>` : ''}
+                </div>
+            `;
+        }).join('');
+
+        if (authors.length > LIMIT) {
+            html += `
+                <button type="button" class="diary-expand-btn" onclick="toggleAuthorsExpand()">
+                    ${authorsExpanded ? 'Згорнути' : `Показати всіх авторів (${authors.length})`}
+                </button>
+            `;
+        }
+
+        listEl.innerHTML = html;
+    }
+
+    function openAuthorWorksModal(authorIdx) {
+        const author = renderedAuthorsList[authorIdx];
+        if (!author) return;
+
+        const titleEl = document.getElementById('authorWorksTitle');
+        const metaEl = document.getElementById('authorWorksMeta');
+        const gridEl = document.getElementById('authorWorksGrid');
+
+        if (titleEl) titleEl.innerText = author.name;
+
+        const totalWord = authorsPlural(author.totalCount, 'твір', 'твори', 'творів');
+        const ratingPart = author.ratedCount > 0 ? `  •  Середня оцінка: ★ ${author.avgRatingStr}` : '';
+        if (metaEl) {
+            metaEl.innerText = `У бібліотеці: ${author.totalCount} ${totalWord} (прочитано: ${author.readCount})${ratingPart}`;
+        }
+
+        const statusOrder = { reading: 0, read: 1, unread: 2, planned: 3 };
+        const statusLabels = { read: 'Прочитано', unread: 'Не читано', planned: 'В планах', reading: 'Читаю' };
+
+        const sortedItems = author.items.slice().sort((a, b) => {
+            const sDiff = (statusOrder[a.status] ?? 9) - (statusOrder[b.status] ?? 9);
+            if (sDiff !== 0) return sDiff;
+            return (a.title || '').localeCompare(b.title || '', 'uk', { numeric: true, sensitivity: 'base' });
+        });
+
+        if (gridEl) {
+            gridEl.innerHTML = sortedItems.map(item => {
+                const cover = item.cover_url || item.image_url || '';
+                const safeTitle = authorsEscapeHtml(item.title);
+                const rVal = parseFloat(item.rating) || 0;
+
+                return `
+                    <div class="author-work-card" onclick="openBookFromAuthorModal('${item.id}')">
+                        <div class="author-work-cover">
+                            ${cover ? `<img src="${cover}" alt="${safeTitle}" loading="lazy">` : ''}
+                            <span class="author-work-status">${statusLabels[item.status] || ''}</span>
+                            ${rVal > 0 ? `<span class="author-work-rating">★ ${rVal}</span>` : ''}
+                        </div>
+                        <div class="author-work-title">${safeTitle}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        const overlay = document.getElementById('authorWorksOverlay');
+        if (!isScreenOpen('authorWorksOverlay')) {
+            history.pushState({ appLayer: 'authorWorks' }, '');
+        }
+        overlay.style.display = 'flex';
+    }
+
+    function closeAuthorWorksModal(fromPopState = false) {
+        if (!fromPopState && history.state?.appLayer === 'authorWorks') {
+            history.back();
+            return;
+        }
+        document.getElementById('authorWorksOverlay').style.display = 'none';
+
+        if (pendingAuthorBookId) {
+            const targetId = pendingAuthorBookId;
+            pendingAuthorBookId = null;
+            document.getElementById('profileScreen').style.display = 'none';
+            openBookDetail(targetId);
+        }
+    }
+
+    function openBookFromAuthorModal(bookId) {
+        const book = authorStatsItemsCache.find(b => String(b.id) === String(bookId));
+        if (!book) return;
+        if (!loadedItems.some(b => String(b.id) === String(book.id))) {
+            loadedItems.push(book);
+        }
+
+        if (history.state?.appLayer === 'authorWorks') {
+            pendingAuthorBookId = book.id;
+            history.back();
+        } else {
+            document.getElementById('authorWorksOverlay').style.display = 'none';
+            document.getElementById('profileScreen').style.display = 'none';
+            openBookDetail(book.id);
+        }
     }
 </script>
 </body>
