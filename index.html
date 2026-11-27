@@ -3791,18 +3791,6 @@
                         <button type="button" class="author-series-btn" id="applyAuthorSeriesBtn" style="display: none;" onclick="applyAuthorToWholeSeries()">
                             <i class="ph ph-stack"></i> Застосувати до всієї серії
                         </button>
-                    </div><div class="detail-row" id="detailAuthorRow">
-                        <div class="review-header">
-                            <span class="detail-row-title">Автор / Манґака</span>
-                            <span class="save-status" id="authorSaveStatus">Збережено ✓</span>
-                        </div>
-                        <div class="series-autocomplete" onclick="event.stopPropagation()">
-                            <input type="text" id="detailAuthorInput" class="modal-input" autocomplete="off" placeholder="Вказати автора..." onfocus="showAuthorDropdown('detailAuthorInput', 'detailAuthorDropdown')" oninput="handleDetailAuthorInput()" onblur="saveBookAuthor()" onkeydown="if (event.key === 'Enter') { this.blur(); }">
-                            <div id="detailAuthorDropdown" class="series-dropdown"></div>
-                        </div>
-                        <button type="button" class="author-series-btn" id="applyAuthorSeriesBtn" style="display: none;" onclick="applyAuthorToWholeSeries()">
-                            <i class="ph ph-stack"></i> Застосувати до всієї серії
-                        </button>
                     </div>
                     
                     <div class="detail-row">
