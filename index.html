@@ -6273,6 +6273,7 @@
         renderDiaryUI();
         renderCollectionTracker(diaryAllItems);
         renderAuthorsStats(diaryAllItems);
+        renderProfileShelves(diaryAllItems);
 
         try {
             const { data: { session } } = await supaClient.auth.getSession();
